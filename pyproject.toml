@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "desbordante-server"
+version = "0.1.0"
+description = "Server-side of Desbordante — a high-performance data profiler"
+homepage = "https://github.com/Mstrutov/Desbordante"
+authors = ["Maksim Strutovskii <strutovsky.m.a@gmail.com>"]
+license = "AGPL-3.0-only"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = { extras = ["all"], version = "^0.103.2" }
+celery = "^5.3.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
