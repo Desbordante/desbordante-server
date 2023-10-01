@@ -1,3 +1,115 @@
 .venv
 .idea
 .vscode
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Bin files
+*.bin
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+bin/
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+.python-version
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# pip-accel cache
+.tmp
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.cache
+assets/
+nosetests.xml
+coverage.xml
+
+# Translations
+*.mo
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+
+# Rope
+.ropeproject
+
+# Django stuff:
+*.log
+*.pot
+media/
+static/
+
+# Sphinx documentation
+docs/build/
+
+# Misc
+.DS_Store
+*.swp
+venv
+common_venv
+development_venv
+node_modules
+content/
+
+# local settings
+*.conf.local.py
+
+# Celery
+celerybeat-schedule
+celeryev.pid
+
+# Honcho
+.env
+
+# scripts data
+scripts/edu_question*
+scripts/images
+scripts/dependent_tags.txt
+scripts/data
+
+# local settings
+app/kelvin/settings/my.conf.local
+
+# pytest cache
+.pytest_cache
+!/app/plato/*/static/
+
+# postgres dumps
+postgres/*.sql
+
+# ping cache
+ping.cache
+
+pytest-report.html
+pytest-cov-report
+pytest-cov-report.xml
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints
+
+coverage-report-html/
+
+.mypy_cache/
+.ruff_cache/
