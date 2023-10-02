@@ -1,3 +1,8 @@
+# References, thanks max-pfeiffer:
+# https://github.com/max-pfeiffer/python-poetry/blob/main/build/Dockerfile
+# https://github.com/max-pfeiffer/uvicorn-poetry/blob/main/build/Dockerfile
+# https://github.com/max-pfeiffer/uvicorn-poetry/blob/main/examples/fast_api_multistage_build/Dockerfile
+
 # References: using official Python images
 # https://hub.docker.com/_/python
 ARG OFFICIAL_PYTHON_IMAGE=python:3.11.5-slim-bullseye
