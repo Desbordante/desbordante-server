@@ -113,3 +113,5 @@ coverage-report-html/
 
 .mypy_cache/
 .ruff_cache/
+
+poetry.lock
