@@ -1,0 +1,21 @@
+# Development only
+version: '3.8'
+
+services:
+  postgres:
+    container_name: desbordante-postgres
+    image: postgres:16.0-alpine
+    stop_signal: SIGINT
+    env_file:
+      - .env
+    ports:
+      - '${POSTGRES_PORT}:5432'
+
+  rabbitmq:
+    container_name: desbordante-rabbitmq
+    image: rabbitmq:3.12-management-alpine
+    stop_signal: SIGINT
+    env_file:
+      - .env
+    ports:
+      - "${RABBITMQ_PORT}:5672"
