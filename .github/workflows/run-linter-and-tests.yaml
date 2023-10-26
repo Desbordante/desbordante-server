@@ -1,11 +1,11 @@
-name: Basics checks for code quality
+name: Basics checks for code quality (linters and tests)
 on:
   pull_request:
     branches:
       - main
     push:
 jobs:
-  run-linter-and-tests:
+  run-linters-and-tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
