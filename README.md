@@ -4,17 +4,15 @@
 
 1. Required `python3.11` or newer
 2. Install [poetry](https://python-poetry.org/) — dependency management tool
-3. Install dependencies: `poetry install`
-4. (!) Install pre-commit hooks: `poetry run pre-commit install`
-5. Run server application: `poetry run uvicorn --port 8000 app.main:app`
+3. Install dependencies: `make init`
 
 ## Local development
 
+Execute `make` to see all available rules with documentation
+
 1. Activate virtual environment: `source .venv/bin/activate`
-2. Up RabbitMQ and PostgresQL: `docker compose up --build --force-recreate`
-3. Run server with reload on save: `uvicorn --port 8000 app.main:app --reload`
-4. Run celery worker with reload on
-   save: `watchmedo auto-restart --directory=./ --pattern='*.py' --recursive -- celery -A app.worker worker --loglevel=info --concurrency=1`
+2. Don't forget to change values in .env
+3. Run **development-only** containers, worker and app: `make run`
 
 ## Docs
 

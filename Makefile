@@ -1,4 +1,4 @@
-.PHONY: env install-deps compose-up run-worker run-app init run all
+.PHONY: env install-deps compose-up run-worker run-app init run all lint test
 
 ## Create .env file from .env.example
 env:
