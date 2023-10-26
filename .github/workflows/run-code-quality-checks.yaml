@@ -1,10 +1,9 @@
-name: Check
+name: Basics checks for code quality
 on:
   pull_request:
     branches:
       - main
     push:
-
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -22,3 +21,6 @@ jobs:
 
       - name: Run all linters and formatters
         run: make lint
+
+      - name: Run all tests and count coverage
+        run: make test

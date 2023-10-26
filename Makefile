@@ -36,11 +36,15 @@ run:
 all:
 	make init run
 
+## Run all formatters and linters in project
 lint:
-	poetry run ruff ./tests ./app
-	poetry run ruff format --check ./tests ./app
-	poetry run black --check ./tests ./app
-	poetry run mypy --ignore-missing-imports ./app
+	poetry run ruff ./tests/*.py ./app/*.py
+	poetry run ruff format --check ./tests/*.py ./app/*.py
+	poetry run black --check ./tests/*.py ./app/*.py
+	poetry run mypy --ignore-missing-imports ./app/*.py
+## Run all tests in project
+test:
+	poetry run pytest --verbosity=2 --showlocals -log-level=DEBUG --cov=app --cov-report term
 
 .DEFAULT_GOAL := help
 # See <https://gist.github.com/klmr/575726c7e05d8780505a> for explanation.
