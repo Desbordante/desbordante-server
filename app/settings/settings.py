@@ -1,7 +1,7 @@
-from functools import cache, cached_property
+from functools import cached_property
 
 from dotenv import load_dotenv, find_dotenv
-from pydantic import AmqpDsn, computed_field, PostgresDsn
+from pydantic import AmqpDsn, PostgresDsn
 from pydantic_settings import BaseSettings
 
 load_dotenv(find_dotenv(".env"))
@@ -22,10 +22,9 @@ class Settings(BaseSettings):
     rabbitmq_port: int = 5672
 
     @cached_property
-    @computed_field
     def rabbitmq_dsn(self) -> AmqpDsn:
         return AmqpDsn.build(
-            scheme=self.postgres_dialect_driver,
+            scheme="amqp",
             username=self.rabbitmq_default_user,
             password=self.rabbitmq_default_password,
             host=self.rabbitmq_host,
@@ -33,16 +32,12 @@ class Settings(BaseSettings):
         )
 
     @cached_property
-    @computed_field
     def postgres_dsn(self) -> PostgresDsn:
         return PostgresDsn.build(
-            scheme="amqp",
+            scheme=self.postgres_dialect_driver,
             username=self.postgres_user,
             password=self.postgres_password,
             host=self.postgres_host,
             port=self.postgres_port,
             path=self.postgres_db,
         )
-
-
-get_settings = cache(lambda: Settings())
