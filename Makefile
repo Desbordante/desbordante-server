@@ -12,29 +12,21 @@ install-deps:
 	poetry run pre-commit install
 
 ## Up development-only docker containers
-compose-up:
+up:
 	(trap 'docker compose -f dev-docker-compose.yaml down' INT; \
 	docker compose -f dev-docker-compose.yaml up --build --force-recreate --remove-orphans)
 
 ## Run celery worker in watch mode
-run-worker:
+worker:
 	. .venv/bin/activate && watchmedo auto-restart --directory=./ --pattern='*.py' --recursive -- celery -A app.worker worker --loglevel=info --concurrency=1
 
 ## Run application server in watch mode
-run-app:
+app:
 	poetry run uvicorn --port 8000 app.main:app --reload
 
 ## Initiate repository
 init:
 	make env install-deps
-
-## Run full application in watch mode
-run:
-	(make compose-up && make run-worker && make run-app)
-
-## Run make init run
-all:
-	make init && make run
 
 ## Run all formatters and linters in project
 lint:
