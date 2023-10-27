@@ -12,7 +12,9 @@ Execute `make` to see all available rules with documentation
 
 1. Activate virtual environment: `source .venv/bin/activate`
 2. Don't forget to change values in .env
-3. Run **development-only** containers, worker and app: `make run`
+3. Run **development-only** containers: `make up`
+4. Run celery worker in watch mode: `make worker`
+5. Run application in watch mode: `make app`
 
 ## Docs
 
