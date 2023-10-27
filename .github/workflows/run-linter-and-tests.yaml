@@ -17,7 +17,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install deps
-        run: python3 -m pip install poetry && make init
+        run: python3 -m pip install poetry==1.6.1 && make init
 
       - name: Run all linters and formatters
         run: make lint

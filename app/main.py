@@ -1,19 +1,14 @@
-from typing import Literal
-
 from fastapi import FastAPI
-from pydantic import UUID4
+from starlette.middleware.cors import CORSMiddleware
 
-from app.tasks import add_one
+from app import api
 
 app = FastAPI()
-
-
-@app.get("/ping")
-async def ping() -> Literal["Pong!"]:
-    return "Pong!"
-
-
-@app.get("/run")
-async def run() -> UUID4:
-    result = add_one.delay(1)
-    return UUID4(result.task_id)
+app.include_router(api.router)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)

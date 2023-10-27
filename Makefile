@@ -30,11 +30,11 @@ init:
 
 ## Run full application in watch mode
 run:
-	make compose-up run-worker run-app
+	(make compose-up && make run-worker && make run-app)
 
 ## Run make init run
 all:
-	make init run
+	make init && make run
 
 ## Run all formatters and linters in project
 lint:
