@@ -9,7 +9,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = { extras = ["all"], version = "^0.103.2" }
+fastapi = { extras = ["all"], version = "^0.104.0" }
 sqlalchemy = "^2.0.22"
 alembic = "^1.12.1"
 celery = "^5.3.4"
