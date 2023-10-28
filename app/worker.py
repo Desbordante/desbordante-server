@@ -8,4 +8,4 @@ taskq = Celery(
     broker=settings.rabbitmq_dsn.unicode_string(),
     include=["app.tasks"],
 )
-taskq.config_from_object("app.settings.celeryconfig")
+taskq.config_from_object("app.settings.celery_config")
