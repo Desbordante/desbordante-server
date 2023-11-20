@@ -1,6 +1,6 @@
 .PHONY: env install-deps up open-db revision migrate worker app init lint test
 
-ifeq ($(shell test -e '.env' && echo -n yes),yes)
+ifeq ($(shell test -e '.env' && echo -n yes), yes)
 	include .env
 endif
 
