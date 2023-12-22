@@ -24,5 +24,8 @@ jobs:
       - name: Run all linters and formatters
         run: make lint
 
+      - name: Up all containers
+        run: docker compose -f dev-docker-compose.yaml up --build --force-recreate --remove-orphans -d
+
       - name: Run all tests and count coverage
         run: make test
