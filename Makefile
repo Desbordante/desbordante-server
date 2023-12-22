@@ -1,4 +1,4 @@
-.PHONY: env install-deps up open-db revision migrate worker app init lint test
+.PHONY: env install-deps up open-db revision migrate downgrade worker app init lint test
 
 ifeq ($(shell test -e '.env' && echo -n yes), yes)
 	include .env
@@ -20,7 +20,7 @@ install-deps:
 ## Up development-only docker containers
 up:
 	(trap 'docker compose -f dev-docker-compose.yaml down' INT; \
-	docker compose -f dev-docker-compose.yaml up --build --force-recreate --remove-orphans)
+	docker compose -f dev-docker-compose.yaml up --build --force-recreate --remove-orphans $(args))
 
 ## Open database with docker-compose
 open-db:
@@ -33,6 +33,10 @@ revision:
 ## Make migrations in database
 migrate:
 	poetry run alembic -c app/settings/alembic.ini upgrade $(args)
+
+## Downgrade database
+downgrade:
+	poetry run alembic -c app/settings/alembic.ini downgrade $(args)
 
 ## Run celery worker in watch mode
 worker:
