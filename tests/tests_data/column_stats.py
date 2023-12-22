@@ -1,0 +1,27 @@
+column_stats_data = [
+    {
+        "id": "94fd971c-fa7d-4a9b-bedf-781622dc2741",
+        "column_index": 1,
+        "type": " ",
+        "distinct": 3,
+        "is_categorical": True,
+        "count": 2,
+        "avg": " ",
+        "std": " ",
+        "skewness": " ",
+        "kurtosis": " ",
+        "min": " ",
+        "max": " ",
+        "sum": " ",
+        "quantile25": " ",
+        "quantile50": " ",
+        "quantile75": " ",
+        "deleted_at": None,
+    },
+    {
+        "id": "0589040a-1924-42f9-9c1d-e4c57756963f",
+        "column_index": 1,
+        "type": " ",
+        "is_categorical": False,
+    },
+]
