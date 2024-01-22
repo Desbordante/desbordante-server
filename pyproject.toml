@@ -9,7 +9,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = { extras = ["all"], version = "^0.105.0" }
+fastapi = { extras = ["all"], version = "^0.109.0" }
 sqlalchemy = "^2.0.22"
 alembic = "^1.12.1"
 celery = "^5.3.4"
@@ -26,7 +26,7 @@ ruff = "^0.1.2"
 mypy = "^1.6.1"
 black = "^23.10.1"
 pre-commit = "^3.5.0"
-celery-types = "^0.20.0"
+celery-types = "^0.21.0"
 watchdog = "^3.0.0"
 pytest-cov = "^4.1.0"
 
