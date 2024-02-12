@@ -5,6 +5,7 @@ Revises: 03c0f0f4b98e
 Create Date: 2023-12-22 15:57:31.889415
 
 """
+
 from typing import Sequence, Union
 import fastapi_users_db_sqlalchemy
 from alembic import op
