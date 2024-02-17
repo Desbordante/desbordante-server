@@ -54,3 +54,6 @@ warn_required_dynamic_aliases = true
 [tool.ruff.lint]
 fixable = ["ALL"]
 ignore = ["F401"]
+
+[tool.pytest.ini_options]
+filterwarnings = ["ignore::DeprecationWarning"]

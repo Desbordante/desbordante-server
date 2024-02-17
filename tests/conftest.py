@@ -22,19 +22,6 @@ def prepare_db():
 
 
 @pytest.fixture(scope="session", autouse=True)
-def get_test_session():
-    Session = sessionmaker(test_engine, expire_on_commit=False)
-    yield Session
-
-
-@pytest.fixture(scope="function", autouse=True)
-def clean_tables(request, get_test_session):
-    if "fixture_name" in request.fixturenames:
-        yield
-    else:
-        with get_test_session() as session:
-            for table_name in Base.metadata.tables.keys():
-                table = Base.metadata.tables[table_name]
-                session.query(table).delete()
-            session.commit()
-            yield
+def session():
+    session = sessionmaker(test_engine, expire_on_commit=False)
+    yield session
