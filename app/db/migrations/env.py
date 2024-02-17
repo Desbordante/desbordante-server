@@ -3,16 +3,16 @@ from sqlalchemy import engine_from_config, pool
 from alembic import context
 from app.settings import get_settings
 from app.db import Base
-from app.db.models.user.code import Code
-from app.db.models.user.device import Device
-from app.db.models.user.feedback import Feedback
-from app.db.models.user.permission import Permission
-from app.db.models.user.role import Role
-from app.db.models.user.session import Session
-from app.db.models.user.user import User
-from app.db.models.file.file_info import FileInfo
-from app.db.models.file.file_format import FileFormat
-from app.tasks.models.task import Task
+from app.domain.user.model.code import Code
+from app.domain.user.model.device import Device
+from app.domain.user.model.feedback import Feedback
+from app.domain.user.model.permission import Permission
+from app.domain.user.model.role import Role
+from app.domain.user.model.session import Session
+from app.domain.user.model.user import User
+from app.domain.file.model.file_info import FileInfo
+from app.domain.file.model.file_format import FileFormat
+from app.domain.task.model.task import Task
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
