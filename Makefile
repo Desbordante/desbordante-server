@@ -40,7 +40,7 @@ downgrade:
 
 ## Run celery worker in watch mode
 worker:
-	. .venv/bin/activate && watchmedo auto-restart --directory=./ --pattern='*.py' --recursive -- celery -A app.worker worker --loglevel=info --concurrency=1
+	watchmedo auto-restart --directory=./ --pattern='*.py' --recursive -- celery -A app.worker worker --loglevel=info --concurrency=1
 
 ## Run application server in watch mode
 app:
@@ -52,14 +52,19 @@ init:
 
 ## Run all formatters and linters in project
 lint:
-	poetry run ruff ./tests/*.py ./app/*.py
-	poetry run ruff format --check ./tests/*.py ./app/*.py
-	poetry run black --check ./tests/*.py ./app/*.py
-	poetry run mypy --ignore-missing-imports ./app/*.py
+	ls
+	poetry run ruff tests app \
+	& poetry run ruff format --check tests app \
+	& poetry run black --check tests app \
+	& poetry run mypy --ignore-missing-imports app
+
+format:
+	poetry run ruff format tests app & poetry run black tests app
+
 
 ## Run all tests in project
 test:
-	poetry run pytest --verbosity=2 --showlocals -log-level=DEBUG --cov=app --cov-report term
+	poetry run pytest -o log_cli=true --verbosity=2 --showlocals --log-cli-level=INFO --cov=app --cov-report term
 
 .DEFAULT_GOAL := help
 # See <https://gist.github.com/klmr/575726c7e05d8780505a> for explanation.

@@ -5,9 +5,9 @@
 
 # References: using official Python images
 # https://hub.docker.com/_/python
-ARG OFFICIAL_PYTHON_IMAGE=python:3.11.5-slim-bullseye
+ARG OFFICIAL_PYTHON_IMAGE=python:3.12.2-slim-bullseye
 FROM ${OFFICIAL_PYTHON_IMAGE} as poetry-install-build-stage
-ARG POETRY_VERSION=1.6.1
+ARG POETRY_VERSION=1.8.2
 
 # References:
 # https://pip.pypa.io/en/stable/topics/caching/#avoiding-caching

@@ -5,6 +5,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db import Base
+from typing import Any
 
 
 class TaskStatus(StrEnum):
@@ -36,8 +37,8 @@ class Task(Base):
     error_msg: Mapped[int | None] = mapped_column(default=None)
     id_executed: Mapped[bool] = mapped_column(default=False)
     elapsed_time: Mapped[float | None] = mapped_column(default=None)
-    config: Mapped[dict] = mapped_column(JSONB)
-    result: Mapped[dict] = mapped_column(JSONB)
+    config: Mapped[dict[Any, Any]] = mapped_column(JSONB)
+    result: Mapped[dict[Any, Any]] = mapped_column(JSONB)
     created_at: Mapped[datetime]
     deleted_at: Mapped[datetime | None] = mapped_column(default=None)
 
