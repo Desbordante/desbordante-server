@@ -44,7 +44,7 @@ class FDAlgoResult(BaseModel):
     fds: list[FDModel]
 
 
-# TODO: replace with 3.12 generics after when supported by mypy
+# TODO: replace with 3.12 generics when PEP 695 will be supported by mypy
 Conf = TypeVar("Conf", bound=BaseModel)
 FDAlgo = TypeVar("FDAlgo", bound=FdAlgorithm)
 
