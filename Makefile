@@ -52,7 +52,6 @@ init:
 
 ## Run all formatters and linters in project
 lint:
-	ls
 	poetry run ruff tests app \
 	& poetry run ruff format --check tests app \
 	& poetry run black --check tests app \
