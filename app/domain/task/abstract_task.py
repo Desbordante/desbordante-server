@@ -27,5 +27,4 @@ class AbstractTask(Generic[Algo, Conf, Res], ABC):
         return self.collect_result()
 
     @abstractmethod
-    def collect_result(self) -> Res:
-        ...
+    def collect_result(self) -> Res: ...
