@@ -14,7 +14,7 @@ from desbordante.fd.algorithms import (
     Pyro,
     Tane,
 )
-from typing import Annotated, Generic, TypeVar
+from typing import Annotated, TypeVar
 from abc import ABC
 
 

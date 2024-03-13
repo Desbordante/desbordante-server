@@ -2,10 +2,10 @@ import ctypes
 import random
 import time
 
-from app.worker import taskq
+from app.worker import worker
 
 
-@taskq.task(bind=True)
+@worker.task(bind=True)
 def dummy_task(self, x):
     time.sleep(1)
     if random.random() < 0.5:

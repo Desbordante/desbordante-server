@@ -2,9 +2,9 @@ from celery import Celery
 
 from app.settings import settings
 
-taskq = Celery(
+worker = Celery(
     __name__,
     broker=settings.rabbitmq_dsn.unicode_string(),
-    include=["app.background_tasks"],
+    include=["app.domain.worker.task"],
 )
-taskq.config_from_object("app.settings.celery_config")
+worker.config_from_object("app.settings.celery_config")
