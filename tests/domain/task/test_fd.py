@@ -1,36 +1,11 @@
-from app.domain.task.schema.fd import (
-    AidTask,
-    DFDTask,
-    DepminerTask,
-    FDepTask,
-    FUNTask,
-    FastFDsTask,
-    FdMineTask,
-    HyFDTask,
-    PyroTask,
-    TaneTask,
-)
+from app.domain.task.fd import fd_factory
 import pytest
 import pandas as pd
 import logging
 from polyfactory.factories.pydantic_factory import ModelFactory
 
 
-all_task_classes = [
-    AidTask,
-    DFDTask,
-    DepminerTask,
-    FDepTask,
-    FUNTask,
-    FastFDsTask,
-    FdMineTask,
-    HyFDTask,
-    PyroTask,
-    TaneTask,
-]
-
-
-@pytest.mark.parametrize("task_cls", all_task_classes)
+@pytest.mark.parametrize("task_cls", fd_factory.get_all())
 @pytest.mark.parametrize(
     "table", [pd.read_csv("tests/datasets/university_fd.csv", sep=",", header=0)]
 )
@@ -40,7 +15,7 @@ def test_with_default_params(task_cls, table):
     logging.info(result)
 
 
-@pytest.mark.parametrize("task_cls", all_task_classes)
+@pytest.mark.parametrize("task_cls", fd_factory.get_all())
 @pytest.mark.parametrize(
     "table", [pd.read_csv("tests/datasets/university_fd.csv", sep=",", header=0)]
 )

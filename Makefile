@@ -52,7 +52,7 @@ init:
 
 ## Run all formatters and linters in project
 lint:
-	poetry run ruff tests app \
+	poetry run ruff check tests app \
 	& poetry run ruff format --check tests app \
 	& poetry run black --check tests app \
 	& poetry run mypy --ignore-missing-imports app

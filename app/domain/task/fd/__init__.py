@@ -1,7 +1,17 @@
-from app.domain.task.abstract_task import AbstractTask
-from enum import StrEnum, auto
-from pydantic import BaseModel, Field
-from desbordante.fd import FD, FdAlgorithm
+from .config import (
+    AidConfig,
+    DFDConfig,
+    DepminerConfig,
+    FDepConfig,
+    FUNConfig,
+    FastFDsConfig,
+    FdMineConfig,
+    HyFDConfig,
+    PyroConfig,
+    TaneConfig,
+)
+from .result import FDModel, FDAlgoResult
+from desbordante.fd import FdAlgorithm
 from desbordante.fd.algorithms import (
     Aid,
     DFD,
@@ -14,11 +24,16 @@ from desbordante.fd.algorithms import (
     Pyro,
     Tane,
 )
-from typing import Annotated, TypeVar
+from typing import TypeVar
+from app.domain.task.abstract_task import AbstractTask
+from app.domain.task.task_factory import TaskFactory
+from app.domain.task.primitive_factory import PrimitiveFactory, PrimitiveName
 from abc import ABC
+from enum import StrEnum, auto
+from pydantic import BaseModel
 
 
-class TaskAlgoType(StrEnum):
+class FDAlgoName(StrEnum):
     Aid = auto()
     DFD = auto()
     Depminer = auto()
@@ -29,19 +44,6 @@ class TaskAlgoType(StrEnum):
     HyFD = auto()
     Pyro = auto()
     Tane = auto()
-
-
-class FDModel(BaseModel):
-    @classmethod
-    def from_fd(cls, fd: FD):
-        return cls(lhs_indices=fd.lhs_indices, rhs_index=fd.rhs_index)
-
-    lhs_indices: list[int]
-    rhs_index: int
-
-
-class FDAlgoResult(BaseModel):
-    fds: list[FDModel]
 
 
 # TODO: replace with 3.12 generics when PEP 695 will be supported by mypy
@@ -57,100 +59,66 @@ class FDTask(AbstractTask[FDAlgo, Conf, FDAlgoResult], ABC):
         return FDAlgoResult(fds=list(map(FDModel.from_fd, fds)))
 
 
-class AidConfig(BaseModel):
-    is_null_equal_null: bool
+fd_factory = PrimitiveFactory.register(
+    PrimitiveName.fd, TaskFactory[FDAlgoName, FDTask]()
+)
 
 
-class DFDConfig(BaseModel):
-    is_null_equal_null: bool
-    threads: Annotated[int, Field(ge=1, le=8)]
-
-
-class DepminerConfig(BaseModel):
-    is_null_equal_null: bool
-
-
-class FDepConfig(BaseModel):
-    is_null_equal_null: bool
-
-
-class FUNConfig(BaseModel):
-    is_null_equal_null: bool
-
-
-class FastFDsConfig(BaseModel):
-    is_null_equal_null: bool
-    max_lhs: Annotated[int, Field(ge=1, le=10)]
-    threads: Annotated[int, Field(ge=1, le=8)]
-
-
-class FdMineConfig(BaseModel):
-    is_null_equal_null: bool
-
-
-class HyFDConfig(BaseModel):
-    is_null_equal_null: bool
-
-
-class PyroConfig(BaseModel):
-    is_null_equal_null: bool
-    error: Annotated[float, Field(ge=0, le=1)]
-    max_lhs: Annotated[int, Field(ge=1, le=10)]
-    threads: Annotated[int, Field(ge=1, le=8)]
-    seed: int
-
-
-class TaneConfig(BaseModel):
-    is_null_equal_null: bool
-    error: Annotated[float, Field(ge=0, le=1)]
-    max_lhs: Annotated[int, Field(ge=1, le=10)]
-
-
+@fd_factory.register_task(FDAlgoName.Aid)
 class AidTask(FDTask[Aid, AidConfig, FDAlgoResult]):
     config_model_cls = AidConfig
     algorithm = Aid()
 
 
+@fd_factory.register_task(FDAlgoName.DFD)
 class DFDTask(FDTask[DFD, DFDConfig, FDAlgoResult]):
     config_model_cls = DFDConfig
     algorithm = DFD()
 
 
+@fd_factory.register_task(FDAlgoName.Depminer)
 class DepminerTask(FDTask[Depminer, DepminerConfig, FDAlgoResult]):
     config_model_cls = DepminerConfig
     algorithm = Depminer()
 
 
+@fd_factory.register_task(FDAlgoName.FDep)
 class FDepTask(FDTask[FDep, FDepConfig, FDAlgoResult]):
     config_model_cls = FDepConfig
     algorithm = FDep()
 
 
+@fd_factory.register_task(FDAlgoName.FUN)
 class FUNTask(FDTask[FUN, FUNConfig, FDAlgoResult]):
     config_model_cls = FUNConfig
     algorithm = FUN()
 
 
+@fd_factory.register_task(FDAlgoName.FastFDs)
 class FastFDsTask(FDTask[FastFDs, FastFDsConfig, FDAlgoResult]):
     config_model_cls = FastFDsConfig
     algorithm = FastFDs()
 
 
+@fd_factory.register_task(FDAlgoName.FdMine)
 class FdMineTask(FDTask[FdMine, FdMineConfig, FDAlgoResult]):
     config_model_cls = FdMineConfig
     algorithm = FdMine()
 
 
+@fd_factory.register_task(FDAlgoName.HyFD)
 class HyFDTask(FDTask[HyFD, HyFDConfig, FDAlgoResult]):
     config_model_cls = HyFDConfig
     algorithm = HyFD()
 
 
+@fd_factory.register_task(FDAlgoName.Pyro)
 class PyroTask(FDTask[Pyro, PyroConfig, FDAlgoResult]):
     config_model_cls = PyroConfig
     algorithm = Pyro()
 
 
+@fd_factory.register_task(FDAlgoName.Tane)
 class TaneTask(FDTask[Tane, TaneConfig, FDAlgoResult]):
     config_model_cls = TaneConfig
     algorithm = Tane()
