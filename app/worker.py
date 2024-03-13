@@ -1,8 +1,7 @@
 from celery import Celery
 
-from app.settings import get_settings
+from app.settings import settings
 
-settings = get_settings()
 taskq = Celery(
     __name__,
     broker=settings.rabbitmq_dsn.unicode_string(),

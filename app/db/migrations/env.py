@@ -1,7 +1,7 @@
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
-from app.settings import get_settings
+from app.settings import settings
 from app.db import Base
 from app.domain.user.model.code import Code
 from app.domain.user.model.device import Device
@@ -29,7 +29,6 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
 section = config.config_ini_section
-settings = get_settings()
 config.set_section_option(section, "db_url", settings.postgres_dsn.unicode_string())
 
 # other values from the config, defined by the needs of env.py,
