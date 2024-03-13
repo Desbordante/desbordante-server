@@ -57,6 +57,7 @@ lint:
 	& poetry run black --check tests app \
 	& poetry run mypy --ignore-missing-imports app
 
+## Reformat code
 format:
 	poetry run ruff format tests app & poetry run black tests app
 

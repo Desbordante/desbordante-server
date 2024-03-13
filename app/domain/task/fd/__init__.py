@@ -60,7 +60,7 @@ class FDTask(AbstractTask[FDAlgo, Conf, FDAlgoResult], ABC):
 
 
 fd_factory = PrimitiveFactory.register(
-    PrimitiveName.fd, TaskFactory[FDAlgoName, FDTask]()
+    PrimitiveName.fd, TaskFactory[FDAlgoName, FDTask](FDAlgoName)
 )
 
 
