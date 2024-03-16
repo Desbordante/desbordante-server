@@ -1,6 +1,7 @@
-from enum import StrEnum, auto
-from app.domain.task.task_factory import TaskFactory, E, T
-
+from enum import auto
+from enum import StrEnum
+from app.domain.task.task_factory import TaskFactory
+from app.domain.task.fd import fd_factory
 from typing import Iterable, TypeVar, TypeAlias
 
 
@@ -18,7 +19,7 @@ class PrimitiveName(StrEnum):
 
 F = TypeVar("F", bound=TaskFactory)
 
-AnyTaskFactory: TypeAlias = TaskFactory[E, T]
+AnyTaskFactory: TypeAlias = TaskFactory
 
 
 class PrimitiveFactory:
@@ -39,5 +40,12 @@ class PrimitiveFactory:
         return factory
 
     @classmethod
-    def get_all(self) -> Iterable[AnyTaskFactory]:
-        return list(self.primitives.values())
+    def get_all(cls) -> Iterable[AnyTaskFactory]:
+        return cls.primitives.values()
+
+    @classmethod
+    def get_names(cls) -> Iterable[PrimitiveName]:
+        return cls.primitives.keys()
+
+
+PrimitiveFactory.register(PrimitiveName.fd, fd_factory)

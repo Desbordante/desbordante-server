@@ -7,5 +7,5 @@ import pytest
 )
 def test_get_task_by_primitive_name(primitive_name: str):
     task_factory = PrimitiveFactory.get_by_name(primitive_name)
-    for name in task_factory.key_enum:
+    for name in task_factory.enum_used_as_keys:
         task_factory.get_by_name(name.value)

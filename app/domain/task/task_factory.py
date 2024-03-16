@@ -1,15 +1,14 @@
 from enum import StrEnum
 from app.domain.task.abstract_task import AbstractTask
-from typing import Generic, TypeVar, Iterable, Type
+from typing import Iterable, Type
 
-E = TypeVar("E", bound=StrEnum)
-T = TypeVar("T", bound=AbstractTask)
+type AnyAlgoName = StrEnum
 
 
-class TaskFactory(Generic[E, T]):
-    def __init__(self, key_enum: type[StrEnum]) -> None:
+class TaskFactory[E: AnyAlgoName, T: AbstractTask]:
+    def __init__(self, enum_used_as_keys: Type[AnyAlgoName]) -> None:
         self.tasks: dict[E, T] = {}
-        self.key_enum = key_enum
+        self.enum_used_as_keys = enum_used_as_keys
 
     def register_task(self, task_type: E):
         def decorator(task_cls):
@@ -27,4 +26,7 @@ class TaskFactory(Generic[E, T]):
         return task
 
     def get_all(self) -> Iterable[T]:
-        return list(self.tasks.values())
+        return self.tasks.values()
+
+    def get_names(self) -> Iterable[E]:
+        return self.tasks.keys()

@@ -23,7 +23,7 @@ class Settings(BaseSettings):
 
     @cached_property
     def rabbitmq_dsn(self) -> AmqpDsn:
-        return AmqpDsn.build(
+        return AmqpDsn.build(  # type: ignore
             scheme="amqp",
             username=self.rabbitmq_default_user,
             password=self.rabbitmq_default_password,
@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     @cached_property
     def postgres_dsn(self) -> PostgresDsn:
-        return PostgresDsn.build(
+        return PostgresDsn.build(  # type: ignore
             scheme=self.postgres_dialect_driver,
             username=self.postgres_user,
             password=self.postgres_password,

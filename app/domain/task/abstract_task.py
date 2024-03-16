@@ -1,29 +1,36 @@
-from typing import Generic, TypeVar, Type
+from typing import Type
 from abc import ABC, abstractmethod
-from abcattrs import abstractattrs, Abstract
 from pydantic import BaseModel
 from desbordante import Algorithm
 import pandas
 
-Conf = TypeVar("Conf", bound=BaseModel)
-Res = TypeVar("Res", bound=BaseModel)
-Algo = TypeVar("Algo", bound=Algorithm)
+
+type AnyAlgo = Algorithm
+type AnyConf = BaseModel
+type AnyRes = BaseModel
 
 
-@abstractattrs
-class AbstractTask(Generic[Algo, Conf, Res], ABC):
-    algorithm: Abstract[Algo]
-    config_model_cls: Abstract[Type[Conf]]
-    result_model_cls: Abstract[Type[Res]]
+class AbstractTask[Algo: AnyAlgo, Conf: AnyConf, Res: AnyRes](ABC):
+    algo: Algo
+    config_model_cls: Type[Conf]
+    result_model_cls: Type[Res]
 
     def __init__(self, table: pandas.DataFrame) -> None:
-        super().__init__()
-        self.table = table
-        self.algorithm.load_data(table=table)
+        try:
+            self.algo
+            self.config_model_cls
+            self.result_model_cls
+        except AttributeError:
+            raise NotImplementedError(
+                "algo, config_model_cls and result_model_cls attributes, must be implemented"
+            )
 
-    def execute(self, config: Conf = None) -> Res:
+        self.table = table
+        self.algo.load_data(table=table)
+
+    def execute(self, config: Conf | None = None) -> Res:
         options = config.model_dump(exclude_unset=True) if config else {}
-        self.algorithm.execute(**options)
+        self.algo.execute(**options)
         return self.collect_result()
 
     @abstractmethod

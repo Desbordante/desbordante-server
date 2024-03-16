@@ -24,13 +24,9 @@ from desbordante.fd.algorithms import (
     Pyro,
     Tane,
 )
-from typing import TypeVar
-from app.domain.task.abstract_task import AbstractTask
+from app.domain.task.abstract_task import AbstractTask, AnyConf
 from app.domain.task.task_factory import TaskFactory
-from app.domain.task.primitive_factory import PrimitiveFactory, PrimitiveName
-from abc import ABC
-from enum import StrEnum, auto
-from pydantic import BaseModel
+from enum import auto, StrEnum
 
 
 class FDAlgoName(StrEnum):
@@ -46,79 +42,74 @@ class FDAlgoName(StrEnum):
     Tane = auto()
 
 
-# TODO: replace with 3.12 generics when PEP 695 will be supported by mypy
-Conf = TypeVar("Conf", bound=BaseModel)
-FDAlgo = TypeVar("FDAlgo", bound=FdAlgorithm)
-
-
-class FDTask(AbstractTask[FDAlgo, Conf, FDAlgoResult], ABC):
+class FDTask[FDAlgo: FdAlgorithm, Conf: AnyConf](
+    AbstractTask[FDAlgo, Conf, FDAlgoResult]
+):
     result_model_cls = FDAlgoResult
 
     def collect_result(self) -> FDAlgoResult:
-        fds = self.algorithm.get_fds()
+        fds = self.algo.get_fds()
         return FDAlgoResult(fds=list(map(FDModel.from_fd, fds)))
 
 
-fd_factory = PrimitiveFactory.register(
-    PrimitiveName.fd, TaskFactory[FDAlgoName, FDTask](FDAlgoName)
-)
+fd_factory = TaskFactory[FDAlgoName, FDTask](FDAlgoName)
 
 
 @fd_factory.register_task(FDAlgoName.Aid)
-class AidTask(FDTask[Aid, AidConfig, FDAlgoResult]):
+class AidTask(FDTask[Aid, AidConfig]):
     config_model_cls = AidConfig
-    algorithm = Aid()
+    algo = Aid()
 
 
 @fd_factory.register_task(FDAlgoName.DFD)
-class DFDTask(FDTask[DFD, DFDConfig, FDAlgoResult]):
+class DFDTask(FDTask[DFD, DFDConfig]):
     config_model_cls = DFDConfig
-    algorithm = DFD()
+    algo = DFD()
 
 
 @fd_factory.register_task(FDAlgoName.Depminer)
-class DepminerTask(FDTask[Depminer, DepminerConfig, FDAlgoResult]):
+class DepminerTask(FDTask[Depminer, DepminerConfig]):
     config_model_cls = DepminerConfig
-    algorithm = Depminer()
+    algo = Depminer()
 
 
 @fd_factory.register_task(FDAlgoName.FDep)
-class FDepTask(FDTask[FDep, FDepConfig, FDAlgoResult]):
+class FDepTask(FDTask[FDep, FDepConfig]):
     config_model_cls = FDepConfig
-    algorithm = FDep()
+    algo = FDep()
 
 
 @fd_factory.register_task(FDAlgoName.FUN)
-class FUNTask(FDTask[FUN, FUNConfig, FDAlgoResult]):
+class FUNTask(FDTask[FUN, FUNConfig]):
     config_model_cls = FUNConfig
-    algorithm = FUN()
+    algo = FUN()
 
 
 @fd_factory.register_task(FDAlgoName.FastFDs)
-class FastFDsTask(FDTask[FastFDs, FastFDsConfig, FDAlgoResult]):
+class FastFDsTask(FDTask[FastFDs, FastFDsConfig]):
     config_model_cls = FastFDsConfig
-    algorithm = FastFDs()
+    algo = FastFDs()
 
 
 @fd_factory.register_task(FDAlgoName.FdMine)
-class FdMineTask(FDTask[FdMine, FdMineConfig, FDAlgoResult]):
+class FdMineTask(FDTask[FdMine, FdMineConfig]):
     config_model_cls = FdMineConfig
-    algorithm = FdMine()
+    algo = FdMine()
 
 
 @fd_factory.register_task(FDAlgoName.HyFD)
-class HyFDTask(FDTask[HyFD, HyFDConfig, FDAlgoResult]):
+class HyFDTask(FDTask[HyFD, HyFDConfig]):
     config_model_cls = HyFDConfig
-    algorithm = HyFD()
+    algo = HyFD()
 
 
 @fd_factory.register_task(FDAlgoName.Pyro)
-class PyroTask(FDTask[Pyro, PyroConfig, FDAlgoResult]):
+class PyroTask(FDTask[Pyro, PyroConfig]):
     config_model_cls = PyroConfig
-    algorithm = Pyro()
+    algo = Pyro()
 
 
 @fd_factory.register_task(FDAlgoName.Tane)
-class TaneTask(FDTask[Tane, TaneConfig, FDAlgoResult]):
+class TaneTask(FDTask[Tane, TaneConfig]):
     config_model_cls = TaneConfig
-    algorithm = Tane()
+    algo = Tane()

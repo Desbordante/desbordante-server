@@ -1,5 +1,6 @@
 from datetime import datetime
-from enum import StrEnum, auto
+from enum import auto
+from enum import StrEnum
 from uuid import UUID, uuid4
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column

@@ -1,5 +1,6 @@
 from datetime import datetime
-from enum import StrEnum, auto
+from enum import auto
+from enum import StrEnum
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from fastapi_users.db import SQLAlchemyBaseUserTableUUID
 from app.db import Base

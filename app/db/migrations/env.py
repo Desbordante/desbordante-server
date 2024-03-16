@@ -3,16 +3,16 @@ from sqlalchemy import engine_from_config, pool
 from alembic import context
 from app.settings import settings
 from app.db import Base
-from app.domain.user.model.code import Code
-from app.domain.user.model.device import Device
-from app.domain.user.model.feedback import Feedback
-from app.domain.user.model.permission import Permission
-from app.domain.user.model.role import Role
-from app.domain.user.model.session import Session
-from app.domain.user.model.user import User
-from app.domain.file.model.file_info import FileInfo
-from app.domain.file.model.file_format import FileFormat
-from app.domain.task.model.task import Task
+from app.domain.user.model.code import Code  # noqa: F401
+from app.domain.user.model.device import Device  # noqa: F401
+from app.domain.user.model.feedback import Feedback  # noqa: F401
+from app.domain.user.model.permission import Permission  # noqa: F401
+from app.domain.user.model.role import Role  # noqa: F401
+from app.domain.user.model.session import Session  # noqa: F401
+from app.domain.user.model.user import User  # noqa: F401
+from app.domain.file.model.file_info import FileInfo  # noqa: F401
+from app.domain.file.model.file_format import FileFormat  # noqa: F401
+from app.domain.task.model.task import Task  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
