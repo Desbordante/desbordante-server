@@ -2,7 +2,7 @@
 
 ## Installation
 
-1. Required `python3.11` or newer
+1. Required `python3.12` or newer
 2. Install [poetry](https://python-poetry.org/) — dependency management tool
 3. Install dependencies: `make init`
 
