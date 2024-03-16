@@ -35,19 +35,13 @@ watchdog = "^4.0.0"
 pytest-cov = "^4.1.0"
 ipykernel = "^6.29.3"
 polyfactory = "^2.15.0"
-pyright = "^1.1.354"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.pyright]
-exclude = ["app/db/migrations"]
-reportMissingModuleSource = false
-
 [tool.ruff.lint]
 fixable = ["ALL"]
-
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]

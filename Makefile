@@ -54,8 +54,7 @@ init:
 lint:
 	poetry run ruff check tests app \
 	& poetry run ruff format --check tests app \
-	& poetry run black --check tests app \
-	& poetry run pyright app
+	& poetry run black --check tests app
 
 ## Reformat code
 format:

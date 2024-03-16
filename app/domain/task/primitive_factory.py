@@ -1,8 +1,8 @@
 from enum import auto
 from enum import StrEnum
-from app.domain.task.task_factory import TaskFactory
+from app.domain.task.task_factory import AnyTaskFactory
 from app.domain.task.fd import fd_factory
-from typing import Iterable, TypeVar, TypeAlias
+from typing import Iterable
 
 
 class PrimitiveName(StrEnum):
@@ -17,12 +17,7 @@ class PrimitiveName(StrEnum):
     # ucc_verification = auto()
 
 
-F = TypeVar("F", bound=TaskFactory)
-
-AnyTaskFactory: TypeAlias = TaskFactory
-
-
-class PrimitiveFactory:
+class PrimitiveFactory[F: AnyTaskFactory]:
     primitives: dict[PrimitiveName, AnyTaskFactory] = {}
 
     @classmethod

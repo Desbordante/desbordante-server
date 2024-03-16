@@ -22,7 +22,7 @@ class AbstractTask[Algo: AnyAlgo, Conf: AnyConf, Res: AnyRes](ABC):
             self.result_model_cls
         except AttributeError:
             raise NotImplementedError(
-                "algo, config_model_cls and result_model_cls attributes, must be implemented"
+                "Attributes `algo`, `config_model_cls` and `result_model_cls` must be implemented in non-abstract class"
             )
 
         self.table = table
@@ -35,3 +35,6 @@ class AbstractTask[Algo: AnyAlgo, Conf: AnyConf, Res: AnyRes](ABC):
 
     @abstractmethod
     def collect_result(self) -> Res: ...
+
+
+type AnyTask = AbstractTask[AnyAlgo, AnyConf, AnyRes]

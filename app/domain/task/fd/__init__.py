@@ -52,7 +52,7 @@ class FDTask[FDAlgo: FdAlgorithm, Conf: AnyConf](
         return FDAlgoResult(fds=list(map(FDModel.from_fd, fds)))
 
 
-fd_factory = TaskFactory[FDAlgoName, FDTask](FDAlgoName)
+fd_factory = TaskFactory(FDAlgoName, FDTask)
 
 
 @fd_factory.register_task(FDAlgoName.Aid)
