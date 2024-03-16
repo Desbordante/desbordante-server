@@ -1,11 +1,11 @@
 fail_fast: true
 default_language_version:
-  python: python3.11
+  python: python3.12
 
 ci:
   autoupdate_commit_msg: "chore: update pre-commit hooks"
   autofix_commit_msg: "style: pre-commit fixes"
-
+  skip: [make-format, make-lint]
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
