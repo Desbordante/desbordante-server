@@ -40,8 +40,12 @@ polyfactory = "^2.15.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.pyright]
+reportMissingModuleSource = false
+
 [tool.ruff.lint]
 fixable = ["ALL"]
+
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]

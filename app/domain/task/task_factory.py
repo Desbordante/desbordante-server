@@ -14,7 +14,7 @@ class TaskFactory[E: AnyAlgoName, T: AnyTask]:
             general_task_cls.result_model_cls
         except AttributeError:
             raise ValueError(
-                "Attribute `result_model_cls` must be implemented in general class"
+                "Attribute `result_model_cls` must be implemented in general_task_cls"
             )
 
         self.general_task_cls = general_task_cls
