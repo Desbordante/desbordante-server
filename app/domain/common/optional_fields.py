@@ -1,60 +1,19 @@
 from __future__ import annotations
-import pydantic
-import typing
+from pydantic import BaseModel
+from typing import Any
 
 
-class OptionalFields[Model: pydantic.BaseModel]:
-    """Generate a new class with all attributes (not-recursively) optionals.
+class OptionalModel(BaseModel):
+    @classmethod
+    def __pydantic_init_subclass__(cls, **kwargs: Any) -> None:
+        super().__pydantic_init_subclass__(**kwargs)
 
-    Example:
-        class Item(BaseModel):
-            name: str
-            description: str
-            price: float
-            tax: float
+        for field in cls.model_fields.values():
+            field.default = None
+
+        cls.model_rebuild(force=True)
 
 
-        @app.post("/items", response_model=Item)
-        async def post_item(item: OptionalFields[Item]):
-            ...
-    """
-
-    def __new__(
-        cls,
-        *args: object,
-        **kwargs: object,
-    ) -> OptionalFields[Model]:
-        """Cannot instantiate.
-
-        Raises:
-            TypeError: Direct instantiation not allowed.
-        """
-        raise TypeError("Cannot instantiate abstract OptionalFields class.")
-
-    def __init_subclass__(
-        cls,
-        *args: object,
-        **kwargs: object,
-    ) -> typing.NoReturn:
-        """Cannot subclass.
-
-        Raises:
-           TypeError: Subclassing not allowed.
-        """
-        raise TypeError("Cannot subclass {}.OptionalFields".format(cls.__module__))
-
-    def __class_getitem__(
-        cls,
-        wrapped_class: type[Model],
-    ) -> type[Model]:
-        """Convert model to a partial model with all fields being optionals."""
-
-        return pydantic.create_model(  # type: ignore[no-any-return, call-overload]
-            f"{wrapped_class.__name__}WithOptionalFields",
-            __base__=wrapped_class,
-            __module__=wrapped_class.__module__,
-            **{
-                name: (info.annotation, None)  # type: ignore[assignment, valid-type]
-                for name, info in wrapped_class.model_fields.items()
-            },
-        )
+class OptionalFields:
+    def __class_getitem__(cls, item):
+        return type(f"{item.__name__}WithOptionalFields", (item, OptionalModel), {})
