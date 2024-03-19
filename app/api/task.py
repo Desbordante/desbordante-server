@@ -1,20 +1,12 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 from pydantic import UUID4
-from typing import Type, Annotated
-import pandas as pd
-from uuid import uuid4
+from typing import Type
 from app.domain.task.primitive_factory import PrimitiveName, PrimitiveFactory
 from app.domain.task.task_factory import AnyAlgoName
 from app.domain.task.abstract_task import AnyTask, AnyRes
-from app.domain.common.optional_fields import OptionalFields
+from app.domain.worker.task.data_profiling_task import data_profiling_task
 
 router = APIRouter(prefix="/task")
-
-repo = {}
-
-
-def get_df_by_file_id(file_id: UUID4) -> pd.DataFrame:
-    return pd.read_csv("tests/datasets/university_fd.csv", sep=",", header=0)
 
 
 def generate_set_task_endpoint(
@@ -30,13 +22,13 @@ def generate_set_task_endpoint(
         tags=["set task"],
     )
     def _(
-        df: Annotated[pd.DataFrame, Depends(get_df_by_file_id)],
-        config: OptionalFields[task_cls.config_model_cls],
+        file_id: UUID4,
+        config: task_cls.config_model_cls,
     ) -> UUID4:
-        task = task_cls(df)
-        task_id = uuid4()
-        repo[task_id] = (task, config)
-        return task_id
+        async_result = data_profiling_task.delay(
+            primitive_name, algo_name, file_id, config
+        )
+        return async_result.id
 
     router.include_router(primitive_router)
 
@@ -48,10 +40,7 @@ def generate_get_task_result_endpoint(
 
     @primitive_router.get("", name=f"Get {primitive_name} result", tags=["get result"])
     def _(task_id: UUID4) -> result_cls:
-        task, config = repo.get(task_id, (None, None))
-        if not task:
-            raise HTTPException(404, "Task not found")
-        return task.execute(config)
+        raise HTTPException(418, "Not implemented yet")
 
     router.include_router(primitive_router)
 

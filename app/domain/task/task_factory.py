@@ -5,8 +5,8 @@ from typing import Iterable, Type
 type AnyAlgoName = StrEnum
 
 
-class TaskFactory[E: AnyAlgoName, T: AnyTask]:
-    def __init__(self, enum_used_as_keys: Type[E], general_task_cls: Type[T]) -> None:
+class TaskFactory[E: AnyAlgoName, T: Type[AnyTask]]:
+    def __init__(self, enum_used_as_keys: Type[E], general_task_cls: T) -> None:
         self.tasks: dict[E, T] = {}
         self.enum_used_as_keys = enum_used_as_keys
 
@@ -41,4 +41,4 @@ class TaskFactory[E: AnyAlgoName, T: AnyTask]:
         return self.tasks.keys()
 
 
-type AnyTaskFactory = TaskFactory[AnyAlgoName, AnyTask]
+type AnyTaskFactory = TaskFactory[AnyAlgoName, Type[AnyTask]]

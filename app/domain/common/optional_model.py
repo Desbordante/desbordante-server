@@ -12,8 +12,3 @@ class OptionalModel(BaseModel):
             field.default = None
 
         cls.model_rebuild(force=True)
-
-
-class OptionalFields:
-    def __class_getitem__(cls, item):
-        return type(f"{item.__name__}WithOptionalFields", (item, OptionalModel), {})

@@ -1,3 +1,3 @@
-from .settings import Settings
+from .settings import get_settings
 
-settings = Settings()
+settings = get_settings()
