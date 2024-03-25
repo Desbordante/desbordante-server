@@ -1,10 +1,10 @@
 import logging
+from typing import Any
 
 from app.db.session import get_session
+from app.domain.task import OneOfTaskConfig
+from app.domain.task import match_task_by_primitive_name
 from app.worker import worker
-from app.domain.task.abstract_task import AnyConf, AnyRes
-from app.domain.task.primitive_factory import PrimitiveName, PrimitiveFactory
-from app.domain.task.task_factory import AnyAlgoName
 from app.domain.worker.task.resource_intensive_task import ResourceIntensiveTask
 from pydantic import UUID4
 import pandas as pd
@@ -13,20 +13,15 @@ from celery.signals import task_failure, task_prerun, task_postrun
 
 @worker.task(base=ResourceIntensiveTask, ignore_result=True, max_retries=0)
 def data_profiling_task(
-    primitive_name: PrimitiveName,
-    algo_name: AnyAlgoName,
     file_id: UUID4,
-    config: AnyConf,
-) -> AnyRes:
-    task_factory = PrimitiveFactory.get_by_name(primitive_name)
-    task_cls = task_factory.get_by_name(algo_name)
-
+    config: OneOfTaskConfig,
+) -> Any:
     df = pd.read_csv(
         "tests/datasets/university_fd.csv", sep=",", header=0
     )  # TODO: Replace with actual file (by file_id) in future
 
-    task = task_cls(df)
-    result = task.execute(config)
+    task = match_task_by_primitive_name(config.primitive_name)
+    result = task.execute(df, config)  # type: ignore
     return result
 
 

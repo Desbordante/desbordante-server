@@ -1,45 +1,67 @@
-from pydantic import Field
-from typing import Annotated
+from pydantic import BaseModel, Field
+from typing import Annotated, Literal, Union
 
-from app.domain.common.optional_model import OptionalModel
+from app.domain.task.fd.algo_name import FdAlgoName
 
 
-class AidConfig(OptionalModel):
+# Should be OptionalModel with required field `algo_name`
+class BaseFdConfig(BaseModel): ...
+
+
+class AidConfig(BaseFdConfig):
+    algo_name: Literal[FdAlgoName.Aid]
+
     is_null_equal_null: bool
 
 
-class DFDConfig(OptionalModel):
+class DFDConfig(BaseFdConfig):
+    algo_name: Literal[FdAlgoName.DFD]
+
     is_null_equal_null: bool
     threads: Annotated[int, Field(ge=1, le=8)]
 
 
-class DepminerConfig(OptionalModel):
+class DepminerConfig(BaseFdConfig):
+    algo_name: Literal[FdAlgoName.Depminer]
+
     is_null_equal_null: bool
 
 
-class FDepConfig(OptionalModel):
+class FDepConfig(BaseFdConfig):
+    algo_name: Literal[FdAlgoName.FDep]
+
     is_null_equal_null: bool
 
 
-class FUNConfig(OptionalModel):
+class FUNConfig(BaseFdConfig):
+    algo_name: Literal[FdAlgoName.FUN]
+
     is_null_equal_null: bool
 
 
-class FastFDsConfig(OptionalModel):
+class FastFDsConfig(BaseFdConfig):
+    algo_name: Literal[FdAlgoName.FastFDs]
+
     is_null_equal_null: bool
     max_lhs: Annotated[int, Field(ge=1, le=10)]
     threads: Annotated[int, Field(ge=1, le=8)]
 
 
-class FdMineConfig(OptionalModel):
+class FdMineConfig(BaseFdConfig):
+    algo_name: Literal[FdAlgoName.FdMine]
+
     is_null_equal_null: bool
 
 
-class HyFDConfig(OptionalModel):
+class HyFDConfig(BaseFdConfig):
+    algo_name: Literal[FdAlgoName.HyFD]
+
     is_null_equal_null: bool
 
 
-class PyroConfig(OptionalModel):
+class PyroConfig(BaseFdConfig):
+    algo_name: Literal[FdAlgoName.Pyro]
+
     is_null_equal_null: bool
     error: Annotated[float, Field(ge=0, le=1)]
     max_lhs: Annotated[int, Field(ge=1, le=10)]
@@ -47,7 +69,26 @@ class PyroConfig(OptionalModel):
     seed: int
 
 
-class TaneConfig(OptionalModel):
+class TaneConfig(BaseFdConfig):
+    algo_name: Literal[FdAlgoName.Tane]
+
     is_null_equal_null: bool
     error: Annotated[float, Field(ge=0, le=1)]
     max_lhs: Annotated[int, Field(ge=1, le=10)]
+
+
+OneOfFdAlgoConfig = Annotated[
+    Union[
+        AidConfig,
+        DFDConfig,
+        DepminerConfig,
+        FDepConfig,
+        FUNConfig,
+        FastFDsConfig,
+        FdMineConfig,
+        HyFDConfig,
+        PyroConfig,
+        TaneConfig,
+    ],
+    Field(discriminator="algo_name"),
+]
