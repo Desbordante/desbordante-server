@@ -24,6 +24,7 @@ def test_with_default_params(algo_name, table):
     logging.info(result)
 
 
+
 @pytest.mark.parametrize(
     "table", [pd.read_csv("tests/datasets/university_fd.csv", sep=",", header=0)]
 )

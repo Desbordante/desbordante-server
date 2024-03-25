@@ -11,6 +11,7 @@ class BaseAfdConfig(OptionalModel):
     }
 
 
+
 class PyroConfig(BaseAfdConfig):
     algo_name: Literal[AfdAlgoName.Pyro]
 
