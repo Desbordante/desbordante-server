@@ -1,10 +1,14 @@
 from typing import Annotated, Literal, Union
-from pydantic import BaseModel, Field
+from pydantic import Field
 
+from app.domain.common.optional_model import OptionalModel
 from app.domain.task.afd.algo_name import AfdAlgoName
 
 
-class BaseAfdConfig(BaseModel): ...
+class BaseAfdConfig(OptionalModel):
+    __non_optional_fields__ = {
+        "algo_name",
+    }
 
 
 class PyroConfig(BaseAfdConfig):
