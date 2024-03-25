@@ -16,4 +16,3 @@ class ResourceIntensiveTask(Task):
         resource.setrlimit(
             resource.RLIMIT_AS, (self.soft_memory_limit, self.hard_memory_limit)
         )
-        super().before_start(task_id, args, kwargs)

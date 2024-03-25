@@ -1,16 +1,7 @@
-from .config import (
-    AidConfig,
-    DFDConfig,
-    DepminerConfig,
-    FDepConfig,
-    FUNConfig,
-    FastFDsConfig,
-    FdMineConfig,
-    HyFDConfig,
-    PyroConfig,
-    TaneConfig,
-)
-from .result import FDModel, FDAlgoResult
+from typing import Literal
+from pydantic import BaseModel
+from app.domain.task.abstract_task import Task
+from typing import assert_never
 from desbordante.fd import FdAlgorithm
 from desbordante.fd.algorithms import (
     Aid,
@@ -24,92 +15,50 @@ from desbordante.fd.algorithms import (
     Pyro,
     Tane,
 )
-from app.domain.task.abstract_task import AbstractTask, AnyConf
-from app.domain.task.task_factory import TaskFactory
-from enum import auto, StrEnum
+from app.domain.task.fd.algo_name import FdAlgoName
+from app.domain.task.primitive_name import PrimitiveName
+from .config import OneOfFdAlgoConfig
+from .result import FdAlgoResult, FdModel
 
 
-class FDAlgoName(StrEnum):
-    Aid = auto()
-    DFD = auto()
-    Depminer = auto()
-    FDep = auto()
-    FUN = auto()
-    FastFDs = auto()
-    FdMine = auto()
-    HyFD = auto()
-    Pyro = auto()
-    Tane = auto()
+class BaseFdTaskModel(BaseModel):
+    primitive_name: Literal[PrimitiveName.fd]
 
 
-class FDTask[FDAlgo: FdAlgorithm, Conf: AnyConf](
-    AbstractTask[FDAlgo, Conf, FDAlgoResult]
-):
-    result_model_cls = FDAlgoResult
-
-    def collect_result(self) -> FDAlgoResult:
-        fds = self.algo.get_fds()
-        return FDAlgoResult(fds=list(map(FDModel.from_fd, fds)))
+class FdTaskConfig(BaseFdTaskModel):
+    config: OneOfFdAlgoConfig
 
 
-fd_factory = TaskFactory(FDAlgoName, FDTask)
+class FdTaskResult(BaseFdTaskModel):
+    result: FdAlgoResult
 
 
-@fd_factory.register_task(FDAlgoName.Aid)
-class AidTask(FDTask[Aid, AidConfig]):
-    config_model_cls = AidConfig
-    algo = Aid()
+class FdTask(Task[FdTaskConfig, FdTaskResult]):
+    def collect_result(self, algo: FdAlgorithm) -> FdTaskResult:
+        fds = algo.get_fds()
+        algo_result = FdAlgoResult(fds=list(map(FdModel.from_fd, fds)))
+        return FdTaskResult(primitive_name=PrimitiveName.fd, result=algo_result)
 
-
-@fd_factory.register_task(FDAlgoName.DFD)
-class DFDTask(FDTask[DFD, DFDConfig]):
-    config_model_cls = DFDConfig
-    algo = DFD()
-
-
-@fd_factory.register_task(FDAlgoName.Depminer)
-class DepminerTask(FDTask[Depminer, DepminerConfig]):
-    config_model_cls = DepminerConfig
-    algo = Depminer()
-
-
-@fd_factory.register_task(FDAlgoName.FDep)
-class FDepTask(FDTask[FDep, FDepConfig]):
-    config_model_cls = FDepConfig
-    algo = FDep()
-
-
-@fd_factory.register_task(FDAlgoName.FUN)
-class FUNTask(FDTask[FUN, FUNConfig]):
-    config_model_cls = FUNConfig
-    algo = FUN()
-
-
-@fd_factory.register_task(FDAlgoName.FastFDs)
-class FastFDsTask(FDTask[FastFDs, FastFDsConfig]):
-    config_model_cls = FastFDsConfig
-    algo = FastFDs()
-
-
-@fd_factory.register_task(FDAlgoName.FdMine)
-class FdMineTask(FDTask[FdMine, FdMineConfig]):
-    config_model_cls = FdMineConfig
-    algo = FdMine()
-
-
-@fd_factory.register_task(FDAlgoName.HyFD)
-class HyFDTask(FDTask[HyFD, HyFDConfig]):
-    config_model_cls = HyFDConfig
-    algo = HyFD()
-
-
-@fd_factory.register_task(FDAlgoName.Pyro)
-class PyroTask(FDTask[Pyro, PyroConfig]):
-    config_model_cls = PyroConfig
-    algo = Pyro()
-
-
-@fd_factory.register_task(FDAlgoName.Tane)
-class TaneTask(FDTask[Tane, TaneConfig]):
-    config_model_cls = TaneConfig
-    algo = Tane()
+    def match_algo_by_name(self, algo_name: FdAlgoName) -> FdAlgorithm:
+        match algo_name:
+            case FdAlgoName.Aid:
+                return Aid()
+            case FdAlgoName.DFD:
+                return DFD()
+            case FdAlgoName.Depminer:
+                return Depminer()
+            case FdAlgoName.FDep:
+                return FDep()
+            case FdAlgoName.FUN:
+                return FUN()
+            case FdAlgoName.FastFDs:
+                return FastFDs()
+            case FdAlgoName.FdMine:
+                return FdMine()
+            case FdAlgoName.HyFD:
+                return HyFD()
+            case FdAlgoName.Pyro:
+                return Pyro()
+            case FdAlgoName.Tane:
+                return Tane()
+        assert_never(algo_name)
