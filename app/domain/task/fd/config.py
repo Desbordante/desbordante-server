@@ -1,11 +1,14 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from typing import Annotated, Literal, Union
 
+from app.domain.common.optional_model import OptionalModel
 from app.domain.task.fd.algo_name import FdAlgoName
 
 
-# Should be OptionalModel with required field `algo_name`
-class BaseFdConfig(BaseModel): ...
+class BaseFdConfig(OptionalModel):
+    __non_optional_fields__ = {
+        "algo_name",
+    }
 
 
 class AidConfig(BaseFdConfig):
