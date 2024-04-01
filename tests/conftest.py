@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database
 import logging
 
-from app.db import Base
+from app.db import ORMBase
 from app.settings import settings
 
 # https://stackoverflow.com/questions/61582142/test-pydantic-settings-in-fastapi
@@ -19,8 +19,8 @@ def prepare_db():
     logging.info("Setup database: %s", settings.postgres_dsn.unicode_string())
     if not database_exists(settings.postgres_dsn.unicode_string()):
         create_database(settings.postgres_dsn.unicode_string())
-    Base.metadata.drop_all(bind=test_engine)
-    Base.metadata.create_all(bind=test_engine)
+    ORMBase.metadata.drop_all(bind=test_engine)
+    ORMBase.metadata.create_all(bind=test_engine)
 
 
 @pytest.fixture(scope="session", autouse=True)
