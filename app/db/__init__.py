@@ -1,3 +1,2 @@
-from sqlalchemy.orm import declarative_base
-
-Base = declarative_base()
+from .session import ORMBase as ORMBase
+from .session import ORMBaseModel as ORMBaseModel

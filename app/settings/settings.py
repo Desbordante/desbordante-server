@@ -1,7 +1,7 @@
 from functools import cached_property
 
 from dotenv import load_dotenv, find_dotenv
-from pydantic import AmqpDsn, PostgresDsn, Field, ByteSize
+from pydantic import AmqpDsn, DirectoryPath, PostgresDsn, Field, ByteSize
 from pydantic_settings import BaseSettings
 
 load_dotenv(find_dotenv(".env"))
@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     worker_hard_time_limit_in_seconds: int = Field(default=120, gt=0)
     worker_soft_memory_limit: ByteSize = "2GB"
     worker_hard_memory_limit: ByteSize = "4GB"
+    # Files settings and limits
+    uploaded_files_dir_path: DirectoryPath = "uploads/"
 
     @cached_property
     def rabbitmq_dsn(self) -> AmqpDsn:

@@ -28,7 +28,7 @@ open-db:
 
 ## Create new revision file automatically
 revision:
-	poetry run alembic -c app/settings/alembic.ini revision --autogenerate
+	poetry run alembic -c app/settings/alembic.ini revision --autogenerate $(args)
 
 ## Make migrations in database
 migrate:

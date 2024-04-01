@@ -1,7 +1,8 @@
 import logging
 from typing import Any
 
-from app.db.session import get_session
+from app.db.session import no_pooling
+from app.domain.file.dataset import DatasetORM
 from app.domain.task import OneOfTaskConfig
 from app.domain.task import match_task_by_primitive_name
 from app.worker import worker
@@ -13,12 +14,21 @@ from celery.signals import task_failure, task_prerun, task_postrun
 
 @worker.task(base=ResourceIntensiveTask, ignore_result=True, max_retries=0)
 def data_profiling_task(
-    file_id: UUID4,
+    dataset_id: UUID4,
     config: OneOfTaskConfig,
 ) -> Any:
+    with no_pooling():
+        dataset_orm: DatasetORM = (
+            DatasetORM.with_joined(DatasetORM.file)  # type: ignore
+            .where(DatasetORM.id == dataset_id)
+            .first()
+        )
+
     df = pd.read_csv(
-        "tests/datasets/university_fd.csv", sep=",", header=0
-    )  # TODO: Replace with actual file (by file_id) in future
+        dataset_orm.file.path_to_file,
+        sep=dataset_orm.separator,
+        header=dataset_orm.header,
+    )
 
     task = match_task_by_primitive_name(config.primitive_name)
     result = task.execute(df, config)  # type: ignore
@@ -35,9 +45,8 @@ def task_prerun_notifier(
     **_,
 ):
     # TODO: Create Task in database and set status to "running" or similar
-    with get_session(with_pool=False) as session:
-        session
-
+    with no_pooling():
+        ...
     logging.critical(
         f"From task_prerun_notifier ==> Running just before add() executes, {sender}"
     )
@@ -53,8 +62,8 @@ def task_postrun_notifier(
     retval,
     **_,
 ):
-    with get_session(with_pool=False) as session:
-        session
+    with no_pooling():
+        ...
 
     # TODO: Update Task in database and set status to "completed" or similar
     logging.critical(f"From task_postrun_notifier ==> Ok, done!, {sender}")
@@ -71,8 +80,8 @@ def task_failure_notifier(
     einfo,
     **_,
 ):
-    with get_session(with_pool=False) as session:
-        session
+    with no_pooling():
+        ...
     # TODO: Update Task in database and set status to "failed" or similar
 
     logging.critical(
