@@ -21,7 +21,7 @@ def set_task(
 
     task_orm = TaskORM.create(
         status=TaskStatus.CREATED,
-        config=config.model_dump(),
+        config=config.model_dump(exclude_unset=True),
         dataset_id=dataset_id,
     )
     task_id = task_orm.id  # type: ignore
@@ -35,7 +35,7 @@ def set_task(
     return task_id
 
 
-@router.get("/{task_id}")
+@router.get("/{task_id}", response_model_exclude_unset=True)
 def retrieve_task(task_id: UUID) -> TaskModel:
     try:
         task_orm = TaskORM.find_or_fail(task_id)

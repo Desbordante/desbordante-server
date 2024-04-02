@@ -66,17 +66,17 @@ def task_postrun_notifier(
 @task_failure.connect(sender=data_profiling_task)
 def task_failure_notifier(
     kwargs,
-    exception,
+    exception: Exception,
     traceback,
     **_,
 ):
     # TODO: test all possible exceptions
     task_failure_reason = TaskFailureReason.OTHER
-    if exception in (TimeLimitExceeded, SoftTimeLimitExceeded):
+    if isinstance(exception, (TimeLimitExceeded, SoftTimeLimitExceeded)):
         task_failure_reason = TaskFailureReason.TIME_LIMIT_EXCEEDED
-    if exception is MemoryError:
+    if isinstance(exception, MemoryError):
         task_failure_reason = TaskFailureReason.MEMORY_LIMIT_EXCEEDED
-    if exception is WorkerLostError:
+    if isinstance(exception, WorkerLostError):
         task_failure_reason = TaskFailureReason.WORKER_KILLED_BY_SIGNAL
 
     db_task_id: UUID = kwargs["task_id"]
@@ -84,7 +84,7 @@ def task_failure_notifier(
         task_orm = TaskORM.find_or_fail(db_task_id)  # type: ignore
         task_orm.update(
             status=TaskStatus.FAILED,  # type: ignore
-            raised_exception_name=exception.__class__.__name__,
+            raised_exception_name=exception.__class__.__name__,  # type: ignore
             failure_reason=task_failure_reason,  # type: ignore
             traceback=traceback,
         )
