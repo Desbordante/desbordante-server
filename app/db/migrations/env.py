@@ -4,7 +4,8 @@ from alembic import context
 from app.settings import settings
 from app.db import ORMBase
 from app.domain.file.file import FileORM  # noqa: F401
-from app.domain.file.dataset import DatasetModel  # noqa: F401
+from app.domain.file.dataset import DatasetORM  # noqa: F401
+from app.domain.task.task import TaskORM  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

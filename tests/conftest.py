@@ -1,4 +1,5 @@
 import pytest
+from pytest_alembic import Config
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database
@@ -27,3 +28,9 @@ def prepare_db():
 def session():
     session = sessionmaker(test_engine, expire_on_commit=False)
     yield session
+
+
+@pytest.fixture
+def alembic_config():
+    options = {"file": "app/settings/alembic.ini"}
+    return Config(config_options=options)

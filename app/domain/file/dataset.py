@@ -5,6 +5,10 @@ from sqlalchemy.dialects.postgresql import ARRAY
 from app.db import ORMBase
 from app.db.session import ORMBaseModel
 from app.domain.file.file import FileModel, FileORM
+import typing
+
+if typing.TYPE_CHECKING:
+    from app.domain.task.task import TaskORM
 
 
 class DatasetORM(ORMBase):
@@ -17,8 +21,11 @@ class DatasetORM(ORMBase):
     file_id: Mapped[UUID] = mapped_column(ForeignKey("file.id"), nullable=False)
     file: Mapped[FileORM] = relationship("FileORM")
 
-    # user = relationship("UserORM")
-    # task = relationship("TaskORM")
+    related_tasks: Mapped[list["TaskORM"]] = relationship(
+        "TaskORM", back_populates="dataset"
+    )
+
+    # owner = relationship("UserORM")
 
 
 class DatasetModel(ORMBaseModel):

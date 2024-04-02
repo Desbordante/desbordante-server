@@ -63,7 +63,7 @@ format:
 
 ## Run all tests in project
 test:
-	poetry run pytest -o log_cli=true --verbosity=2 --showlocals --log-cli-level=INFO --cov=app --cov-report term
+	poetry run pytest -o log_cli=true --verbosity=2 --showlocals --log-cli-level=INFO --test-alembic --cov=app --cov-report term
 
 .DEFAULT_GOAL := help
 # See <https://gist.github.com/klmr/575726c7e05d8780505a> for explanation.
