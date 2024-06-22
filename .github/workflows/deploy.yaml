@@ -1,9 +1,8 @@
-name: Deploy app to the server
+name: Deploy
 on:
-  push:
-    branches:
-      - main
-      - 'feat/ci-cd'
+  workflow_run:
+    workflows: [ 'Build' ]
+    types: [ completed ]
 jobs:
   pull:
     runs-on: ubuntu-latest
