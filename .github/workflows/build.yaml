@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - 'feat/ci-cd'
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
