@@ -1,0 +1,18 @@
+name: Deploy app to the server
+on:
+  push:
+    branches:
+      - main
+      - 'feat/ci-cd'
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Update and restart docker containers with ssh
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT }}
+        script: make -C ${{ vars.PROJECT_DIR }} update
