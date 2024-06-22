@@ -5,7 +5,6 @@ on:
     types: [ completed ]
     branches:
       - main
-      - 'feat/ci-cd'
 jobs:
   pull:
     runs-on: ubuntu-latest
