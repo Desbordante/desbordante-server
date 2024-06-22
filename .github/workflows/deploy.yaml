@@ -3,6 +3,9 @@ on:
   workflow_run:
     workflows: [ 'Build' ]
     types: [ completed ]
+    branches:
+      - main
+      - 'feat/ci-cd'
 jobs:
   pull:
     runs-on: ubuntu-latest
