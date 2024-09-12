@@ -1,11 +1,11 @@
-from app.domain.task.fd import FdTask, FdTaskConfig
 import pytest
 import pandas as pd
 import logging
 from polyfactory.factories.pydantic_factory import ModelFactory
 
-from app.domain.task.fd.algo_name import FdAlgoName
-from app.domain.task.primitive_name import PrimitiveName
+from internal.domain.task import FdTask
+from internal.domain.task.value_objects import FdTaskConfig, PrimitiveName
+from internal.domain.task.value_objects.fd import FdAlgoName
 
 
 @pytest.mark.parametrize("algo_name", [algo_name.value for algo_name in FdAlgoName])
