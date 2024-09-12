@@ -1,11 +1,7 @@
 name: Lint
 on:
   pull_request:
-    branches:
-      - main
   push:
-    branches:
-      - main
 jobs:
   run-linters-and-tests:
     runs-on: ubuntu-latest
