@@ -1,1 +1,1 @@
-from .file import File
+from internal.domain.file.file import File

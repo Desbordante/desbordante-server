@@ -1,1 +1,1 @@
-from .optional_model import OptionalModel
+from internal.domain.common.optional_model import OptionalModel
