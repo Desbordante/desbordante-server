@@ -8,15 +8,13 @@ class File:
 
     def __init__(self):
         """
-        Initializes a new file instance with a unique UUID as the file's name.
+        This constructor generates a new UUID and assigns it as the file's name.
         """
         self._name = uuid4()
 
     @property
     def name(self) -> str:
         """
-        Returns the file's UUID as a string.
-
         Returns:
             str: The UUID of the file in string format.
         """
@@ -25,9 +23,7 @@ class File:
     @property
     def name_as_uuid(self) -> UUID:
         """
-        Returns the file's UUID as a UUID object.
-
         Returns:
-            UUID: The UUID of the file in UUID format.
+            UUID: The file's name as a UUID object.
         """
         return self._name
