@@ -8,7 +8,7 @@ from internal.infrastructure.data_storage.relational.model import ORMBaseModel
 from internal.infrastructure.data_storage.relational.model.file.file_metadata import FileMetadataORM
 
 if typing.TYPE_CHECKING:
-    pass
+    from internal.infrastructure.data_storage.relational.model.task import TaskORM
 
 
 class DatasetORM(ORMBaseModel):
@@ -21,8 +21,8 @@ class DatasetORM(ORMBaseModel):
     file_id: Mapped[UUID] = mapped_column(ForeignKey("file_metadata.id"), nullable=False)
     file: Mapped[FileMetadataORM] = relationship("FileMetadataORM")
 
-    # related_tasks: Mapped[list["TaskORM"]] = relationship(
-    #     "TaskORM", back_populates="dataset"
-    # )
+    related_tasks: Mapped[list["TaskORM"]] = relationship(
+        "TaskORM", back_populates="dataset"
+    )
 
     # owner = relationship("UserORM")
