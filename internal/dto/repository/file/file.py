@@ -3,6 +3,13 @@ from uuid import UUID
 
 from internal.dto.repository.base_schema import BaseCreateSchema, BaseUpdateSchema, BaseSchema
 
+
+class FailedFileReadingException(Exception):
+
+    def __init__(self, message: str):
+        super().__init__(message)
+
+
 class File(Protocol):
 
     filename: str | None
