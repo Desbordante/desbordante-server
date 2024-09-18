@@ -27,16 +27,16 @@ open-db:
 	docker exec -it desbordante-postgres psql -d $(POSTGRES_DB) -U $(POSTGRES_USER)
 
 ## Create new revision file automatically
-revision:
-	poetry run alembic -c app/settings/alembic.ini revision --autogenerate $(args)
+pg-revision:
+	poetry run alembic -c internal/infrastructure/data_storage/relational/postgres/migrations/alembic.ini revision --autogenerate $(args)
 
 ## Make migrations in database
-migrate:
-	poetry run alembic -c app/settings/alembic.ini upgrade $(args)
+pg-migrate:
+	poetry run alembic -c internal/infrastructure/data_storage/relational/postgres/migrations/alembic.ini upgrade $(args)
 
 ## Downgrade database
-downgrade:
-	poetry run alembic -c app/settings/alembic.ini downgrade $(args)
+pg-downgrade:
+	poetry run alembic -c internal/infrastructure/data_storage/relational/postgres/migrations/alembic.ini downgrade $(args)
 
 ## Run celery worker in watch mode
 worker:
