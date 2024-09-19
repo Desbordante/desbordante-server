@@ -19,6 +19,7 @@ class FileRepository:
             file_info: FileCreateSchema,
             context: DataStorageContext  # The current repository implementation does not support transactions.
     ) -> FileResponseSchema:
+
         path_to_file = Path.joinpath(self.files_dir_path, str(file_info.file_name))
         try:
             async with aiofiles.open(path_to_file, "wb") as out_file: # !!!
