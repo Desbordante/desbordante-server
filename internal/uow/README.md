@@ -12,7 +12,7 @@ To use UoW in your use case, you need to implement the DataStorageContext interf
 ### Example
 ```python
 
-from typing import Protocol
+from typing import Protocol, Type
 from uuid import UUID, uuid4
 from sqlalchemy.orm import Session
 from internal.uow import UnitOfWork, DataStorageContext
@@ -20,8 +20,8 @@ from internal.uow import UnitOfWork, DataStorageContext
 class DatasetRepo(Protocol):
     def create(self, file_id: UUID, context: DataStorageContext) -> None: ...
 
-def create_uow(context: Session) -> UnitOfWork:
-    return UnitOfWork(context=context)
+def create_uow(context_maker: Type[Session]) -> UnitOfWork:
+    return UnitOfWork(context_maker=context_maker)
 
 def create_two_datasets(
         uow: UnitOfWork,
