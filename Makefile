@@ -39,7 +39,7 @@ pg-downgrade:
 	poetry run alembic -c internal/infrastructure/data_storage/relational/postgres/migrations/alembic.ini downgrade $(args)
 
 ## Run celery worker in watch mode
-worker:
+celery-worker:
 	watchmedo auto-restart --directory=./ --pattern='*.py' --recursive -- celery -A internal.infrastructure.background_task.celery worker --loglevel=info --concurrency=1
 
 ## Run application server in watch mode
