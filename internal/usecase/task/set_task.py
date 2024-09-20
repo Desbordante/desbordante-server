@@ -20,8 +20,6 @@ class TaskRepo(Protocol):
 
 
 class ProfilingTaskWorker(Protocol):
-    unit_of_work: UnitOfWork
-    dataset_repo: DatasetRepo
 
     def set(self, task_info: ProfilingTaskCreateSchema) -> None: ...
 
