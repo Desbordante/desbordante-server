@@ -15,7 +15,7 @@ test_engine = create_engine(settings.postgres_dsn.unicode_string())
 
 
 @pytest.fixture(scope="session", autouse=True)
-def prepare_db():
+def prepare_postgres():
     logging.info("Setup database: %s", settings.postgres_dsn.unicode_string())
     if not database_exists(settings.postgres_dsn.unicode_string()):
         create_database(settings.postgres_dsn.unicode_string())
@@ -23,7 +23,22 @@ def prepare_db():
     ORMBaseModel.metadata.create_all(bind=test_engine)
 
 
-@pytest.fixture(scope="session", autouse=True)
-def session():
-    session = sessionmaker(test_engine, expire_on_commit=False)
-    yield session
+@pytest.fixture(scope="session")
+def postgres_context_maker():
+    return sessionmaker(test_engine, expire_on_commit=False)
+
+
+@pytest.fixture(scope="function")
+def postgres_context(postgres_context_maker):
+    context = postgres_context_maker()
+
+    yield context
+
+    context.close()
+
+
+@pytest.fixture(autouse=True)
+def clean_tables(session):
+    for table in reversed(ORMBaseModel.metadata.sorted_tables):
+        session.execute(table.delete())
+    session.commit()
