@@ -38,7 +38,7 @@ def postgres_context(postgres_context_maker):
 
 
 @pytest.fixture(autouse=True)
-def clean_tables(session):
+def clean_tables(postgres_context):
     for table in reversed(ORMBaseModel.metadata.sorted_tables):
-        session.execute(table.delete())
-    session.commit()
+        postgres_context.execute(table.delete())
+    postgres_context.commit()
