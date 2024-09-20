@@ -41,6 +41,7 @@ class SetTask:
 
     def __call__(
             self,
+            *,
             dataset_id: UUID,
             config: OneOfTaskConfig,
     ) -> UUID:

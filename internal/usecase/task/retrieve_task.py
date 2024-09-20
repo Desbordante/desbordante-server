@@ -36,7 +36,7 @@ class RetrieveTask:
         self.unit_of_work = unit_of_work
         self.task_repo = task_repo
 
-    def __call__(self, task_id: UUID) -> RetrieveTaskUseCaseResult:
+    def __call__(self, *, task_id: UUID) -> RetrieveTaskUseCaseResult:
         task_find_schema = TaskFindSchema(id=task_id)
 
         with self.unit_of_work as context:
