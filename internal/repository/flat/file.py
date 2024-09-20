@@ -3,7 +3,7 @@ from pathlib import Path
 import aiofiles
 import pandas as pd
 
-from internal.dto.repository.file.file import FailedFileReadingException, CSVFileReadSchema, CSVFileReadResponseSchema
+from internal.dto.repository.file.file import FailedFileReadingException, CSVFileFindSchema, CSVFileResponseSchema
 from internal.infrastructure.data_storage import settings
 from internal.dto.repository.file import File, FileCreateSchema, FileResponseSchema
 from internal.uow import DataStorageContext
@@ -33,9 +33,9 @@ class FileRepository:
 
     def find(
             self,
-            file_info: CSVFileReadSchema,
+            file_info: CSVFileFindSchema,
             context: DataStorageContext  # The current repository implementation does not support transactions.
-    ) -> CSVFileReadResponseSchema:
+    ) -> CSVFileResponseSchema:
 
         path_to_file = Path(self.files_dir_path, str(file_info.file_name))
 
