@@ -1,12 +1,11 @@
 import pytest
-from pytest_alembic import Config
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database
 import logging
 
-from app.db import ORMBase
-from app.settings import settings
+from internal.infrastructure.data_storage.relational.model import ORMBaseModel
+from internal.infrastructure.data_storage import settings
 
 # https://stackoverflow.com/questions/61582142/test-pydantic-settings-in-fastapi
 # Maybe should be overriden by env vars for testing only
@@ -20,17 +19,11 @@ def prepare_db():
     logging.info("Setup database: %s", settings.postgres_dsn.unicode_string())
     if not database_exists(settings.postgres_dsn.unicode_string()):
         create_database(settings.postgres_dsn.unicode_string())
-    ORMBase.metadata.drop_all(bind=test_engine)
-    ORMBase.metadata.create_all(bind=test_engine)
+    ORMBaseModel.metadata.drop_all(bind=test_engine)
+    ORMBaseModel.metadata.create_all(bind=test_engine)
 
 
 @pytest.fixture(scope="session", autouse=True)
 def session():
     session = sessionmaker(test_engine, expire_on_commit=False)
     yield session
-
-
-@pytest.fixture
-def alembic_config():
-    options = {"file": "app/settings/alembic.ini"}
-    return Config(config_options=options)
