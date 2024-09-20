@@ -40,11 +40,11 @@ pg-downgrade:
 
 ## Run celery worker in watch mode
 worker:
-	watchmedo auto-restart --directory=./ --pattern='*.py' --recursive -- celery -A app.worker worker --loglevel=info --concurrency=1
+	watchmedo auto-restart --directory=./ --pattern='*.py' --recursive -- celery -A internal.infrastructure.background_task.celery worker --loglevel=info --concurrency=1
 
 ## Run application server in watch mode
 app:
-	poetry run uvicorn --port 8000 app.main:app --reload
+	poetry run uvicorn --port 8000 internal:app --reload
 
 ## Initiate repository
 init:
