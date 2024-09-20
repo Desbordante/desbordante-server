@@ -4,6 +4,12 @@ from internal.dto.repository.base_schema import BaseSchema, BaseCreateSchema, Ba
     BaseResponseSchema, BaseFindSchema
 
 
+class FileMetadataNotFoundException(Exception):
+
+    def __init__(self):
+        super().__init__('File metadata not found')
+
+
 class FileMetadataBaseSchema(BaseSchema):
     file_name: UUID
     original_file_name: str

@@ -2,6 +2,8 @@ from internal.dto.repository.file.file import (File, FileResponseSchema, FileFin
                                                FileCreateSchema, FileUpdateSchema,
                                                FailedFileReadingException)
 from internal.dto.repository.file.file_metadata import (FileMetadataResponseSchema, FileMetadataCreateSchema,
-                                                        FileMetadataFindSchema, FileMetadataUpdateSchema)
+                                                        FileMetadataFindSchema, FileMetadataUpdateSchema,
+                                                        FileMetadataNotFoundException)
 from internal.dto.repository.file.dataset import (DatasetResponseSchema, DatasetCreateSchema,
-                                                  DatasetUpdateSchema, DatasetFindSchema)
+                                                  DatasetUpdateSchema, DatasetFindSchema,
+                                                  DatasetNotFoundException)

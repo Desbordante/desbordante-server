@@ -4,6 +4,12 @@ from internal.dto.repository.base_schema import BaseSchema, BaseCreateSchema, Ba
     BaseResponseSchema, BaseFindSchema
 
 
+class DatasetNotFoundException(Exception):
+
+    def __init__(self):
+        super().__init__('Dataset not found')
+
+
 class DatasetBaseSchema(BaseSchema):
     file_id: UUID
     separator: str
