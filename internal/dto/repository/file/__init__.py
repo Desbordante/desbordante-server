@@ -7,3 +7,4 @@ from internal.dto.repository.file.file_metadata import (FileMetadataResponseSche
 from internal.dto.repository.file.dataset import (DatasetResponseSchema, DatasetCreateSchema,
                                                   DatasetUpdateSchema, DatasetFindSchema,
                                                   DatasetNotFoundException)
+from internal.dto.repository.file.file import CSVFileFindSchema, CSVFileResponseSchema

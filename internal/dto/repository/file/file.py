@@ -1,6 +1,8 @@
 from typing import Protocol
 from uuid import UUID
 
+import pandas as pd
+
 from internal.dto.repository.base_schema import BaseCreateSchema, BaseUpdateSchema, BaseSchema
 
 
@@ -30,4 +32,13 @@ class FileUpdateSchema(FileBaseSchema, BaseUpdateSchema[UUID]): ...
 
 class FileFindSchema(FileBaseSchema, BaseSchema): ... # it's not a typo
 
+
 FileResponseSchema = None
+
+
+class CSVFileFindSchema(FileFindSchema):
+    separator: str
+    header: list[int]
+
+
+CSVFileResponseSchema = pd.DataFrame
