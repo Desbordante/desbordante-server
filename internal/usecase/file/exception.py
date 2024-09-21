@@ -44,3 +44,20 @@ class FileMetadataNotFoundException(Exception):
         The default message "File metadata not found" is used to indicate the error.
         """
         super().__init__("File metadata not found")
+
+
+class FailedReadFileException(Exception):
+    """
+    Exception raised when a file reading operation fails.
+
+    This exception carries a specific error message detailing the cause of the failure.
+    """
+
+    def __init__(self, message: str):
+        """
+        Initializes an instance of FailedReadFileException with a specific error message.
+
+        Args:
+            message(str): The error message to be reported.
+        """
+        super().__init__(message)

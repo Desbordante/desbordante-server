@@ -4,9 +4,10 @@ from uuid import UUID
 from pydantic import BaseModel
 
 from internal.domain.file import File as FileEntity
-from internal.dto.repository.file import FileCreateSchema, FileResponseSchema, File
+from internal.dto.repository.file import FileCreateSchema, FileResponseSchema, File, FailedFileReadingException
 from internal.dto.repository.file import FileMetadataCreateSchema, FileMetadataResponseSchema
 from internal.uow import DataStorageContext, UnitOfWork
+from internal.usecase.file.exception import FailedReadFileException
 
 
 class FileRepo(Protocol):
@@ -61,9 +62,11 @@ class SaveFile:
         )
 
         with self.unit_of_work as context:
-            response = self.file_metadata_repo.create(file_metadata_create_schema, context)
-            await self.file_repo.create(upload_file, create_file_schema, context)
-
+            try:
+                response = self.file_metadata_repo.create(file_metadata_create_schema, context)
+                await self.file_repo.create(upload_file, create_file_schema, context)
+            except FailedFileReadingException as e:
+                raise FailedReadFileException(str(e))
         return SaveFileUseCaseResult(
             id=response.id,
             file_name=response.file_name,

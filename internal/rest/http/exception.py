@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, HTTPException
 
 from internal.usecase.file.exception import IncorrectFileFormatException, DatasetNotFoundException, \
-    FileMetadataNotFoundException
+    FileMetadataNotFoundException, FailedReadFileException
 from internal.usecase.task.exception import TaskNotFoundException
 
 def add_exception_handlers(app: FastAPI):
@@ -32,6 +32,14 @@ def add_exception_handlers(app: FastAPI):
 
     @app.exception_handler(TaskNotFoundException)
     def file_metadata_not_found_exception(request: Request, exc: TaskNotFoundException):
+        raise HTTPException(
+            status_code=404,
+            detail=str(exc),
+        )
+
+
+    @app.exception_handler(FailedReadFileException)
+    def failed_read_file_exception(request: Request, exc: FailedReadFileException):
         raise HTTPException(
             status_code=404,
             detail=str(exc),
