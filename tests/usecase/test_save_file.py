@@ -13,6 +13,7 @@ from internal.dto.repository.file import (
     FileResponseSchema,
 )
 from internal.uow import UnitOfWork, DataStorageContext
+from internal.usecase.file.exception import FailedReadFileException
 from internal.usecase.file.save_file import (
     FileMetadataRepo,
     FileRepo,
@@ -137,3 +138,32 @@ async def test_save_file(
         created_at=created_at,
         updated_at=updated_at,
     )
+
+
+@pytest.mark.asyncio
+async def test_save_file_failed_read_file_exception(
+    mocker: MockerFixture,
+    save_file: SaveFile,
+    unit_of_work_mock: UnitOfWork,
+    file_repo_mock: FileRepo,
+    file_metadata_repo_mock: FileMetadataRepo,
+    file_entity_mock: FileEntity,
+) -> None:
+    # Prepare the mock to raise the exception
+    file_repo_mock.create.side_effect = FailedReadFileException("File reading failed")
+
+    upload_file_mock = mocker.Mock(spec=File)
+    upload_file_mock.filename = "example.txt"
+    upload_file_mock.content_type = "text/plain"
+
+    # Act & Assert
+    with pytest.raises(FailedReadFileException, match="File reading failed"):
+        await save_file(upload_file=upload_file_mock)
+
+    # Check that the repositories' create methods were called
+    file_metadata_repo_mock.create.assert_called_once()
+    file_repo_mock.create.assert_called_once()
+
+    # Verify that UnitOfWork was used correctly
+    unit_of_work_mock.__enter__.assert_called_once()
+    unit_of_work_mock.__exit__.assert_called_once()
