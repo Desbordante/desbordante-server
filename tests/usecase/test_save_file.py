@@ -11,6 +11,7 @@ from internal.dto.repository.file import (
     FileMetadataCreateSchema,
     FileCreateSchema,
     FileResponseSchema,
+    FailedFileReadingException,
 )
 from internal.uow import UnitOfWork, DataStorageContext
 from internal.usecase.file.exception import FailedReadFileException
@@ -28,7 +29,14 @@ def unit_of_work_mock(mocker: MockerFixture) -> UnitOfWork:
     mock.__enter__.return_value = mocker.Mock(
         return_value=mocker.Mock(), spec=DataStorageContext
     )
-    mock.__exit__.return_value = mocker.Mock(return_value=None)
+    mock.__exit__.return_value = None
+
+    def exit_side_effect(exc_type, exc_value, traceback) -> bool:
+        if exc_type:
+            raise exc_value
+        return False
+
+    mock.__exit__.side_effect = exit_side_effect
     return mock
 
 
@@ -150,7 +158,9 @@ async def test_save_file_failed_read_file_exception(
     file_entity_mock: FileEntity,
 ) -> None:
     # Prepare the mock to raise the exception
-    file_repo_mock.create.side_effect = FailedReadFileException("File reading failed")
+    file_repo_mock.create.side_effect = FailedFileReadingException(
+        "File reading failed"
+    )
 
     upload_file_mock = mocker.Mock(spec=File)
     upload_file_mock.filename = "example.txt"
