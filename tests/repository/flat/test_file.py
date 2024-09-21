@@ -53,7 +53,7 @@ async def test_create_file_success(
 def test_find_file_success(file_repository, mock_flat_context):
     file_name = uuid4()
     file_content = "col1,col2\n1,2\n3,4"
-    file_path = mock_flat_context.upload_directory_path / file_name
+    file_path = mock_flat_context.upload_directory_path / str(file_name)
 
     with open(file_path, "w") as f:
         f.write(file_content)
