@@ -7,6 +7,15 @@ from alembic import context
 
 from internal.infrastructure.data_storage import settings
 from internal.infrastructure.data_storage.relational.model import ORMBaseModel
+from internal.infrastructure.data_storage.relational.model.file.file_metadata import (  # noqa: F401
+    FileMetadataORM,
+)
+from internal.infrastructure.data_storage.relational.model.file.dataset import (  # noqa: F401
+    DatasetORM,
+)
+from internal.infrastructure.data_storage.relational.model.task.task import (  # noqa: F401
+    TaskORM,
+)
 
 
 # this is the Alembic Config object, which provides
