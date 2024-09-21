@@ -10,12 +10,6 @@ from internal.dto.repository.base_schema import (
 )
 
 
-class FailedFileReadingException(Exception):
-
-    def __init__(self, message: str):
-        super().__init__(message)
-
-
 class File(Protocol):
 
     filename: str | None
@@ -46,3 +40,21 @@ class CSVFileFindSchema(FileFindSchema):
 
 
 CSVFileResponseSchema = pd.DataFrame
+
+
+class FailedFileReadingException(Exception):
+    """
+    Exception raised when file reading fails.
+
+    This exception can be used to provide specific error messages
+    related to file reading operations in repository.
+    """
+
+    def __init__(self, message: str):
+        """
+        Initializes an instance of FailedFileReadingException with a specific error message.
+
+        Args:
+            message(str): The error message to be reported.
+        """
+        super().__init__(message)

@@ -9,12 +9,6 @@ from internal.dto.repository.base_schema import (
 )
 
 
-class FileMetadataNotFoundException(Exception):
-
-    def __init__(self):
-        super().__init__("File metadata not found")
-
-
 class FileMetadataBaseSchema(BaseSchema):
     file_name: UUID
     original_file_name: str
@@ -31,3 +25,17 @@ class FileMetadataFindSchema(BaseFindSchema[UUID]): ...
 
 
 class FileMetadataResponseSchema(FileMetadataBaseSchema, BaseResponseSchema[UUID]): ...
+
+
+class FileMetadataNotFoundException(Exception):
+    """
+    Exception raised when a file metadata is not found in some data storage.
+
+    This exception may be thrown only by the repository.
+    """
+
+    def __init__(self):
+        """
+        Initializes an instance of FileMetadataNotFoundException with a default message.
+        """
+        super().__init__("File metadata not found")

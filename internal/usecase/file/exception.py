@@ -23,8 +23,6 @@ class DatasetNotFoundException(Exception):
     def __init__(self):
         """
         Initializes an instance of DatasetNotFoundException without any specific message.
-
-        The default message "Dataset not found" is used.
         """
         super().__init__("Dataset not found")
 
@@ -40,8 +38,6 @@ class FileMetadataNotFoundException(Exception):
     def __init__(self):
         """
         Initializes an instance of FileMetadataNotFoundException with a default message.
-
-        The default message "File metadata not found" is used to indicate the error.
         """
         super().__init__("File metadata not found")
 
@@ -49,8 +45,6 @@ class FileMetadataNotFoundException(Exception):
 class FailedReadFileException(Exception):
     """
     Exception raised when a file reading operation fails.
-
-    This exception carries a specific error message detailing the cause of the failure.
     """
 
     def __init__(self, message: str):

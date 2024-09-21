@@ -15,12 +15,6 @@ from internal.dto.repository.base_schema import (
 )
 
 
-class TaskNotFoundException(Exception):
-
-    def __init__(self):
-        super().__init__("Task not found")
-
-
 class TaskBaseSchema(BaseSchema):
     status: TaskStatus
     config: OneOfTaskConfig
@@ -46,3 +40,17 @@ class TaskResponseSchema(TaskBaseSchema, BaseResponseSchema[UUID]):
     raised_exception_name: str | None = None
     failure_reason: TaskFailureReason | None = None
     traceback: str | None = None
+
+
+class TaskNotFoundException(Exception):
+    """
+    Exception raised when a task is not found in some data storage.
+
+    This exception may be thrown only by the repository.
+    """
+
+    def __init__(self):
+        """
+        Initializes an instance of TaskNotFoundException with a default message.
+        """
+        super().__init__("Task not found")
