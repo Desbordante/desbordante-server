@@ -52,13 +52,13 @@ init:
 
 ## Run all formatters and linters in project
 lint:
-	poetry run ruff check tests app \
-	& poetry run ruff format --check tests app \
-	& poetry run black --check tests app
+	poetry run ruff check tests internal \
+	& poetry run ruff format --check tests internal \
+	& poetry run black --check tests internal
 
 ## Reformat code
 format:
-	poetry run ruff format tests app & poetry run ruff check --fix & poetry run black tests app
+	poetry run ruff format tests app & poetry run ruff check --fix & poetry run black tests internal
 
 
 ## Run all tests in project
