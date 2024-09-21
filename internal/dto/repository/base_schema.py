@@ -16,7 +16,7 @@ class BaseFindSchema[T](BaseSchema):
     id: T
 
 
-class BaseUpdateSchema[T](BaseSchema, OptionalModel):
+class BaseUpdateSchema(BaseSchema, OptionalModel):
     __non_optional_fields__ = {
         "id",
     }

@@ -30,7 +30,7 @@ class TaskBaseSchema(BaseSchema):
 class TaskCreateSchema(TaskBaseSchema, BaseCreateSchema): ...
 
 
-class TaskUpdateSchema(TaskBaseSchema, BaseUpdateSchema[UUID]):
+class TaskUpdateSchema(TaskBaseSchema, BaseUpdateSchema):
     status: TaskStatus | None
     result: OneOfTaskResult | None
     raised_exception_name: str | None
