@@ -7,7 +7,7 @@ from internal.infrastructure.data_storage.relational.postgres.context import (
 )
 from internal.repository.flat import FileRepository
 from internal.repository.relational.file import (
-    FileMetaDataRepository,
+    FileMetadataRepository,
     DatasetRepository,
 )
 from internal.repository.relational.task import TaskRepository
@@ -35,8 +35,8 @@ def get_file_repo() -> FileRepository:
     return FileRepository()
 
 
-def get_file_metadata_repo() -> FileMetaDataRepository:
-    return FileMetaDataRepository()
+def get_file_metadata_repo() -> FileMetadataRepository:
+    return FileMetadataRepository()
 
 
 def get_dataset_repo() -> DatasetRepository:

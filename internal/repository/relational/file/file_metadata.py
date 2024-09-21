@@ -8,7 +8,7 @@ from internal.infrastructure.data_storage.relational.model.file import FileMetad
 from internal.repository.relational import CRUD
 
 
-class FileMetaDataRepository(
+class FileMetadataRepository(
     CRUD[
         FileMetadataORM,
         FileMetadataCreateSchema,
