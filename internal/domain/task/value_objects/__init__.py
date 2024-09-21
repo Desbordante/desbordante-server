@@ -1,4 +1,3 @@
-from enum import StrEnum, auto
 from typing import Annotated, Union
 from pydantic import Field
 
@@ -10,20 +9,8 @@ from internal.domain.task.value_objects.result import TaskResult
 
 from internal.domain.task.value_objects.primitive_name import PrimitiveName
 
-
-class TaskStatus(StrEnum):
-    FAILED = auto()
-    CREATED = auto()
-    RUNNING = auto()
-    COMPLETED = auto()
-
-
-class TaskFailureReason(StrEnum):
-    MEMORY_LIMIT_EXCEEDED = auto()
-    TIME_LIMIT_EXCEEDED = auto()
-    WORKER_KILLED_BY_SIGNAL = auto()
-    OTHER = auto()
-
+from internal.domain.task.value_objects.task_status import TaskStatus
+from internal.domain.task.value_objects.task_failure_reason import TaskFailureReason
 
 OneOfTaskConfig = Annotated[
     Union[
