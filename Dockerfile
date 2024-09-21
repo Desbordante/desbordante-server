@@ -78,7 +78,7 @@ EXPOSE ${APPLICATION_SERVER_PORT}
 USER 1001
 
 # Run the uvicorn application server.
-CMD exec uvicorn --workers 1 --host 0.0.0.0 --port $APPLICATION_SERVER_PORT app.main:app
+CMD exec uvicorn --workers 1 --host 0.0.0.0 --port $APPLICATION_SERVER_PORT internal:app
 
 FROM server-setup-build-stage as install-dependencies-build-stage
 # install [tool.poetry.dependencies]
@@ -93,4 +93,4 @@ FROM server-setup-build-stage as production-image
 COPY --chown=python_application:python_application --from=install-dependencies-build-stage /application_root/.venv /application_root/.venv
 
 # Copy application files
-COPY --chown=python_application:python_application /app /application_root/app/
+COPY --chown=python_application:python_application /internal /application_root/internal/
