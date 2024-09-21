@@ -4,8 +4,10 @@ from internal.uow import UnitOfWork
 from internal.rest.http.di import get_unit_of_work, get_task_repo, get_dataset_repo
 from internal.usecase.task import RetrieveTask, SetTask
 from internal.usecase.task.retrieve_task import TaskRepo as RetrieveTaskRepo
-from internal.usecase.task.set_task import (TaskRepo as SetTaskRepo,
-                                            DatasetRepo as SetDatasetRepo)
+from internal.usecase.task.set_task import (
+    TaskRepo as SetTaskRepo,
+    DatasetRepo as SetDatasetRepo,
+)
 from internal.worker.celery import ProfilingTaskWorker
 
 
@@ -14,8 +16,8 @@ def get_profiling_task_worker() -> ProfilingTaskWorker:
 
 
 def get_retrieve_task_use_case(
-        unit_of_work: UnitOfWork = Depends(get_unit_of_work),
-        task_repo: RetrieveTaskRepo = Depends(get_task_repo),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
+    task_repo: RetrieveTaskRepo = Depends(get_task_repo),
 ) -> RetrieveTask:
 
     return RetrieveTask(
@@ -25,10 +27,10 @@ def get_retrieve_task_use_case(
 
 
 def get_set_task_use_case(
-        unit_of_work: UnitOfWork = Depends(get_unit_of_work),
-        task_repo: SetTaskRepo = Depends(get_task_repo),
-        dataset_repo: SetDatasetRepo = Depends(get_dataset_repo),
-        profiling_task_worker: ProfilingTaskWorker = Depends(get_profiling_task_worker),
+    unit_of_work: UnitOfWork = Depends(get_unit_of_work),
+    task_repo: SetTaskRepo = Depends(get_task_repo),
+    dataset_repo: SetDatasetRepo = Depends(get_dataset_repo),
+    profiling_task_worker: ProfilingTaskWorker = Depends(get_profiling_task_worker),
 ) -> SetTask:
 
     return SetTask(

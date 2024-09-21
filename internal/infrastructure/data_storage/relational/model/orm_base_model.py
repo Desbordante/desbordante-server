@@ -8,13 +8,11 @@ class ORMBaseModel(DeclarativeBase):
     __abstract__ = True
 
     created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True),
-        nullable=False,
-        server_default=text("now()")
+        TIMESTAMP(timezone=True), nullable=False, server_default=text("now()")
     )
     updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
         nullable=False,
         server_default=text("now()"),
-        onupdate=text("now()")
+        onupdate=text("now()"),
     )

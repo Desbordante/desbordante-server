@@ -3,7 +3,11 @@ from uuid import UUID
 
 import pandas as pd
 
-from internal.dto.repository.base_schema import BaseCreateSchema, BaseUpdateSchema, BaseSchema
+from internal.dto.repository.base_schema import (
+    BaseCreateSchema,
+    BaseUpdateSchema,
+    BaseSchema,
+)
 
 
 class FailedFileReadingException(Exception):
@@ -30,7 +34,7 @@ class FileCreateSchema(FileBaseSchema, BaseCreateSchema): ...
 class FileUpdateSchema(FileBaseSchema, BaseUpdateSchema[UUID]): ...
 
 
-class FileFindSchema(FileBaseSchema, BaseSchema): ... # it's not a typo
+class FileFindSchema(FileBaseSchema, BaseSchema): ...  # it's not a typo
 
 
 FileResponseSchema = None

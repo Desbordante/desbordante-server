@@ -23,7 +23,6 @@ class Task[C: TaskConfig, R: TaskResult](ABC):
       on a given table with the provided configuration.
     """
 
-
     @abstractmethod
     def _match_algo_by_name(self, algo_name: str) -> desbordante.Algorithm:
         """
@@ -36,7 +35,6 @@ class Task[C: TaskConfig, R: TaskResult](ABC):
         """
         pass
 
-
     @abstractmethod
     def _collect_result(self, algo: desbordante.Algorithm) -> R:
         """
@@ -48,7 +46,6 @@ class Task[C: TaskConfig, R: TaskResult](ABC):
             TaskResult: The task result containing the processed output.
         """
         pass
-
 
     def execute(self, table: pandas.DataFrame, task_config: C) -> R:
         """

@@ -8,12 +8,12 @@ from internal.usecase.task import SetTask
 
 router = APIRouter()
 
+
 @router.post("/set")
 def set_task(
     dataset_id: UUID,
     config: OneOfTaskConfig,
-
-    set_task_use_case: SetTask = Depends(get_set_task_use_case)
+    set_task_use_case: SetTask = Depends(get_set_task_use_case),
 ) -> UUID:
 
     task_id = set_task_use_case(

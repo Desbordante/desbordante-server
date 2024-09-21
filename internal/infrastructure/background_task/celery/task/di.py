@@ -1,4 +1,6 @@
-from internal.infrastructure.data_storage.relational.postgres import get_postgres_context_maker_without_pool
+from internal.infrastructure.data_storage.relational.postgres import (
+    get_postgres_context_maker_without_pool,
+)
 from internal.repository.flat import FileRepository
 from internal.repository.relational.file import DatasetRepository
 from internal.repository.relational.task import TaskRepository
@@ -29,6 +31,7 @@ def get_update_task_info_use_case():
         unit_of_work=unit_of_work,
         task_repo=task_repo,  # type: ignore
     )
+
 
 def get_profile_task_use_case():
     context_maker = get_postgres_context_maker_without_pool()

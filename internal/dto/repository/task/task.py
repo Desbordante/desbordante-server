@@ -1,13 +1,24 @@
 from uuid import UUID
 
-from internal.domain.task.value_objects import TaskStatus, OneOfTaskConfig, OneOfTaskResult, TaskFailureReason
-from internal.dto.repository.base_schema import BaseSchema, BaseCreateSchema, BaseUpdateSchema, \
-    BaseResponseSchema, BaseFindSchema
+from internal.domain.task.value_objects import (
+    TaskStatus,
+    OneOfTaskConfig,
+    OneOfTaskResult,
+    TaskFailureReason,
+)
+from internal.dto.repository.base_schema import (
+    BaseSchema,
+    BaseCreateSchema,
+    BaseUpdateSchema,
+    BaseResponseSchema,
+    BaseFindSchema,
+)
+
 
 class TaskNotFoundException(Exception):
 
     def __init__(self):
-        super().__init__('Task not found')
+        super().__init__("Task not found")
 
 
 class TaskBaseSchema(BaseSchema):

@@ -10,6 +10,7 @@ from internal.domain.task.value_objects.result import TaskResult
 
 from internal.domain.task.value_objects.primitive_name import PrimitiveName
 
+
 class TaskStatus(StrEnum):
     FAILED = auto()
     CREATED = auto()

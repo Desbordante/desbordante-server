@@ -7,7 +7,9 @@ from internal.uow import DataStorageContext, UnitOfWork
 
 class DatasetRepo(Protocol):
 
-    def create(self, dataset_info: DatasetCreateSchema, context: DataStorageContext) -> DatasetResponseSchema: ...
+    def create(
+        self, dataset_info: DatasetCreateSchema, context: DataStorageContext
+    ) -> DatasetResponseSchema: ...
 
 
 class SaveDataset:
@@ -17,17 +19,15 @@ class SaveDataset:
         self.dataset_repo = dataset_repo
 
     def __call__(
-            self,
-            *,
-            file_id: UUID,
-            separator: str,
-            header: list[int],
+        self,
+        *,
+        file_id: UUID,
+        separator: str,
+        header: list[int],
     ) -> UUID:
 
         dataset_create_schema = DatasetCreateSchema(
-            file_id=file_id,
-            separator=separator,
-            header=header
+            file_id=file_id, separator=separator, header=header
         )
 
         with self.unit_of_work as context:

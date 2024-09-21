@@ -4,7 +4,12 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from internal.domain.task.value_objects import TaskStatus, OneOfTaskConfig, OneOfTaskResult, TaskFailureReason
+from internal.domain.task.value_objects import (
+    TaskStatus,
+    OneOfTaskConfig,
+    OneOfTaskResult,
+    TaskFailureReason,
+)
 from internal.dto.repository.task import TaskResponseSchema, TaskFindSchema
 from internal.uow import DataStorageContext, UnitOfWork
 from internal.usecase.task.exception import TaskNotFoundException
@@ -12,7 +17,9 @@ from internal.usecase.task.exception import TaskNotFoundException
 
 class TaskRepo(Protocol):
 
-    def find(self, task_info: TaskFindSchema, context: DataStorageContext) -> TaskResponseSchema | None: ...
+    def find(
+        self, task_info: TaskFindSchema, context: DataStorageContext
+    ) -> TaskResponseSchema | None: ...
 
 
 class RetrieveTaskUseCaseResult(BaseModel):
@@ -55,5 +62,5 @@ class RetrieveTask:
             failure_reason=task.failure_reason,
             traceback=task.traceback,
             created_at=task.created_at,
-            updated_at=task.updated_at
+            updated_at=task.updated_at,
         )

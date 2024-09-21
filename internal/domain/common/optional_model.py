@@ -13,6 +13,7 @@ class OptionalModel(BaseModel):
         __non_optional_fields__ (set): A set of field names that should remain
         non-optional. Fields listed here will not have `None` as their default value.
     """
+
     __non_optional_fields__ = set()
 
     @classmethod

@@ -4,8 +4,16 @@ from uuid import UUID
 from pydantic import BaseModel
 
 from internal.domain.file import File as FileEntity
-from internal.dto.repository.file import FileCreateSchema, FileResponseSchema, File, FailedFileReadingException
-from internal.dto.repository.file import FileMetadataCreateSchema, FileMetadataResponseSchema
+from internal.dto.repository.file import (
+    FileCreateSchema,
+    FileResponseSchema,
+    File,
+    FailedFileReadingException,
+)
+from internal.dto.repository.file import (
+    FileMetadataCreateSchema,
+    FileMetadataResponseSchema,
+)
 from internal.uow import DataStorageContext, UnitOfWork
 from internal.usecase.file.exception import FailedReadFileException
 
@@ -13,19 +21,14 @@ from internal.usecase.file.exception import FailedReadFileException
 class FileRepo(Protocol):
 
     async def create(
-            self,
-            file: File,
-            file_info: FileCreateSchema,
-            context: DataStorageContext
+        self, file: File, file_info: FileCreateSchema, context: DataStorageContext
     ) -> FileResponseSchema: ...
 
 
 class FileMetadataRepo(Protocol):
 
     def create(
-            self,
-            file_metadata: FileMetadataCreateSchema,
-            context: DataStorageContext
+        self, file_metadata: FileMetadataCreateSchema, context: DataStorageContext
     ) -> FileMetadataResponseSchema: ...
 
 
@@ -41,10 +44,10 @@ class SaveFileUseCaseResult(BaseModel):
 class SaveFile:
 
     def __init__(
-            self,
-            unit_of_work: UnitOfWork,
-            file_repo: FileRepo,
-            file_metadata_repo: FileMetadataRepo
+        self,
+        unit_of_work: UnitOfWork,
+        file_repo: FileRepo,
+        file_metadata_repo: FileMetadataRepo,
     ):
 
         self.unit_of_work = unit_of_work
@@ -58,12 +61,14 @@ class SaveFile:
         file_metadata_create_schema = FileMetadataCreateSchema(
             file_name=file.name_as_uuid,
             original_file_name=upload_file.filename,
-            mime_type=upload_file.content_type
+            mime_type=upload_file.content_type,
         )
 
         with self.unit_of_work as context:
             try:
-                response = self.file_metadata_repo.create(file_metadata_create_schema, context)
+                response = self.file_metadata_repo.create(
+                    file_metadata_create_schema, context
+                )
                 await self.file_repo.create(upload_file, create_file_schema, context)
             except FailedFileReadingException as e:
                 raise FailedReadFileException(str(e))
@@ -73,5 +78,5 @@ class SaveFile:
             original_file_name=response.original_file_name,
             mime_type=response.mime_type,
             created_at=response.created_at,
-            updated_at=response.updated_at
+            updated_at=response.updated_at,
         )

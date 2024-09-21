@@ -18,9 +18,8 @@ class ResponseSchema(BaseModel):
 
 @router.post("/dataset/{dataset_id}", response_model=ResponseSchema)
 def retrieve_dataset(
-        dataset_id: UUID,
-
-        retrieve_dataset_use_case: RetrieveDataset = Depends(get_retrieve_dataset_use_case)
+    dataset_id: UUID,
+    retrieve_dataset_use_case: RetrieveDataset = Depends(get_retrieve_dataset_use_case),
 ) -> ResponseSchema:
 
     dataset = retrieve_dataset_use_case(dataset_id=dataset_id)

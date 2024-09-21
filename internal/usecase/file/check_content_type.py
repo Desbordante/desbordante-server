@@ -10,5 +10,7 @@ class File(Protocol):
 class CheckContentType:
 
     def __call__(self, *, upload_file: File) -> None:
-        if upload_file.content_type != "text/csv":  # TODO: replace with actual validation
+        if (
+            upload_file.content_type != "text/csv"
+        ):  # TODO: replace with actual validation
             raise IncorrectFileFormatException("File is not CSV")

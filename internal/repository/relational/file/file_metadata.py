@@ -1,5 +1,9 @@
-from internal.dto.repository.file import (FileMetadataCreateSchema, FileMetadataUpdateSchema,
-                                          FileMetadataFindSchema, FileMetadataResponseSchema)
+from internal.dto.repository.file import (
+    FileMetadataCreateSchema,
+    FileMetadataUpdateSchema,
+    FileMetadataFindSchema,
+    FileMetadataResponseSchema,
+)
 from internal.infrastructure.data_storage.relational.model.file import FileMetadataORM
 from internal.repository.relational import CRUD
 
@@ -10,9 +14,11 @@ class FileMetaDataRepository(
         FileMetadataCreateSchema,
         FileMetadataUpdateSchema,
         FileMetadataFindSchema,
-        FileMetadataResponseSchema
+        FileMetadataResponseSchema,
     ]
 ):
 
     def __init__(self):
-        super().__init__(orm_model=FileMetadataORM, response_schema=FileMetadataResponseSchema)
+        super().__init__(
+            orm_model=FileMetadataORM, response_schema=FileMetadataResponseSchema
+        )

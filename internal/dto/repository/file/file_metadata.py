@@ -1,13 +1,18 @@
 from uuid import UUID
 
-from internal.dto.repository.base_schema import BaseSchema, BaseCreateSchema, BaseUpdateSchema, \
-    BaseResponseSchema, BaseFindSchema
+from internal.dto.repository.base_schema import (
+    BaseSchema,
+    BaseCreateSchema,
+    BaseUpdateSchema,
+    BaseResponseSchema,
+    BaseFindSchema,
+)
 
 
 class FileMetadataNotFoundException(Exception):
 
     def __init__(self):
-        super().__init__('File metadata not found')
+        super().__init__("File metadata not found")
 
 
 class FileMetadataBaseSchema(BaseSchema):

@@ -11,12 +11,16 @@ from internal.usecase.file.exception import DatasetNotFoundException
 
 class DatasetRepo(Protocol):
 
-    def find(self, dataset_info: DatasetFindSchema, context: DataStorageContext) -> DatasetResponseSchema | None: ...
+    def find(
+        self, dataset_info: DatasetFindSchema, context: DataStorageContext
+    ) -> DatasetResponseSchema | None: ...
 
 
 class TaskRepo(Protocol):
 
-    def create(self, task_info: TaskCreateSchema, context: DataStorageContext) -> TaskResponseSchema: ...
+    def create(
+        self, task_info: TaskCreateSchema, context: DataStorageContext
+    ) -> TaskResponseSchema: ...
 
 
 class ProfilingTaskWorker(Protocol):
@@ -27,11 +31,11 @@ class ProfilingTaskWorker(Protocol):
 class SetTask:
 
     def __init__(
-            self,
-            unit_of_work: UnitOfWork,
-            dataset_repo: DatasetRepo,
-            task_repo: TaskRepo,
-            profiling_task_worker: ProfilingTaskWorker
+        self,
+        unit_of_work: UnitOfWork,
+        dataset_repo: DatasetRepo,
+        task_repo: TaskRepo,
+        profiling_task_worker: ProfilingTaskWorker,
     ):
 
         self.unit_of_work = unit_of_work
@@ -40,17 +44,17 @@ class SetTask:
         self.profiling_task_worker = profiling_task_worker
 
     def __call__(
-            self,
-            *,
-            dataset_id: UUID,
-            config: OneOfTaskConfig,
+        self,
+        *,
+        dataset_id: UUID,
+        config: OneOfTaskConfig,
     ) -> UUID:
 
         dataset_find_schema = DatasetFindSchema(id=dataset_id)
         task_create_schema = TaskCreateSchema(
             status=TaskStatus.CREATED,
             config=config.model_dump(exclude_unset=True),
-            dataset_id=dataset_id
+            dataset_id=dataset_id,
         )
 
         with self.unit_of_work as context:
@@ -60,9 +64,7 @@ class SetTask:
             task = self.task_repo.create(task_create_schema, context)
 
         profiling_task_create_schema = ProfilingTaskCreateSchema(
-            task_id=task.id,
-            dataset_id=dataset_id,
-            config=config
+            task_id=task.id, dataset_id=dataset_id, config=config
         )
         self.profiling_task_worker.set(profiling_task_create_schema)
 

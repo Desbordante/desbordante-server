@@ -5,7 +5,12 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy.dialects.postgresql import JSONB
 
-from internal.domain.task.value_objects import TaskStatus, OneOfTaskConfig, OneOfTaskResult, TaskFailureReason
+from internal.domain.task.value_objects import (
+    TaskStatus,
+    OneOfTaskConfig,
+    OneOfTaskResult,
+    TaskFailureReason,
+)
 from internal.infrastructure.data_storage.relational.model import ORMBaseModel
 
 if typing.TYPE_CHECKING:

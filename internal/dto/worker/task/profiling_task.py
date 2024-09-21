@@ -10,8 +10,7 @@ class ProfilingTaskBaseSchema(BaseModel):
     config: OneOfTaskConfig
 
 
-class ProfilingTaskCreateSchema(ProfilingTaskBaseSchema):
-    ...
+class ProfilingTaskCreateSchema(ProfilingTaskBaseSchema): ...
 
 
 ProfilingTaskResponseSchema = None

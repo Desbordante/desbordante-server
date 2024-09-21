@@ -3,7 +3,12 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from internal.domain.task.value_objects import TaskStatus, OneOfTaskConfig, OneOfTaskResult, TaskFailureReason
+from internal.domain.task.value_objects import (
+    TaskStatus,
+    OneOfTaskConfig,
+    OneOfTaskResult,
+    TaskFailureReason,
+)
 from internal.rest.http.task.di import get_retrieve_task_use_case
 from internal.usecase.task import RetrieveTask
 
@@ -22,8 +27,8 @@ class ResponseSchema(BaseModel):
 
 @router.get("/{task_id}")
 def retrieve_task(
-        task_id: UUID,
-        retrieve_task_use_case: RetrieveTask = Depends(get_retrieve_task_use_case)
+    task_id: UUID,
+    retrieve_task_use_case: RetrieveTask = Depends(get_retrieve_task_use_case),
 ) -> ResponseSchema:
 
     task = retrieve_task_use_case(task_id=task_id)

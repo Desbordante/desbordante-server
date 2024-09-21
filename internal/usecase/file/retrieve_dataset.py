@@ -9,7 +9,9 @@ from internal.usecase.file.exception import DatasetNotFoundException
 
 class DatasetRepo(Protocol):
 
-    def find(self, dataset_info: DatasetFindSchema, context: DataStorageContext) -> DatasetResponseSchema | None: ...
+    def find(
+        self, dataset_info: DatasetFindSchema, context: DataStorageContext
+    ) -> DatasetResponseSchema | None: ...
 
 
 class RetrieveDatasetUseCaseResult(BaseModel):
@@ -18,12 +20,13 @@ class RetrieveDatasetUseCaseResult(BaseModel):
     separator: str
     header: list[int]
 
+
 class RetrieveDataset:
 
     def __init__(
-            self,
-            unit_of_work: UnitOfWork,
-            dataset_repo: DatasetRepo,
+        self,
+        unit_of_work: UnitOfWork,
+        dataset_repo: DatasetRepo,
     ):
 
         self.unit_of_work = unit_of_work

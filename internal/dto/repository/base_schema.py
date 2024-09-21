@@ -9,8 +9,7 @@ class BaseSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class BaseCreateSchema(BaseSchema):
-    ...
+class BaseCreateSchema(BaseSchema): ...
 
 
 class BaseFindSchema[T](BaseSchema):

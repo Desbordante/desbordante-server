@@ -8,6 +8,7 @@ from internal.domain.task.value_objects import PrimitiveName
 from internal.domain.task.value_objects.afd import AfdTaskResult, AfdTaskConfig
 from internal.domain.task.value_objects.afd import AfdAlgoName, AfdAlgoResult, FdModel
 
+
 class AfdTask(Task[AfdTaskConfig, AfdTaskResult]):
     """
     Task class for Approximate Functional Dependency (AFD) profiling.
