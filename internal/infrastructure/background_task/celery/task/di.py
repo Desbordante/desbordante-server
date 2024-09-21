@@ -42,6 +42,6 @@ def get_profile_task_use_case():
 
     return ProfileTask(
         unit_of_work=unit_of_work,
-        file_repo=file_repo,
+        file_repo=file_repo,  # type: ignore
         dataset_repo=dataset_repo,  # type: ignore
     )
