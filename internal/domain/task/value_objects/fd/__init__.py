@@ -4,8 +4,11 @@ from pydantic import BaseModel
 
 from internal.domain.task.value_objects.primitive_name import PrimitiveName
 from internal.domain.task.value_objects.fd.algo_config import OneOfFdAlgoConfig
-from internal.domain.task.value_objects.fd.algo_result import FdAlgoResult, FdModel
-from internal.domain.task.value_objects.fd.algo_name import FdAlgoName
+from internal.domain.task.value_objects.fd.algo_result import (  # noqa: F401
+    FdAlgoResult,
+    FdModel,
+)
+from internal.domain.task.value_objects.fd.algo_name import FdAlgoName  # noqa: F401
 
 
 class BaseFdTaskModel(BaseModel):

@@ -1,2 +1,2 @@
-from internal.domain.task.entities import FdTask
-from internal.domain.task.entities import AfdTask
+from internal.domain.task.entities import FdTask  # noqa: F401
+from internal.domain.task.entities import AfdTask  # noqa: F401

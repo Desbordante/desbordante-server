@@ -21,30 +21,28 @@ def add_exception_handlers(app: FastAPI):
         )
 
     @app.exception_handler(DatasetNotFoundException)
-    def dataset_not_found_exception(request: Request, exc: DatasetNotFoundException):
+    def dataset_not_found_exception(_, exc: DatasetNotFoundException):
         raise HTTPException(
             status_code=404,
             detail=str(exc),
         )
 
     @app.exception_handler(FileMetadataNotFoundException)
-    def file_metadata_not_found_exception(
-        request: Request, exc: FileMetadataNotFoundException
-    ):
+    def file_metadata_not_found_exception(_, exc: FileMetadataNotFoundException):
         raise HTTPException(
             status_code=404,
             detail=str(exc),
         )
 
     @app.exception_handler(TaskNotFoundException)
-    def file_metadata_not_found_exception(request: Request, exc: TaskNotFoundException):
+    def file_metadata_not_found_exception(_, exc: TaskNotFoundException):  # noqa: F811
         raise HTTPException(
             status_code=404,
             detail=str(exc),
         )
 
     @app.exception_handler(FailedReadFileException)
-    def failed_read_file_exception(request: Request, exc: FailedReadFileException):
+    def failed_read_file_exception(_, exc: FailedReadFileException):
         raise HTTPException(
             status_code=404,
             detail=str(exc),
