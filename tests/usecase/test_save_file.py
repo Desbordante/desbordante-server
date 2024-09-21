@@ -72,7 +72,8 @@ def save_file(
         "internal.usecase.file.save_file.FileEntity", return_value=file_entity_mock
     )
     return SaveFile(
-        unit_of_work=unit_of_work_mock,
+        file_unit_of_work=unit_of_work_mock,
+        file_info_unit_of_work=unit_of_work_mock,
         file_repo=file_repo_mock,
         file_metadata_repo=file_metadata_repo_mock,
     )
@@ -133,9 +134,9 @@ async def test_save_file(
         unit_of_work_mock.__enter__.return_value,
     )
 
-    # Check that UnitOfWork was used correctly
-    unit_of_work_mock.__enter__.assert_called_once()
-    unit_of_work_mock.__exit__.assert_called_once()
+    # Verify that UnitOfWork was used correctly
+    assert unit_of_work_mock.__enter__.call_count == 2
+    assert unit_of_work_mock.__exit__.call_count == 2
 
     # Verify that the result matches the expected SaveFileUseCaseResult
     assert result == SaveFileUseCaseResult(
@@ -175,5 +176,5 @@ async def test_save_file_failed_read_file_exception(
     file_repo_mock.create.assert_called_once()
 
     # Verify that UnitOfWork was used correctly
-    unit_of_work_mock.__enter__.assert_called_once()
-    unit_of_work_mock.__exit__.assert_called_once()
+    assert unit_of_work_mock.__enter__.call_count == 2
+    assert unit_of_work_mock.__exit__.call_count == 2
