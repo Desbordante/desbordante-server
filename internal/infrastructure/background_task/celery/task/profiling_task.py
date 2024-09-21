@@ -1,6 +1,8 @@
 from typing import Any
 from uuid import UUID
 
+import traceback as tb
+
 from celery.signals import task_failure, task_prerun, task_postrun
 from celery.exceptions import SoftTimeLimitExceeded, TimeLimitExceeded, WorkerLostError
 
@@ -70,6 +72,8 @@ def task_failure_notifier(
     if isinstance(exception, WorkerLostError):
         task_failure_reason = TaskFailureReason.WORKER_KILLED_BY_SIGNAL
 
+    formatted_traceback = "".join(tb.format_exception(type(exception), exception, exception.__traceback__))
+
     update_task_info = get_update_task_info_use_case()
     db_task_id: UUID = kwargs["task_id"]
 
@@ -78,5 +82,5 @@ def task_failure_notifier(
         task_status=TaskStatus.FAILED,
         raised_exception_name=exception.__class__.__name__,
         failure_reason=task_failure_reason,
-        traceback=traceback,
+        traceback=formatted_traceback,
     )
