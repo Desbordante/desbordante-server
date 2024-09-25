@@ -23,7 +23,6 @@ desbordante-stubs = "^0.1.0"
 pandas = "^2.2.1"
 pandas-stubs = "^2.2.0.240218"
 python-multipart = "^0.0.9"
-sqlalchemy-mixins = "^2.0.5"
 aiofiles = "^23.2.1"
 cfgv = "^3.4.0"
 

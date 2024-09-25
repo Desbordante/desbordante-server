@@ -2789,21 +2789,6 @@ pymysql = ["pymysql"]
 sqlcipher = ["sqlcipher3_binary"]
 
 [[package]]
-name = "sqlalchemy-mixins"
-version = "2.0.5"
-description = "Active Record, Django-like queries, nested eager load and beauty __repr__ for SQLAlchemy"
-optional = false
-python-versions = "*"
-files = [
-    {file = "sqlalchemy_mixins-2.0.5-py3-none-any.whl", hash = "sha256:9067b630744741b472aa91d92494cc5612ed2d29c66729a5a4a1d3fbbeccd448"},
-    {file = "sqlalchemy_mixins-2.0.5.tar.gz", hash = "sha256:85197fc3682c4bf9c35671fb3d10282a0973b19cd2ff2b6791d601cbfb0fb89e"},
-]
-
-[package.dependencies]
-six = "*"
-SQLAlchemy = ">=2.0"
-
-[[package]]
 name = "sqlalchemy-utils"
 version = "0.41.2"
 description = "Various utility functions for SQLAlchemy."
@@ -3405,4 +3390,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "2a16ad9195dd67f2442c55835418c818e7528f094bc7bd99356700614ea6a3e5"
+content-hash = "8bc60ad0e9e823656aae7fc151606f23962c48d27d3bd05dfa974785c2ff5fed"
