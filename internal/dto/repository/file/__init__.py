@@ -1,6 +1,5 @@
 from internal.dto.repository.file.file import (  # noqa: F401
     File,
-    FileResponseSchema,
     FileFindSchema,
     FileCreateSchema,
     FileUpdateSchema,

@@ -5,7 +5,7 @@ import pytest
 from pytest_mock import MockerFixture
 
 from internal.domain.task.value_objects import PrimitiveName, TaskStatus, FdTaskConfig
-from internal.domain.task.value_objects.fd import FdAlgoName
+from internal.domain.task.value_objects.fd.algo_config import AidConfig
 from internal.dto.repository.file import (
     DatasetResponseSchema,
     DatasetFindSchema,
@@ -15,7 +15,7 @@ from internal.dto.repository.task import (
     TaskCreateSchema,
 )
 from internal.dto.worker.task import ProfilingTaskCreateSchema
-from internal.uow import UnitOfWork, DataStorageContext
+from internal.uow import DataStorageContext
 from internal.usecase.file.exception import DatasetNotFoundException
 from internal.usecase.task.set_task import (
     SetTask,
@@ -26,7 +26,7 @@ from internal.usecase.task.set_task import (
 
 
 @pytest.fixture
-def unit_of_work_mock(mocker: MockerFixture) -> UnitOfWork:
+def unit_of_work_mock(mocker: MockerFixture):
     mock = mocker.MagicMock()
     mock.__enter__.return_value = mocker.Mock(
         return_value=mocker.Mock(), spec=DataStorageContext
@@ -43,29 +43,29 @@ def unit_of_work_mock(mocker: MockerFixture) -> UnitOfWork:
 
 
 @pytest.fixture
-def dataset_repo_mock(mocker: MockerFixture) -> DatasetRepo:
+def dataset_repo_mock(mocker: MockerFixture):
     mock = mocker.Mock(spec=DatasetRepo)
     return mock
 
 
 @pytest.fixture
-def task_repo_mock(mocker: MockerFixture) -> TaskRepo:
+def task_repo_mock(mocker: MockerFixture):
     mock = mocker.Mock(spec=TaskRepo)
     return mock
 
 
 @pytest.fixture
-def profiling_task_worker(mocker: MockerFixture) -> ProfilingTaskWorker:
+def profiling_task_worker(mocker: MockerFixture):
     mock = mocker.Mock(spec=ProfilingTaskWorker)
     return mock
 
 
 @pytest.fixture
 def set_task_use_case(
-    unit_of_work_mock: UnitOfWork,
-    dataset_repo_mock: DatasetRepo,
-    task_repo_mock: TaskRepo,
-    profiling_task_worker: ProfilingTaskWorker,
+    unit_of_work_mock,
+    dataset_repo_mock,
+    task_repo_mock,
+    profiling_task_worker,
 ):
     return SetTask(
         unit_of_work=unit_of_work_mock,
@@ -76,18 +76,17 @@ def set_task_use_case(
 
 
 def test_set_task_use_case_success(
-    set_task_use_case: SetTask,
-    unit_of_work_mock: UnitOfWork,
-    dataset_repo_mock: DatasetRepo,
-    task_repo_mock: TaskRepo,
-    profiling_task_worker: ProfilingTaskWorker,
+    set_task_use_case,
+    unit_of_work_mock,
+    dataset_repo_mock,
+    task_repo_mock,
+    profiling_task_worker,
 ) -> None:
     # Prepare data
     dataset_id = uuid4()
     task_id = uuid4()
-    task_config = FdTaskConfig(
-        primitive_name=PrimitiveName.fd, config={"algo_name": FdAlgoName.Aid}
-    )
+    aid_config = AidConfig(algo_name="aid")  # type: ignore
+    task_config = FdTaskConfig(primitive_name=PrimitiveName.fd, config=aid_config)
 
     # Mocks repo methods
     dataset_repo_mock.find.return_value = DatasetResponseSchema(
@@ -124,7 +123,7 @@ def test_set_task_use_case_success(
     task_repo_mock.create.assert_called_once_with(
         TaskCreateSchema(
             status=TaskStatus.CREATED,
-            config=task_config.model_dump(exclude_unset=True),
+            config=task_config,
             dataset_id=dataset_id,
         ),
         unit_of_work_mock.__enter__.return_value,
@@ -144,17 +143,16 @@ def test_set_task_use_case_success(
 
 
 def test_set_task_use_case_dataset_not_found(
-    set_task_use_case: SetTask,
-    unit_of_work_mock: UnitOfWork,
-    dataset_repo_mock: DatasetRepo,
-    task_repo_mock: TaskRepo,
-    profiling_task_worker: ProfilingTaskWorker,
+    set_task_use_case,
+    unit_of_work_mock,
+    dataset_repo_mock,
+    task_repo_mock,
+    profiling_task_worker,
 ):
     # Prepare data
     dataset_id = uuid4()
-    task_config = FdTaskConfig(
-        primitive_name=PrimitiveName.fd, config={"algo_name": FdAlgoName.Aid}
-    )
+    aid_config = AidConfig(algo_name="aid")  # type: ignore
+    task_config = FdTaskConfig(primitive_name=PrimitiveName.fd, config=aid_config)
 
     # Mocks repo methods
     dataset_repo_mock.find.return_value = None

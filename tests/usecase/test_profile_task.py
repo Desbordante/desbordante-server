@@ -4,9 +4,10 @@ import pandas as pd
 import pytest
 from pytest_mock import MockerFixture
 
-from internal.uow import UnitOfWork, DataStorageContext
+from internal.uow import DataStorageContext
 from internal.domain.task.value_objects import FdTaskConfig, PrimitiveName, FdTaskResult
-from internal.domain.task.value_objects.fd import FdAlgoResult, FdAlgoName
+from internal.domain.task.value_objects.fd import FdAlgoResult
+from internal.domain.task.value_objects.fd.algo_config import AidConfig
 from internal.usecase.task.profile_task import DatasetRepo, FileRepo, ProfileTask
 from internal.usecase.file.exception import (
     DatasetNotFoundException as DatasetNotFoundUseCaseException,
@@ -25,7 +26,7 @@ from internal.dto.repository.file import (
 
 
 @pytest.fixture
-def unit_of_work_mock(mocker: MockerFixture) -> UnitOfWork:
+def unit_of_work_mock(mocker: MockerFixture):
     mock = mocker.MagicMock()
     mock.__enter__.return_value = mocker.Mock(
         return_value=mocker.Mock(), spec=DataStorageContext
@@ -42,25 +43,26 @@ def unit_of_work_mock(mocker: MockerFixture) -> UnitOfWork:
 
 
 @pytest.fixture
-def dataset_repo_mock(mocker: MockerFixture) -> DatasetRepo:
+def dataset_repo_mock(mocker: MockerFixture):
     mock = mocker.Mock(spec=DatasetRepo)
     return mock
 
 
 @pytest.fixture
-def file_repo_mock(mocker: MockerFixture) -> FileRepo:
+def file_repo_mock(mocker: MockerFixture):
     mock = mocker.Mock(spec=FileRepo)
     return mock
 
 
 @pytest.fixture
 def profile_task_use_case(
-    unit_of_work_mock: UnitOfWork,
-    dataset_repo_mock: DatasetRepo,
-    file_repo_mock: FileRepo,
+    unit_of_work_mock,
+    dataset_repo_mock,
+    file_repo_mock,
 ) -> ProfileTask:
     return ProfileTask(
-        unit_of_work=unit_of_work_mock,
+        file_unit_of_work=unit_of_work_mock,
+        dataset_unit_of_work=unit_of_work_mock,
         dataset_repo=dataset_repo_mock,
         file_repo=file_repo_mock,
     )
@@ -68,10 +70,10 @@ def profile_task_use_case(
 
 def test_profile_task_use_case_success(
     mocker: MockerFixture,
-    profile_task_use_case: ProfileTask,
-    unit_of_work_mock: UnitOfWork,
-    dataset_repo_mock: DatasetRepo,
-    file_repo_mock: FileRepo,
+    profile_task_use_case,
+    unit_of_work_mock,
+    dataset_repo_mock,
+    file_repo_mock,
 ) -> None:
     # Prepare data
     dataset_id = uuid4()
@@ -95,9 +97,8 @@ def test_profile_task_use_case_success(
         {"column1": [1, 2, 3], "column2": ["a", "b", "c"]}
     )
 
-    task_config = FdTaskConfig(
-        primitive_name=PrimitiveName.fd, config={"algo_name": FdAlgoName.Aid}
-    )
+    aid_config = AidConfig(algo_name="aid")  # type: ignore
+    task_config = FdTaskConfig(primitive_name=PrimitiveName.fd, config=aid_config)
 
     task_result = FdTaskResult(
         primitive_name=PrimitiveName.fd, result=FdAlgoResult(fds=[])
@@ -144,8 +145,8 @@ def test_profile_task_use_case_success(
     )
 
     # Check that UnitOfWork was entered and exited correctly
-    unit_of_work_mock.__enter__.assert_called_once()
-    unit_of_work_mock.__exit__.assert_called_once()
+    assert unit_of_work_mock.__enter__.call_count == 2
+    assert unit_of_work_mock.__exit__.call_count == 2
 
 
 @pytest.mark.parametrize(
@@ -156,19 +157,18 @@ def test_profile_task_use_case_success(
     ],
 )
 def test_profile_task_use_case_dataset_not_found(
-    profile_task_use_case: ProfileTask,
-    unit_of_work_mock: UnitOfWork,
-    dataset_repo_mock: DatasetRepo,
-    file_repo_mock: FileRepo,
-    repo_exception: Exception,
-    use_case_exception: Exception,
+    profile_task_use_case,
+    unit_of_work_mock,
+    dataset_repo_mock,
+    file_repo_mock,
+    repo_exception,
+    use_case_exception,
 ) -> None:
     # Prepare data
     dataset_id = uuid4()
 
-    task_config = FdTaskConfig(
-        primitive_name=PrimitiveName.fd, config={"algo_name": FdAlgoName.Aid}
-    )
+    aid_config = AidConfig(algo_name="aid")  # type: ignore
+    task_config = FdTaskConfig(primitive_name=PrimitiveName.fd, config=aid_config)
 
     # Mocks
     dataset_repo_mock.find_with_file_metadata.side_effect = repo_exception
@@ -186,5 +186,5 @@ def test_profile_task_use_case_dataset_not_found(
     assert not file_repo_mock.find.called
 
     # Check that UnitOfWork was entered and exited correctly
-    unit_of_work_mock.__enter__.assert_called_once()
-    unit_of_work_mock.__exit__.assert_called_once()
+    assert unit_of_work_mock.__enter__.call_count == 2
+    assert unit_of_work_mock.__exit__.call_count == 2

@@ -6,7 +6,6 @@ from pydantic import BaseModel
 from internal.domain.file import File as FileEntity
 from internal.dto.repository.file import (
     FileCreateSchema,
-    FileResponseSchema,
     File,
     FailedFileReadingException,
 )
@@ -22,7 +21,7 @@ class FileRepo(Protocol):
 
     async def create(
         self, file: File, file_info: FileCreateSchema, context: DataStorageContext
-    ) -> FileResponseSchema: ...
+    ) -> None: ...
 
 
 class FileMetadataRepo(Protocol):

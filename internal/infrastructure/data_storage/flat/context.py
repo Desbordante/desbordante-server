@@ -13,20 +13,20 @@ class FlatContext:
         return self._upload_directory_path
 
     # This context implementation does not support transactions
-    def flush(self) -> None:
-        pass
+    def flush(self) -> None: ...
 
-    def rollback(self) -> None:
-        pass
+    def rollback(self) -> None: ...
 
-    def commit(self) -> None:
-        pass
+    def commit(self) -> None: ...
 
-    def close(self) -> None:
-        pass  # TODO: implement flat context closing.
+    def close(self) -> None: ...  # TODO: implement flat context closing.
 
 
 class FlatContextMaker:
 
     def __call__(self):
         return FlatContext(settings.uploaded_files_dir_path)
+
+
+def get_flat_context_maker() -> FlatContextMaker:
+    return FlatContextMaker()

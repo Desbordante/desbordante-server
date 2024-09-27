@@ -60,7 +60,7 @@ def task_postrun_notifier(
     update_task_info(
         task_id=db_task_id,
         task_status=TaskStatus.COMPLETED,
-        result=retval.model_dump(),
+        result=retval,
     )
 
 

@@ -13,6 +13,16 @@ from internal.usecase.file import SaveFile, SaveDataset, CheckContentType
 router = APIRouter()
 
 
+class UploadFileAdapter:
+    def __init__(self, upload_file: UploadFile):
+        self.filename = upload_file.filename or ""
+        self.content_type = upload_file.content_type or ""
+        self._upload_file = upload_file
+
+    async def read(self, chunk_size: int) -> bytes:
+        return await self._upload_file.read(chunk_size)
+
+
 @router.post("/csv")
 async def upload_csv_dataset(
     file: UploadFile,
@@ -23,8 +33,10 @@ async def upload_csv_dataset(
     save_dataset: SaveDataset = Depends(get_save_dataset_use_case),
 ) -> UUID:
 
-    check_content_type(upload_file=file)
-    save_file_result = await save_file(upload_file=file)
+    adapted_file = UploadFileAdapter(file)
+
+    check_content_type(upload_file=adapted_file)
+    save_file_result = await save_file(upload_file=adapted_file)
     save_dataset_result = save_dataset(
         file_id=save_file_result.id,
         separator=separator,

@@ -4,7 +4,7 @@ import pandas
 from internal.domain.task.value_objects import TaskConfig, TaskResult
 
 
-class Task[C: TaskConfig, R: TaskResult](ABC):
+class Task[A: desbordante.Algorithm, C: TaskConfig, R: TaskResult](ABC):
     """
     Abstract base class for data profiling tasks.
 
@@ -24,7 +24,7 @@ class Task[C: TaskConfig, R: TaskResult](ABC):
     """
 
     @abstractmethod
-    def _match_algo_by_name(self, algo_name: str) -> desbordante.Algorithm:
+    def _match_algo_by_name(self, algo_name: str) -> A:
         """
         Match and return the algorithm instance based on its name.
 
@@ -36,7 +36,7 @@ class Task[C: TaskConfig, R: TaskResult](ABC):
         pass
 
     @abstractmethod
-    def _collect_result(self, algo: desbordante.Algorithm) -> R:
+    def _collect_result(self, algo: A) -> R:
         """
         Collect and process the result from the executed algorithm.
 

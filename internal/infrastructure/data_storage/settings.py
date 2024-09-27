@@ -1,8 +1,14 @@
+# type: ignore
+
+# Values ​​in the settings are added dynamically, so the static analyzer,
+# without knowing this, produces an error.
+
 from functools import cached_property
 
 from dotenv import load_dotenv, find_dotenv
 from pydantic import AmqpDsn, DirectoryPath, PostgresDsn
 from pydantic_settings import BaseSettings
+from pathlib import Path
 
 load_dotenv(find_dotenv(".env"))
 
@@ -21,7 +27,7 @@ class Settings(BaseSettings):
     rabbitmq_host: str
     rabbitmq_port: int = 5672
     # Flat files settings
-    uploaded_files_dir_path: DirectoryPath = "uploads/"
+    uploaded_files_dir_path: DirectoryPath = Path("uploads/")
 
     @cached_property
     def rabbitmq_dsn(self) -> AmqpDsn:

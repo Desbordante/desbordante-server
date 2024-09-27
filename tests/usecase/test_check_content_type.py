@@ -1,3 +1,5 @@
+from typing import Type
+
 import pytest
 from pytest_mock import MockerFixture
 
@@ -23,7 +25,7 @@ def test_check_content_type(
     check_content_type: CheckContentType,
     mocker: MockerFixture,
     content_type: str,
-    expected_exception: IncorrectFileFormatException | None,
+    expected_exception: Type[IncorrectFileFormatException] | None,
 ):
     upload_file = mocker.Mock(spec=File)
     upload_file.content_type = content_type

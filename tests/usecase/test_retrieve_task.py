@@ -4,12 +4,13 @@ import pytest
 from pytest_mock import MockerFixture
 
 from internal.domain.task.value_objects import PrimitiveName, TaskStatus, FdTaskResult
-from internal.domain.task.value_objects.fd import FdAlgoName, FdAlgoResult, FdTaskConfig
+from internal.domain.task.value_objects.fd import FdAlgoResult, FdTaskConfig
+from internal.domain.task.value_objects.fd.algo_config import AidConfig
 from internal.dto.repository.task import (
     TaskResponseSchema,
     TaskFindSchema,
 )
-from internal.uow import UnitOfWork, DataStorageContext
+from internal.uow import DataStorageContext
 from internal.usecase.task.exception import TaskNotFoundException
 from internal.usecase.task.retrieve_task import (
     RetrieveTask,
@@ -19,7 +20,7 @@ from internal.usecase.task.retrieve_task import (
 
 
 @pytest.fixture
-def unit_of_work_mock(mocker: MockerFixture) -> UnitOfWork:
+def unit_of_work_mock(mocker: MockerFixture):
     mock = mocker.MagicMock()
     mock.__enter__.return_value = mocker.Mock(
         return_value=mocker.Mock(), spec=DataStorageContext
@@ -29,30 +30,27 @@ def unit_of_work_mock(mocker: MockerFixture) -> UnitOfWork:
 
 
 @pytest.fixture
-def task_repo_mock(mocker: MockerFixture) -> TaskRepo:
+def task_repo_mock(mocker: MockerFixture):
     mock = mocker.Mock(spec=TaskRepo)
     return mock
 
 
 @pytest.fixture
-def retrieve_task_use_case(
-    unit_of_work_mock: UnitOfWork, task_repo_mock: TaskRepo
-) -> RetrieveTask:
+def retrieve_task_use_case(unit_of_work_mock, task_repo_mock):
     return RetrieveTask(unit_of_work=unit_of_work_mock, task_repo=task_repo_mock)
 
 
 def test_retrieve_task_use_case_success(
-    unit_of_work_mock: UnitOfWork,
-    task_repo_mock: TaskRepo,
-    retrieve_task_use_case: RetrieveTask,
+    unit_of_work_mock,
+    task_repo_mock,
+    retrieve_task_use_case,
 ):
     # Prepare data
     task_id = uuid4()
     dataset_id = uuid4()
 
-    task_config = FdTaskConfig(
-        primitive_name=PrimitiveName.fd, config={"algo_name": FdAlgoName.Aid}
-    )
+    aid_config = AidConfig(algo_name="aid")  # type: ignore
+    task_config = FdTaskConfig(primitive_name=PrimitiveName.fd, config=aid_config)
     task_result = FdTaskResult(
         primitive_name=PrimitiveName.fd, result=FdAlgoResult(fds=[])
     )
@@ -95,9 +93,9 @@ def test_retrieve_task_use_case_success(
 
 
 def test_retrieve_task_use_case_not_found(
-    unit_of_work_mock: UnitOfWork,
-    retrieve_task_use_case: RetrieveTask,
-    task_repo_mock: TaskRepo,
+    unit_of_work_mock,
+    retrieve_task_use_case,
+    task_repo_mock,
 ):
     task_id = uuid4()
 

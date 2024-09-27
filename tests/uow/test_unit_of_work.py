@@ -6,20 +6,16 @@ from internal.uow.uow import DataStorageContextMaker
 
 
 @pytest.fixture
-def context_mock(mocker: MockerFixture) -> DataStorageContext:
+def context_mock(mocker: MockerFixture):
     return mocker.Mock(spec=DataStorageContext)
 
 
 @pytest.fixture
-def context_maker_mock(
-    mocker: MockerFixture, context_mock: DataStorageContext
-) -> DataStorageContextMaker:
+def context_maker_mock(mocker: MockerFixture, context_mock):
     return mocker.Mock(spec=DataStorageContextMaker, return_value=context_mock)
 
 
-def test_unit_of_work_commit_on_success(
-    context_maker_mock: DataStorageContextMaker, context_mock: DataStorageContext
-) -> None:
+def test_unit_of_work_commit_on_success(context_maker_mock, context_mock) -> None:
     uow = UnitOfWork(context_maker_mock)
 
     with uow as context:
@@ -31,9 +27,7 @@ def test_unit_of_work_commit_on_success(
     context_mock.close.assert_called_once()
 
 
-def test_unit_of_work_rollback_on_failure(
-    context_maker_mock: DataStorageContextMaker, context_mock: DataStorageContext
-) -> None:
+def test_unit_of_work_rollback_on_failure(context_maker_mock, context_mock) -> None:
     uow = UnitOfWork(context_maker_mock)
 
     with pytest.raises(ValueError):

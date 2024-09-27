@@ -1,4 +1,3 @@
-from typing import assert_never
 from desbordante.fd import FdAlgorithm  # This is not a typo
 from desbordante.afd.algorithms import Pyro, Tane
 
@@ -6,10 +5,15 @@ from internal.domain.task.entities.task import Task
 from internal.domain.task.value_objects import PrimitiveName
 
 from internal.domain.task.value_objects.afd import AfdTaskResult, AfdTaskConfig
-from internal.domain.task.value_objects.afd import AfdAlgoName, AfdAlgoResult, FdModel
+from internal.domain.task.value_objects.afd import (
+    AfdAlgoName,
+    AfdAlgoResult,
+    FdModel,
+    IncorrectAFDAlgorithmName,
+)
 
 
-class AfdTask(Task[AfdTaskConfig, AfdTaskResult]):
+class AfdTask(Task[FdAlgorithm, AfdTaskConfig, AfdTaskResult]):
     """
     Task class for Approximate Functional Dependency (AFD) profiling.
 
@@ -37,7 +41,7 @@ class AfdTask(Task[AfdTaskConfig, AfdTaskResult]):
         algo_result = AfdAlgoResult(fds=list(map(FdModel.from_fd, fds)))
         return AfdTaskResult(primitive_name=PrimitiveName.afd, result=algo_result)
 
-    def _match_algo_by_name(self, algo_name: AfdAlgoName) -> FdAlgorithm:
+    def _match_algo_by_name(self, algo_name: str) -> FdAlgorithm:
         """
         Match the approximate functional dependency algorithm by name.
 
@@ -51,4 +55,5 @@ class AfdTask(Task[AfdTaskConfig, AfdTaskResult]):
                 return Pyro()
             case AfdAlgoName.Tane:
                 return Tane()
-        assert_never(algo_name)
+            case _:
+                raise IncorrectAFDAlgorithmName(algo_name)

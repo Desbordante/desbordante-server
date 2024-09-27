@@ -35,7 +35,7 @@ def add_exception_handlers(app: FastAPI):
         )
 
     @app.exception_handler(TaskNotFoundException)
-    def file_metadata_not_found_exception(_, exc: TaskNotFoundException):  # noqa: F811
+    def task_not_found_exception(_, exc: TaskNotFoundException):
         raise HTTPException(
             status_code=404,
             detail=str(exc),

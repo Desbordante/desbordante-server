@@ -4,12 +4,12 @@ import pytest
 from pytest_mock import MockerFixture
 
 from internal.dto.repository.file import DatasetResponseSchema, DatasetCreateSchema
-from internal.uow import UnitOfWork, DataStorageContext
+from internal.uow import DataStorageContext
 from internal.usecase.file.save_dataset import DatasetRepo, SaveDataset
 
 
 @pytest.fixture
-def unit_of_work_mock(mocker: MockerFixture) -> UnitOfWork:
+def unit_of_work_mock(mocker: MockerFixture):
     mock = mocker.MagicMock()
     mock.__enter__.return_value = mocker.Mock(
         return_value=mocker.Mock(), spec=DataStorageContext
@@ -19,22 +19,20 @@ def unit_of_work_mock(mocker: MockerFixture) -> UnitOfWork:
 
 
 @pytest.fixture
-def dataset_repo_mock(mocker: MockerFixture) -> DatasetRepo:
+def dataset_repo_mock(mocker: MockerFixture):
     mock = mocker.Mock(spec=DatasetRepo)
     return mock
 
 
 @pytest.fixture
-def save_dataset(
-    unit_of_work_mock: UnitOfWork, dataset_repo_mock: DatasetRepo
-) -> SaveDataset:
+def save_dataset(unit_of_work_mock, dataset_repo_mock):
     return SaveDataset(unit_of_work=unit_of_work_mock, dataset_repo=dataset_repo_mock)
 
 
 def test_save_dataset(
-    save_dataset: SaveDataset,
-    unit_of_work_mock: UnitOfWork,
-    dataset_repo_mock: DatasetRepo,
+    save_dataset,
+    unit_of_work_mock,
+    dataset_repo_mock,
 ) -> None:
     # Prepare data
     file_id = uuid4()

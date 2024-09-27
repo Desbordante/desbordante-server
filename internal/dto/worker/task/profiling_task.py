@@ -11,6 +11,3 @@ class ProfilingTaskBaseSchema(BaseModel):
 
 
 class ProfilingTaskCreateSchema(ProfilingTaskBaseSchema): ...
-
-
-ProfilingTaskResponseSchema = None

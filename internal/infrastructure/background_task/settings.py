@@ -9,8 +9,8 @@ class Settings(BaseSettings):
     # Celery worker limits
     worker_soft_time_limit_in_seconds: int = Field(default=60, gt=0)
     worker_hard_time_limit_in_seconds: int = Field(default=120, gt=0)
-    worker_soft_memory_limit: ByteSize = "2GB"
-    worker_hard_memory_limit: ByteSize = "4GB"
+    worker_soft_memory_limit: ByteSize = Field(default=2 * 1024 * 1024 * 1024)  # 2GB
+    worker_hard_memory_limit: ByteSize = Field(default=4 * 1024 * 1024 * 1024)  # 4GB
 
 
 def get_settings():

@@ -16,12 +16,12 @@ from internal.dto.repository.base_schema import (
 
 
 class TaskBaseSchema(BaseSchema):
-    status: TaskStatus
     config: OneOfTaskConfig
     dataset_id: UUID
 
 
-class TaskCreateSchema(TaskBaseSchema, BaseCreateSchema): ...
+class TaskCreateSchema(TaskBaseSchema, BaseCreateSchema):
+    status: TaskStatus
 
 
 class TaskUpdateSchema(TaskBaseSchema, BaseUpdateSchema):
@@ -36,6 +36,7 @@ class TaskFindSchema(BaseFindSchema[UUID]): ...
 
 
 class TaskResponseSchema(TaskBaseSchema, BaseResponseSchema[UUID]):
+    status: TaskStatus
     result: OneOfTaskResult | None = None
     raised_exception_name: str | None = None
     failure_reason: TaskFailureReason | None = None

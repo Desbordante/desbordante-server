@@ -12,8 +12,8 @@ from internal.dto.repository.base_schema import (
 
 class File(Protocol):
 
-    filename: str | None
-    content_type: str | None
+    filename: str
+    content_type: str
 
     async def read(self, chunk_size: int) -> bytes: ...
 
@@ -29,9 +29,6 @@ class FileUpdateSchema(FileBaseSchema, BaseUpdateSchema): ...
 
 
 class FileFindSchema(FileBaseSchema, BaseSchema): ...  # it's not a typo
-
-
-FileResponseSchema = None
 
 
 class CSVFileFindSchema(FileFindSchema):

@@ -8,7 +8,7 @@ from internal.dto.repository.file.file import (
     CSVFileFindSchema,
     CSVFileResponseSchema,
 )
-from internal.dto.repository.file import File, FileCreateSchema, FileResponseSchema
+from internal.dto.repository.file import File, FileCreateSchema
 from internal.infrastructure.data_storage.flat import FlatContext
 
 CHUNK_SIZE = 1024
@@ -22,7 +22,7 @@ class FileRepository:
         file: File,
         file_info: FileCreateSchema,
         context: FlatContext,
-    ) -> FileResponseSchema:
+    ) -> None:
 
         path_to_file = Path.joinpath(
             context.upload_directory_path, str(file_info.file_name)

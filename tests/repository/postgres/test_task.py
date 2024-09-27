@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from internal.domain.task.value_objects import TaskStatus, FdTaskConfig, PrimitiveName
 from internal.domain.task.value_objects.fd import FdAlgoName
+from internal.domain.task.value_objects.fd.algo_config import AidConfig
 from internal.dto.repository.task import (
     TaskCreateSchema,
     TaskFindSchema,
@@ -51,7 +52,7 @@ def dataset_id(dataset_create_schema, postgres_context):
 def get_config():
     return FdTaskConfig(
         primitive_name=PrimitiveName.fd,
-        config={"algo_name": FdAlgoName.Aid, "is_null_equal_null": True},
+        config=AidConfig(algo_name=FdAlgoName.Aid, is_null_equal_null=True),
     )
 
 

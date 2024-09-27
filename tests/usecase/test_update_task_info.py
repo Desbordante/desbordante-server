@@ -1,12 +1,10 @@
-from uuid import uuid4
-
 import pytest
+from uuid import uuid4
 from pytest_mock import MockerFixture
-
 from internal.domain.task.value_objects import TaskStatus
 from internal.dto.repository.task import TaskUpdateSchema, TaskFindSchema
 from internal.dto.repository.task.task import TaskNotFoundException
-from internal.uow import UnitOfWork, DataStorageContext
+from internal.uow import DataStorageContext
 from internal.usecase.task.update_task_info import TaskRepo, UpdateTaskInfo
 from internal.usecase.task.exception import (
     TaskNotFoundException as TaskNotFoundUseCaseException,
@@ -14,12 +12,10 @@ from internal.usecase.task.exception import (
 
 
 @pytest.fixture
-def unit_of_work_mock(mocker: MockerFixture) -> UnitOfWork:
+def unit_of_work_mock(mocker: MockerFixture):
     mock = mocker.MagicMock()
-    mock.__enter__.return_value = mocker.Mock(
-        return_value=mocker.Mock(), spec=DataStorageContext
-    )
-    mock.__exit__.return_value = None
+    mock.__enter__.return_value = mocker.Mock(spec=DataStorageContext)
+    mock.__exit__.return_value = mocker.Mock()
 
     def exit_side_effect(exc_type, exc_value, traceback) -> bool:
         if exc_type:
@@ -31,15 +27,14 @@ def unit_of_work_mock(mocker: MockerFixture) -> UnitOfWork:
 
 
 @pytest.fixture
-def task_repo_mock(mocker: MockerFixture) -> TaskRepo:
+def task_repo_mock(mocker: MockerFixture):
     mock = mocker.Mock(spec=TaskRepo)
+    mock.update = mocker.Mock()
     return mock
 
 
 @pytest.fixture
-def update_task_info_use_case(
-    unit_of_work_mock: UnitOfWork, task_repo_mock: TaskRepo
-) -> UpdateTaskInfo:
+def update_task_info_use_case(unit_of_work_mock, task_repo_mock) -> UpdateTaskInfo:
     return UpdateTaskInfo(
         unit_of_work=unit_of_work_mock,
         task_repo=task_repo_mock,
@@ -47,9 +42,9 @@ def update_task_info_use_case(
 
 
 def test_update_task_info_success(
-    update_task_info_use_case: UpdateTaskInfo,
-    unit_of_work_mock: UnitOfWork,
-    task_repo_mock: TaskRepo,
+    update_task_info_use_case,
+    unit_of_work_mock,
+    task_repo_mock,
 ) -> None:
     # Prepare data
     task_id = uuid4()
@@ -80,11 +75,11 @@ def test_update_task_info_success(
     ],
 )
 def test_update_task_info_unsuccess(
-    update_task_info_use_case: UpdateTaskInfo,
-    unit_of_work_mock: UnitOfWork,
-    task_repo_mock: TaskRepo,
-    repo_exception: Exception,
-    use_case_exception: Exception,
+    update_task_info_use_case,
+    unit_of_work_mock,
+    task_repo_mock,
+    repo_exception,
+    use_case_exception,
 ) -> None:
     # Prepare data
     task_id = uuid4()

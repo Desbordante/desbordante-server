@@ -53,7 +53,7 @@ class SetTask:
         dataset_find_schema = DatasetFindSchema(id=dataset_id)
         task_create_schema = TaskCreateSchema(
             status=TaskStatus.CREATED,
-            config=config.model_dump(exclude_unset=True),
+            config=config,
             dataset_id=dataset_id,
         )
 

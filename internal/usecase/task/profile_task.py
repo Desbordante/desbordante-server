@@ -40,34 +40,40 @@ class ProfileTask:
 
     def __init__(
         self,
-        unit_of_work: UnitOfWork,
+        # It is assumed that the two repositories will be associated with different repositories.
+        # In order to support different repositories, different UoW will be needed.
+        # If both of your repositories are linked to the same repository, use only one of the UoW.
+        file_unit_of_work: UnitOfWork,
+        dataset_unit_of_work: UnitOfWork,
         file_repo: FileRepo,
         dataset_repo: DatasetRepo,
     ):
-        self.unit_of_work = unit_of_work
+        self.file_unit_of_work = file_unit_of_work
+        self.dataset_unit_of_work = dataset_unit_of_work
         self.file_repo = file_repo
         self.dataset_repo = dataset_repo
 
     def __call__(self, *, dataset_id: UUID, config: OneOfTaskConfig) -> OneOfTaskResult:
 
-        with self.unit_of_work as context:
-            try:
-                dataset, file_metadata = self.dataset_repo.find_with_file_metadata(
-                    DatasetFindSchema(id=dataset_id), context
-                )
+        with self.file_unit_of_work as file_context:
+            with self.dataset_unit_of_work as dataset_context:
+                try:
+                    dataset, file_metadata = self.dataset_repo.find_with_file_metadata(
+                        DatasetFindSchema(id=dataset_id), dataset_context
+                    )
 
-                df = self.file_repo.find(
-                    CSVFileFindSchema(
-                        file_name=file_metadata.file_name,
-                        separator=dataset.separator,
-                        header=dataset.header,
-                    ),
-                    context,
-                )
-            except DatasetNotFoundException:
-                raise DatasetNotFoundUseCaseException()
-            except FileMetadataNotFoundException:
-                raise FileMetadataNotFoundUseCaseException()
+                    df = self.file_repo.find(
+                        CSVFileFindSchema(
+                            file_name=file_metadata.file_name,
+                            separator=dataset.separator,
+                            header=dataset.header,
+                        ),
+                        file_context,
+                    )
+                except DatasetNotFoundException:
+                    raise DatasetNotFoundUseCaseException()
+                except FileMetadataNotFoundException:
+                    raise FileMetadataNotFoundUseCaseException()
 
         task = match_task_by_primitive_name(primitive_name=config.primitive_name)
         result = task.execute(table=df, task_config=config)  # type: ignore

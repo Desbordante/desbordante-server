@@ -10,10 +10,9 @@ from internal.dto.repository.file import (
     File,
     FileMetadataCreateSchema,
     FileCreateSchema,
-    FileResponseSchema,
     FailedFileReadingException,
 )
-from internal.uow import UnitOfWork, DataStorageContext
+from internal.uow import DataStorageContext
 from internal.usecase.file.exception import FailedReadFileException
 from internal.usecase.file.save_file import (
     FileMetadataRepo,
@@ -24,7 +23,7 @@ from internal.usecase.file.save_file import (
 
 
 @pytest.fixture
-def unit_of_work_mock(mocker: MockerFixture) -> UnitOfWork:
+def unit_of_work_mock(mocker: MockerFixture):
     mock = mocker.MagicMock()
     mock.__enter__.return_value = mocker.Mock(
         return_value=mocker.Mock(), spec=DataStorageContext
@@ -41,7 +40,7 @@ def unit_of_work_mock(mocker: MockerFixture) -> UnitOfWork:
 
 
 @pytest.fixture
-def file_entity_mock(mocker: MockerFixture) -> FileEntity:
+def file_entity_mock(mocker: MockerFixture):
     mock = mocker.Mock(spec=FileEntity)
     mock.name_as_uuid = uuid4()
     mock.name = str(mock.name_as_uuid)
@@ -49,13 +48,13 @@ def file_entity_mock(mocker: MockerFixture) -> FileEntity:
 
 
 @pytest.fixture
-def file_repo_mock(mocker: MockerFixture) -> FileRepo:
+def file_repo_mock(mocker: MockerFixture):
     mock = mocker.Mock(spec=FileRepo)
     return mock
 
 
 @pytest.fixture
-def file_metadata_repo_mock(mocker: MockerFixture) -> FileMetadataRepo:
+def file_metadata_repo_mock(mocker: MockerFixture):
     mock = mocker.Mock(spec=FileMetadataRepo)
     return mock
 
@@ -63,10 +62,10 @@ def file_metadata_repo_mock(mocker: MockerFixture) -> FileMetadataRepo:
 @pytest.fixture
 def save_file(
     mocker: MockerFixture,
-    unit_of_work_mock: UnitOfWork,
-    file_repo_mock: FileRepo,
-    file_metadata_repo_mock: FileMetadataRepo,
-    file_entity_mock: FileEntity,
+    unit_of_work_mock,
+    file_repo_mock,
+    file_metadata_repo_mock,
+    file_entity_mock,
 ) -> SaveFile:
     mocker.patch(
         "internal.usecase.file.save_file.FileEntity", return_value=file_entity_mock
@@ -82,11 +81,11 @@ def save_file(
 @pytest.mark.asyncio
 async def test_save_file(
     mocker: MockerFixture,
-    save_file: SaveFile,
-    unit_of_work_mock: UnitOfWork,
-    file_repo_mock: FileRepo,
-    file_metadata_repo_mock: FileMetadataRepo,
-    file_entity_mock: FileEntity,
+    save_file,
+    unit_of_work_mock,
+    file_repo_mock,
+    file_metadata_repo_mock,
+    file_entity_mock,
 ) -> None:
     # Prepare data
     file_id = uuid4()
@@ -106,9 +105,7 @@ async def test_save_file(
         updated_at=updated_at,
     )
 
-    file_response = FileResponseSchema
-
-    file_repo_mock.create.return_value = file_response
+    file_repo_mock.create.return_value = None
     file_metadata_repo_mock.create.return_value = file_metadata_response
 
     upload_file_mock = mocker.Mock(spec=File)
@@ -152,11 +149,11 @@ async def test_save_file(
 @pytest.mark.asyncio
 async def test_save_file_failed_read_file_exception(
     mocker: MockerFixture,
-    save_file: SaveFile,
-    unit_of_work_mock: UnitOfWork,
-    file_repo_mock: FileRepo,
-    file_metadata_repo_mock: FileMetadataRepo,
-    file_entity_mock: FileEntity,
+    save_file,
+    unit_of_work_mock,
+    file_repo_mock,
+    file_metadata_repo_mock,
+    file_entity_mock,
 ) -> None:
     # Prepare the mock to raise the exception
     file_repo_mock.create.side_effect = FailedFileReadingException(

@@ -4,7 +4,7 @@ import pytest
 from pytest_mock import MockerFixture
 
 from internal.dto.repository.file import DatasetResponseSchema, DatasetFindSchema
-from internal.uow import UnitOfWork, DataStorageContext
+from internal.uow import DataStorageContext
 from internal.usecase.file.exception import DatasetNotFoundException
 from internal.usecase.file.retrieve_dataset import (
     DatasetRepo,
@@ -14,7 +14,7 @@ from internal.usecase.file.retrieve_dataset import (
 
 
 @pytest.fixture
-def unit_of_work_mock(mocker: MockerFixture) -> UnitOfWork:
+def unit_of_work_mock(mocker: MockerFixture):
     mock = mocker.MagicMock()
     mock.__enter__.return_value = mocker.Mock(
         return_value=mocker.Mock(), spec=DataStorageContext
@@ -31,24 +31,22 @@ def unit_of_work_mock(mocker: MockerFixture) -> UnitOfWork:
 
 
 @pytest.fixture
-def dataset_repo_mock(mocker: MockerFixture) -> DatasetRepo:
+def dataset_repo_mock(mocker: MockerFixture):
     mock = mocker.Mock(spec=DatasetRepo)
     return mock
 
 
 @pytest.fixture
-def retrieve_dataset_use_case(
-    unit_of_work_mock: UnitOfWork, dataset_repo_mock: DatasetRepo
-) -> RetrieveDataset:
+def retrieve_dataset_use_case(unit_of_work_mock, dataset_repo_mock):
     return RetrieveDataset(
         unit_of_work=unit_of_work_mock, dataset_repo=dataset_repo_mock
     )
 
 
 def test_retrieve_dataset_use_case_success(
-    unit_of_work_mock: UnitOfWork,
-    dataset_repo_mock: DatasetRepo,
-    retrieve_dataset_use_case: RetrieveDataset,
+    unit_of_work_mock,
+    dataset_repo_mock,
+    retrieve_dataset_use_case,
 ):
     # Prepare data
     dataset_id = uuid4()
@@ -77,9 +75,9 @@ def test_retrieve_dataset_use_case_success(
 
 
 def test_retrieve_dataset_use_case_not_found(
-    unit_of_work_mock: UnitOfWork,
-    retrieve_dataset_use_case: RetrieveDataset,
-    dataset_repo_mock: DatasetRepo,
+    unit_of_work_mock,
+    retrieve_dataset_use_case,
+    dataset_repo_mock,
 ):
     # Prepare data
     dataset_id = uuid4()

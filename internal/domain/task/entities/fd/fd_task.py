@@ -1,4 +1,3 @@
-from typing import assert_never
 from desbordante.fd import FdAlgorithm
 from desbordante.fd.algorithms import (
     Aid,
@@ -16,10 +15,15 @@ from desbordante.fd.algorithms import (
 from internal.domain.task.entities.task import Task
 from internal.domain.task.value_objects import PrimitiveName
 from internal.domain.task.value_objects.fd import FdTaskConfig, FdTaskResult
-from internal.domain.task.value_objects.fd import FdAlgoName, FdModel, FdAlgoResult
+from internal.domain.task.value_objects.fd import (
+    FdAlgoName,
+    FdModel,
+    FdAlgoResult,
+    IncorrectFDAlgorithmName,
+)
 
 
-class FdTask(Task[FdTaskConfig, FdTaskResult]):
+class FdTask(Task[FdAlgorithm, FdTaskConfig, FdTaskResult]):
     """
     Task class for Functional Dependency (FD) profiling.
 
@@ -47,7 +51,7 @@ class FdTask(Task[FdTaskConfig, FdTaskResult]):
         algo_result = FdAlgoResult(fds=list(map(FdModel.from_fd, fds)))
         return FdTaskResult(primitive_name=PrimitiveName.fd, result=algo_result)
 
-    def _match_algo_by_name(self, algo_name: FdAlgoName) -> FdAlgorithm:
+    def _match_algo_by_name(self, algo_name: str) -> FdAlgorithm:
         """
         Match the functional dependency algorithm by name.
 
@@ -77,4 +81,5 @@ class FdTask(Task[FdTaskConfig, FdTaskResult]):
                 return Pyro()
             case FdAlgoName.Tane:
                 return Tane()
-        assert_never(algo_name)
+            case _:
+                raise IncorrectFDAlgorithmName(algo_name)
