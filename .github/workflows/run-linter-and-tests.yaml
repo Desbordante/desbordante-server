@@ -20,6 +20,9 @@ jobs:
       - name: Run all linters and formatters
         run: make lint
 
+      - name: Run type check
+        run: make check-types
+
       - name: Up all containers
         run: docker compose -f dev-docker-compose.yaml up --build --force-recreate --remove-orphans -d
 
