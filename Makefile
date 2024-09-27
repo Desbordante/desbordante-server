@@ -1,4 +1,4 @@
-.PHONY: env install-deps up open-db revision migrate downgrade worker app init lint test
+.PHONY: env install-deps up open-db pg-revision pg-migrate pg-downgrade celery-worker app init lint test check-types
 
 ifeq ($(shell test -e '.env' && echo -n yes), yes)
 	include .env
@@ -60,10 +60,13 @@ lint:
 format:
 	poetry run ruff format tests app & poetry run ruff check --fix & poetry run black tests internal
 
-
 ## Run all tests in project
 test:
 	poetry run pytest -o log_cli=true --verbosity=2 --showlocals --log-cli-level=INFO --cov=internal --cov-report term
+
+## Check all types
+check-types:
+	poetry run pyright .
 
 .DEFAULT_GOAL := help
 # See <https://gist.github.com/klmr/575726c7e05d8780505a> for explanation.
