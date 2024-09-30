@@ -1,3 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
-RelationalContextType = Session
+type RelationalContextType = Session
+type RelationalContextMakerType = sessionmaker

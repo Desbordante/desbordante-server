@@ -10,6 +10,7 @@ engine_without_pool = create_engine(
 )
 
 type PostgresContextType = Session
+type PostgresContextMakerType = sessionmaker[Session]
 PostgresContextMaker = sessionmaker(bind=default_engine)
 PostgresContextMakerWithoutPool = sessionmaker(bind=engine_without_pool)
 
