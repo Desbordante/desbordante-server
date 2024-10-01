@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import aiofiles
 import pandas as pd
 
 from internal.dto.repository.file.file import (
@@ -9,13 +8,10 @@ from internal.dto.repository.file.file import (
     CSVFileResponseSchema,
 )
 from internal.dto.repository.file import File, FileCreateSchema
-from internal.infrastructure.data_storage.flat import FlatContext
-
-CHUNK_SIZE = 1024
+from internal.infrastructure.data_storage.flat import FlatAddModel, FlatContext
 
 
 class FileRepository:
-    # The current repository implementation does not support transactions.
 
     async def create(
         self,
@@ -23,14 +19,11 @@ class FileRepository:
         file_info: FileCreateSchema,
         context: FlatContext,
     ) -> None:
+        model = FlatAddModel(file=file, file_name=str(file_info.file_name))
 
-        path_to_file = Path.joinpath(
-            context.upload_directory_path, str(file_info.file_name)
-        )
         try:
-            async with aiofiles.open(path_to_file, "wb") as out_file:  # !!!
-                while content := await file.read(CHUNK_SIZE):
-                    await out_file.write(content)
+            context.add(model)
+            await context.async_flush()
         except Exception:
             raise FailedFileReadingException("The sent file could not be read.")
 

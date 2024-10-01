@@ -1,31 +1,90 @@
+import os
 from pathlib import Path
 
+import aiofiles
+import asyncio
+
+from pydantic import BaseModel
+
+from internal.dto.repository.file import File
 from internal.infrastructure.data_storage import settings
+
+
+CHUNK_SIZE = 1024
+
+
+class FlatAddModel:
+
+    def __init__(self, file: File, file_name: str):
+        self.file_name = file_name
+        self.file = file
+
+
+class FlatDeleteModel(BaseModel):
+    file_name: str
 
 
 class FlatContext:
 
     def __init__(self, upload_directory_path: Path):
         self._upload_directory_path = upload_directory_path
+        self._is_closed = True
+        self._to_add: list[FlatAddModel] = []
+        self._added: list[Path] = []
 
     @property
     def upload_directory_path(self) -> Path:
         return self._upload_directory_path
 
-    # This context implementation does not support transactions
-    def flush(self) -> None: ...
+    async def async_flush(self) -> None:
+        for file_model in self._to_add:
+            path_to_file = Path.joinpath(
+                self.upload_directory_path, str(file_model.file_name)
+            )
+            async with aiofiles.open(path_to_file, "wb") as out_file:
+                while content := await file_model.file.read(CHUNK_SIZE):
+                    await out_file.write(content)
+            self._added.append(path_to_file)
+            self._to_add.remove(file_model)
 
-    def rollback(self) -> None: ...
+    def flush(self) -> None:
+        """Запускает асинхронный flush внутри синхронного контекста."""
+        asyncio.run(self.async_flush())
 
-    def commit(self) -> None: ...
+    def rollback(self) -> None:
+        for file_path in self._added:
+            if file_path.exists():
+                os.remove(file_path)
+        self._added.clear()
+        self._to_add.clear()
 
-    def close(self) -> None: ...  # TODO: implement flat context closing.
+    def commit(self) -> None:
+        if self._to_add:
+            self.flush()
+        self._added.clear()
+
+    def close(self) -> None:
+        if self._added:
+            self.rollback()
+        self._is_closed = True
+
+    def add(self, file_model: FlatAddModel) -> None:
+        self._to_add.append(file_model)
+
+    def delete(
+        self, file_model: FlatDeleteModel
+    ) -> None: ...  # TODO: implement, when needed
 
 
 class FlatContextMaker:
 
     def __call__(self):
         return FlatContext(settings.uploaded_files_dir_path)
+
+
+def get_flat_context() -> FlatContext:
+    context_maker = FlatContextMaker()
+    return context_maker()
 
 
 def get_flat_context_maker() -> FlatContextMaker:
