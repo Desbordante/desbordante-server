@@ -47,8 +47,8 @@ async def test_add_and_flush_file(flat_context, mock_file, file_name):
         assert content == b"Hello World"
 
 
-def test_add_and_sync_flush_file(flat_context, mock_file, file_name):
-    file_model = FlatAddModel(file=mock_file, file_name=file_name)
+def test_add_and_sync_flush_file(flat_context, mock_sync_file, file_name):
+    file_model = FlatAddModel(file=mock_sync_file, file_name=file_name)
     flat_context.add(file_model)
     flat_context.flush()
     added_file_path = Path(flat_context.upload_directory_path) / file_name

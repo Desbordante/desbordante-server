@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 
 import aiofiles
-import asyncio
 
 from pydantic import BaseModel
 
@@ -48,8 +47,15 @@ class FlatContext:
             self._to_add.remove(file_model)
 
     def flush(self) -> None:
-        """Запускает асинхронный flush внутри синхронного контекста."""
-        asyncio.run(self.async_flush())
+        for file_model in self._to_add:
+            path_to_file = Path.joinpath(
+                self.upload_directory_path, str(file_model.file_name)
+            )
+            with open(path_to_file, "wb") as out_file:
+                while content := file_model.file.read(CHUNK_SIZE):
+                    out_file.write(content)  # type: ignore
+            self._added.append(path_to_file)
+            self._to_add.remove(file_model)
 
     def rollback(self) -> None:
         for file_path in self._added:
