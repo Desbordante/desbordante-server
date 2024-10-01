@@ -61,8 +61,7 @@ def profile_task_use_case(
     file_repo_mock,
 ) -> ProfileTask:
     return ProfileTask(
-        file_unit_of_work=unit_of_work_mock,
-        dataset_unit_of_work=unit_of_work_mock,
+        unit_of_work=unit_of_work_mock,
         dataset_repo=dataset_repo_mock,
         file_repo=file_repo_mock,
     )
@@ -144,9 +143,9 @@ def test_profile_task_use_case_success(
         table=cvs_file_read_response, task_config=task_config
     )
 
-    # Check that UnitOfWork was entered and exited correctly
-    assert unit_of_work_mock.__enter__.call_count == 2
-    assert unit_of_work_mock.__exit__.call_count == 2
+    # Verify that UnitOfWork was used correctly
+    unit_of_work_mock.__enter__.assert_called_once()
+    unit_of_work_mock.__exit__.assert_called_once()
 
 
 @pytest.mark.parametrize(
@@ -185,6 +184,6 @@ def test_profile_task_use_case_dataset_not_found(
 
     assert not file_repo_mock.find.called
 
-    # Check that UnitOfWork was entered and exited correctly
-    assert unit_of_work_mock.__enter__.call_count == 2
-    assert unit_of_work_mock.__exit__.call_count == 2
+    # Verify that UnitOfWork was used correctly
+    unit_of_work_mock.__enter__.assert_called_once()
+    unit_of_work_mock.__exit__.assert_called_once()
