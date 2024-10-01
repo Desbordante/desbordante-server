@@ -17,7 +17,7 @@ from internal.repository.flat import FileRepository
 
 @pytest.fixture
 def mock_flat_context(tmp_path, mocker: MockFixture):
-    context = mocker.MagicMock(spec=FlatContext)
+    context = mocker.AsyncMock(spec=FlatContext)
     context.upload_directory_path = tmp_path
     return context
 
@@ -29,20 +29,18 @@ def file_repository():
 
 @pytest.mark.asyncio
 async def test_create_file_success(
-    mocker: MockFixture, file_repository, mock_flat_context
+    mocker: MockFixture, file_repository, mock_flat_context, tmp_path
 ):
     file_name = uuid4()
     file_content = b"Hello, World!"
     file_info = FileCreateSchema(file_name=file_name)
 
     mock_file = mocker.AsyncMock(spec=File)
-    mock_file.read = mocker.AsyncMock(
-        side_effect=[file_content, b""]
-    )  # Читаем содержимое файла
+    mock_file.read = mocker.AsyncMock(side_effect=[file_content, b""])
+    context = FlatContext(tmp_path)
+    await file_repository.create(mock_file, file_info, context)
 
-    await file_repository.create(mock_file, file_info, mock_flat_context)
-
-    created_file_path = mock_flat_context.upload_directory_path / str(file_name)
+    created_file_path = tmp_path / str(file_name)
     assert created_file_path.is_file()
 
     async with aiofiles.open(created_file_path, "rb") as f:
@@ -74,7 +72,9 @@ async def test_create_file_failure(
     file_info = FileCreateSchema(file_name=file_name)
 
     mock_file = mocker.AsyncMock(spec=File)
-    mock_file.read = mocker.AsyncMock(side_effect=Exception("Read error"))
+    mock_flat_context.async_flush = mocker.AsyncMock(
+        side_effect=Exception("Read error")
+    )
 
     with pytest.raises(
         FailedFileReadingException, match="The sent file could not be read."
