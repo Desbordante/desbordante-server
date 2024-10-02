@@ -8,7 +8,8 @@ from internal.dto.repository.file.file import (
     CSVFileResponseSchema,
 )
 from internal.dto.repository.file import File, FileCreateSchema
-from internal.infrastructure.data_storage.flat import FlatAddModel, FlatContext
+from internal.infrastructure.data_storage.flat import FlatAddModel
+from internal.infrastructure.data_storage import Context
 
 
 class FileRepository:
@@ -17,7 +18,7 @@ class FileRepository:
         self,
         file: File,
         file_info: FileCreateSchema,
-        context: FlatContext,
+        context: Context,
     ) -> None:
         model = FlatAddModel(file=file, file_name=str(file_info.file_name))
 
@@ -30,10 +31,12 @@ class FileRepository:
     def find(
         self,
         file_info: CSVFileFindSchema,
-        context: FlatContext,
+        context: Context,
     ) -> CSVFileResponseSchema:
 
-        path_to_file = Path(context.upload_directory_path, str(file_info.file_name))
+        path_to_file = Path(
+            context.flat_context.upload_directory_path, str(file_info.file_name)
+        )
 
         return pd.read_csv(
             path_to_file,

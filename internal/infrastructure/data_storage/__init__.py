@@ -5,6 +5,7 @@ settings = get_settings()
 
 from internal.infrastructure.data_storage.context import (
     Context,
+    ContextMaker,
     get_context,
     get_context_without_pool,
     get_context_maker,

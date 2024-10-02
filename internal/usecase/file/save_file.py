@@ -44,17 +44,12 @@ class SaveFile:
 
     def __init__(
         self,
-        # It is assumed that the two repositories will be associated with different repositories.
-        # In order to support different repositories, different UoW will be needed.
-        # If both of your repositories are linked to the same repository, use only one of the UoW.
-        file_info_unit_of_work: UnitOfWork,
-        file_unit_of_work: UnitOfWork,
+        unit_of_work: UnitOfWork,
         file_repo: FileRepo,
         file_metadata_repo: FileMetadataRepo,
     ):
 
-        self.file_info_unit_of_work = file_info_unit_of_work
-        self.file_unit_of_work = file_unit_of_work
+        self.unit_of_work = unit_of_work
         self.file_repo = file_repo
         self.file_metadata_repo = file_metadata_repo
 
@@ -68,17 +63,14 @@ class SaveFile:
             mime_type=upload_file.content_type,
         )
 
-        with self.file_unit_of_work as file_context:
-            with self.file_info_unit_of_work as file_info_context:
-                try:
-                    response = self.file_metadata_repo.create(
-                        file_metadata_create_schema, file_info_context
-                    )
-                    await self.file_repo.create(
-                        upload_file, create_file_schema, file_context
-                    )
-                except FailedFileReadingException as e:
-                    raise FailedReadFileException(str(e))
+        with self.unit_of_work as context:
+            try:
+                response = self.file_metadata_repo.create(
+                    file_metadata_create_schema, context
+                )
+                await self.file_repo.create(upload_file, create_file_schema, context)
+            except FailedFileReadingException as e:
+                raise FailedReadFileException(str(e))
 
         return SaveFileUseCaseResult(
             id=response.id,

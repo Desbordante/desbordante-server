@@ -9,9 +9,7 @@ from internal.dto.repository.base_schema import (
     BaseFindSchema,
     BaseResponseSchema,
 )
-from internal.infrastructure.data_storage.relational.context import (
-    RelationalContextType,
-)
+from internal.infrastructure.data_storage import Context
 
 
 class CRUD[
@@ -29,26 +27,20 @@ class CRUD[
         self._orm_model: Type[ORMModel] = orm_model
         self._response_schema: Type[ResponseSchema] = response_schema
 
-    def create(
-        self, create_schema: CreateSchema, context: RelationalContextType
-    ) -> ResponseSchema:
+    def create(self, create_schema: CreateSchema, context: Context) -> ResponseSchema:
         create_schema_dict = create_schema.model_dump()
         db_model_instance = self._orm_model(**create_schema_dict)
         context.add(db_model_instance)
         context.flush()
         return self._response_schema.model_validate(db_model_instance)
 
-    def _find(
-        self, find_schema: FindSchema, context: RelationalContextType
-    ) -> ORMModel | None:
+    def _find(self, find_schema: FindSchema, context: Context) -> ORMModel | None:
         find_schema_dict = find_schema.model_dump()
         stmt = select(self._orm_model).filter_by(**find_schema_dict)
         db_model_instance = context.execute(stmt).scalars().one_or_none()
         return db_model_instance
 
-    def find(
-        self, find_schema: FindSchema, context: RelationalContextType
-    ) -> ResponseSchema | None:
+    def find(self, find_schema: FindSchema, context: Context) -> ResponseSchema | None:
         db_model_instance = self._find(find_schema, context)
         response = (
             self._response_schema.model_validate(db_model_instance)
@@ -61,7 +53,7 @@ class CRUD[
         self,
         find_schema: FindSchema,
         create_schema: CreateSchema,
-        context: RelationalContextType,
+        context: Context,
     ) -> ResponseSchema:
 
         db_model_instance = self._find(find_schema, context)
@@ -74,7 +66,7 @@ class CRUD[
         find_schema: FindSchema,
         update_schema: UpdateSchema,
         fields_to_update_if_none: set[str] | None,
-        context: RelationalContextType,
+        context: Context,
     ) -> ResponseSchema:
 
         db_model_instance = self._find(find_schema, context)
@@ -93,7 +85,7 @@ class CRUD[
         return self._response_schema.model_validate(db_model_instance)
 
     def delete(
-        self, find_schema: FindSchema, context: RelationalContextType
+        self, find_schema: FindSchema, context: Context
     ) -> ResponseSchema | None:
         db_model_instance = self._find(find_schema, context)
         if not db_model_instance:

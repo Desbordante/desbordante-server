@@ -1,8 +1,11 @@
 from typing import Any
 
+from sqlalchemy.orm import sessionmaker, Session
+
 from internal.infrastructure.data_storage.flat import (
     FlatContext,
     get_flat_context_maker,
+    FlatContextMaker,
 )
 from internal.infrastructure.data_storage.relational.postgres import (
     get_postgres_context_maker,
@@ -74,12 +77,28 @@ class Context:
 
 class ContextMaker:
 
-    def __init__(self, *, use_pool: bool = True):
+    def __init__(
+        self,
+        *,
+        use_pool: bool = True,
+        postgres_context_maker: sessionmaker[Session] | None = None,
+        flat_context_maker: FlatContextMaker | None = None,
+    ):
         if use_pool:
-            self._postgres_context_maker = get_postgres_context_maker()
+            self._postgres_context_maker = (
+                postgres_context_maker
+                if postgres_context_maker
+                else get_postgres_context_maker()
+            )
         else:
-            self._postgres_context_maker = get_postgres_context_maker_without_pool()
-        self._flat_context_maker = get_flat_context_maker()
+            self._postgres_context_maker = (
+                postgres_context_maker
+                if postgres_context_maker
+                else get_postgres_context_maker_without_pool()
+            )
+        self._flat_context_maker = (
+            flat_context_maker if flat_context_maker else get_flat_context_maker()
+        )
 
     def __call__(self) -> Context:
         postgres_context = self._postgres_context_maker()

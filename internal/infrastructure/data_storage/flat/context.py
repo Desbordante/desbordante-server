@@ -84,14 +84,25 @@ class FlatContext:
 
 class FlatContextMaker:
 
+    def __init__(
+        self, *, uploaded_files_dir_path: Path = settings.uploaded_files_dir_path
+    ):
+        self.uploaded_files_dir_path = uploaded_files_dir_path
+
     def __call__(self):
-        return FlatContext(settings.uploaded_files_dir_path)
+        return FlatContext(self.uploaded_files_dir_path)
+
+
+def get_flat_context_maker(
+    *, uploaded_files_dir_path: Path | None = None
+) -> FlatContextMaker:
+    flat_context_maker = (
+        FlatContextMaker(uploaded_files_dir_path=uploaded_files_dir_path)
+        if uploaded_files_dir_path
+        else FlatContextMaker()
+    )
+    return flat_context_maker
 
 
 def get_flat_context() -> FlatContext:
-    context_maker = FlatContextMaker()
-    return context_maker()
-
-
-def get_flat_context_maker() -> FlatContextMaker:
-    return FlatContextMaker()
+    return get_flat_context_maker()()

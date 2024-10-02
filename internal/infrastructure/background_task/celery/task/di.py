@@ -1,7 +1,4 @@
-from internal.infrastructure.data_storage.relational.postgres import (
-    get_postgres_context_maker_without_pool,
-)
-from internal.infrastructure.data_storage.flat import get_flat_context_maker
+from internal.infrastructure.data_storage.context import get_context_maker_without_pool
 from internal.repository.flat import FileRepository
 from internal.repository.relational.file import DatasetRepository
 from internal.repository.relational.task import TaskRepository
@@ -22,10 +19,13 @@ def get_task_repo() -> TaskRepository:
     return TaskRepository()
 
 
-def get_update_task_info_use_case():
-    context_maker = get_postgres_context_maker_without_pool()
+def get_unit_of_work_without_pool() -> UnitOfWork:
+    context_maker_without_pool = get_context_maker_without_pool()
+    return UnitOfWork(context_maker_without_pool)
 
-    unit_of_work = UnitOfWork(context_maker)
+
+def get_update_task_info_use_case():
+    unit_of_work = get_unit_of_work_without_pool()
     task_repo = get_task_repo()
 
     return UpdateTaskInfo(
@@ -35,17 +35,12 @@ def get_update_task_info_use_case():
 
 
 def get_profile_task_use_case():
-    postgres_context_maker = get_postgres_context_maker_without_pool()
-    flat_context_maker = get_flat_context_maker()
-
-    file_unit_of_work = UnitOfWork(flat_context_maker)
-    dataset_unit_of_work = UnitOfWork(postgres_context_maker)
+    unit_of_work = get_unit_of_work_without_pool()
     file_repo = get_file_repo()
     dataset_repo = get_dataset_repo()
 
     return ProfileTask(
-        file_unit_of_work=file_unit_of_work,
-        dataset_unit_of_work=dataset_unit_of_work,
+        unit_of_work=unit_of_work,
         file_repo=file_repo,  # type: ignore
         dataset_repo=dataset_repo,  # type: ignore
     )

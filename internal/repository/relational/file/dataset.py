@@ -1,9 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
-from internal.infrastructure.data_storage.relational.context import (
-    RelationalContextType,
-)
+from internal.infrastructure.data_storage import Context
 from internal.infrastructure.data_storage.relational.model.file import DatasetORM
 from internal.repository.relational import CRUD
 from internal.dto.repository.file import (
@@ -32,7 +30,7 @@ class DatasetRepository(
     def find_with_file_metadata(
         self,
         dataset_info: DatasetFindSchema,
-        context: RelationalContextType,
+        context: Context,
     ) -> tuple[DatasetResponseSchema, FileMetadataResponseSchema]:
 
         dataset_find_dict = dataset_info.model_dump()

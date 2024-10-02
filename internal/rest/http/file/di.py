@@ -5,7 +5,6 @@ from internal.rest.http.di import (
     get_file_repo,
     get_file_metadata_repo,
     get_dataset_repo,
-    get_flat_unit_of_work,
 )
 from internal.uow import UnitOfWork
 from internal.usecase.file import SaveFile, SaveDataset, CheckContentType
@@ -17,13 +16,11 @@ from internal.usecase.file.save_file import FileRepo, FileMetadataRepo
 
 def get_save_file_use_case(
     unit_of_work: UnitOfWork = Depends(get_unit_of_work),
-    flat_unit_of_work: UnitOfWork = Depends(get_flat_unit_of_work),
     file_repo: FileRepo = Depends(get_file_repo),
     file_metadata_repo: FileMetadataRepo = Depends(get_file_metadata_repo),
 ) -> SaveFile:
     return SaveFile(
-        file_info_unit_of_work=unit_of_work,
-        file_unit_of_work=flat_unit_of_work,
+        unit_of_work=unit_of_work,
         file_repo=file_repo,
         file_metadata_repo=file_metadata_repo,
     )
