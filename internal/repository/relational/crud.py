@@ -10,6 +10,7 @@ from internal.dto.repository.base_schema import (
     BaseResponseSchema,
 )
 from internal.infrastructure.data_storage import Context
+from internal.dto.repository.exception import ModelNotFoundException
 
 
 class CRUD[
@@ -70,6 +71,11 @@ class CRUD[
     ) -> ResponseSchema:
 
         db_model_instance = self._find(find_schema, context)
+        if not db_model_instance:
+            raise ModelNotFoundException(
+                "When updating data, the required row was not found in the database."
+            )
+
         update_schema_dict = update_schema.model_dump()
         fields_to_update_if_none = (
             fields_to_update_if_none if fields_to_update_if_none else set()
