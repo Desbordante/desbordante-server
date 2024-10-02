@@ -229,7 +229,7 @@ def set_task_use_case(unit_of_work, task_repo, dataset_repo, profiling_task_work
 def profile_task_use_case(unit_of_work_without_pool, dataset_repo, file_repo):
     return ProfileTask(
         unit_of_work=unit_of_work_without_pool,
-        dataset_repo=task_repo,
+        dataset_repo=dataset_repo,
         file_repo=file_repo,
     )
 
