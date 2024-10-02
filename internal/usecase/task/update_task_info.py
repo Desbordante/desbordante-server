@@ -16,7 +16,6 @@ from internal.usecase.task.exception import (
 
 
 class TaskRepo(Protocol):
-
     def update(
         self,
         find_schema: TaskFindSchema,
@@ -27,13 +26,11 @@ class TaskRepo(Protocol):
 
 
 class UpdateTaskInfo:
-
     def __init__(
         self,
         unit_of_work: UnitOfWork,
         task_repo: TaskRepo,
     ):
-
         self.unit_of_work = unit_of_work
         self.task_repo = task_repo
 
@@ -48,7 +45,6 @@ class UpdateTaskInfo:
         failure_reason: str | None = None,
         traceback: str | None = None,
     ) -> None:
-
         task_find_schema = TaskFindSchema(id=task_id)
         data_to_update = TaskUpdateSchema(
             status=task_status,

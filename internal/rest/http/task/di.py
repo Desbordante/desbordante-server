@@ -19,7 +19,6 @@ def get_retrieve_task_use_case(
     unit_of_work: UnitOfWork = Depends(get_unit_of_work),
     task_repo: RetrieveTaskRepo = Depends(get_task_repo),
 ) -> RetrieveTask:
-
     return RetrieveTask(
         unit_of_work=unit_of_work,
         task_repo=task_repo,
@@ -32,7 +31,6 @@ def get_set_task_use_case(
     dataset_repo: SetDatasetRepo = Depends(get_dataset_repo),
     profiling_task_worker: ProfilingTaskWorker = Depends(get_profiling_task_worker),
 ) -> SetTask:
-
     return SetTask(
         unit_of_work=unit_of_work,
         task_repo=task_repo,

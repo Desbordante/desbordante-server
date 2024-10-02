@@ -10,7 +10,6 @@ from internal.usecase.task.exception import TaskNotFoundException
 
 
 def add_exception_handlers(app: FastAPI):
-
     @app.exception_handler(IncorrectFileFormatException)
     def incorrect_file_format_exception(
         request: Request, exc: IncorrectFileFormatException

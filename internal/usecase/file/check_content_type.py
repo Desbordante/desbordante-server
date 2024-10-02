@@ -8,7 +8,6 @@ class File(Protocol):
 
 
 class CheckContentType:
-
     def __call__(self, *, upload_file: File) -> None:
         if (
             upload_file.content_type != "text/csv"

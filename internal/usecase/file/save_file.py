@@ -18,14 +18,12 @@ from internal.usecase.file.exception import FailedReadFileException
 
 
 class FileRepo(Protocol):
-
     async def create(
         self, file: File, file_info: FileCreateSchema, context: DataStorageContext
     ) -> None: ...
 
 
 class FileMetadataRepo(Protocol):
-
     def create(
         self, file_metadata: FileMetadataCreateSchema, context: DataStorageContext
     ) -> FileMetadataResponseSchema: ...
@@ -41,14 +39,12 @@ class SaveFileUseCaseResult(BaseModel):
 
 
 class SaveFile:
-
     def __init__(
         self,
         unit_of_work: UnitOfWork,
         file_repo: FileRepo,
         file_metadata_repo: FileMetadataRepo,
     ):
-
         self.unit_of_work = unit_of_work
         self.file_repo = file_repo
         self.file_metadata_repo = file_metadata_repo

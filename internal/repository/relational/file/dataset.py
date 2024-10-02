@@ -23,7 +23,6 @@ class DatasetRepository(
         DatasetResponseSchema,
     ]
 ):
-
     def __init__(self):
         super().__init__(orm_model=DatasetORM, response_schema=DatasetResponseSchema)
 
@@ -32,7 +31,6 @@ class DatasetRepository(
         dataset_info: DatasetFindSchema,
         context: Context,
     ) -> tuple[DatasetResponseSchema, FileMetadataResponseSchema]:
-
         dataset_find_dict = dataset_info.model_dump()
         stmt = (
             select(DatasetORM)

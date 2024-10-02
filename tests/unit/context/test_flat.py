@@ -95,7 +95,7 @@ async def test_rollback_clears_files(flat_context, mock_file, file_name):
 @pytest.mark.asyncio
 async def test_close_without_files(flat_context):
     flat_context.close()
-    assert flat_context._is_closed == True
+    assert flat_context._is_closed
     assert flat_context._to_add == []
     assert flat_context._added == []
 
@@ -109,6 +109,6 @@ async def test_close_with_rollback(flat_context, mock_file, file_name):
     assert added_file_path.exists()
     flat_context.close()
     assert not added_file_path.exists()
-    assert flat_context._is_closed == True
+    assert flat_context._is_closed
     assert flat_context._to_add == []
     assert flat_context._added == []

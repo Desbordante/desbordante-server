@@ -30,7 +30,6 @@ def retrieve_task(
     task_id: UUID,
     retrieve_task_use_case: RetrieveTask = Depends(get_retrieve_task_use_case),
 ) -> ResponseSchema:
-
     task = retrieve_task_use_case(task_id=task_id)
 
     return ResponseSchema(

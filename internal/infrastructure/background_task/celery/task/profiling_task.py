@@ -28,7 +28,6 @@ def profiling_task(
     dataset_id: UUID,
     config: OneOfTaskConfig,
 ) -> Any:
-
     profile_task = get_profile_task_use_case()
 
     result = profile_task(dataset_id=dataset_id, config=config)
@@ -40,7 +39,6 @@ def task_prerun_notifier(
     kwargs,
     **_,
 ) -> None:
-
     update_task_info = get_update_task_info_use_case()
     db_task_id: UUID = kwargs["task_id"]
 
@@ -53,7 +51,6 @@ def task_postrun_notifier(
     retval: OneOfTaskResult,
     **_,
 ):
-
     update_task_info = get_update_task_info_use_case()
     db_task_id: UUID = kwargs["task_id"]
 
@@ -71,7 +68,6 @@ def task_failure_notifier(
     traceback,
     **_,
 ):
-
     # TODO: test all possible exceptions
     task_failure_reason = TaskFailureReason.OTHER
     if isinstance(exception, (TimeLimitExceeded, SoftTimeLimitExceeded)):

@@ -13,6 +13,5 @@ class TaskRepository(
         TaskORM, TaskCreateSchema, TaskUpdateSchema, TaskFindSchema, TaskResponseSchema
     ]
 ):
-
     def __init__(self):
         super().__init__(orm_model=TaskORM, response_schema=TaskResponseSchema)

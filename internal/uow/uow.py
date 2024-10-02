@@ -3,7 +3,6 @@ from typing import Protocol, runtime_checkable
 
 @runtime_checkable
 class DataStorageContext(Protocol):
-
     def commit(self) -> None: ...
 
     def flush(self) -> None: ...
@@ -14,12 +13,10 @@ class DataStorageContext(Protocol):
 
 
 class DataStorageContextMaker(Protocol):
-
     def __call__(self) -> DataStorageContext: ...
 
 
 class UnitOfWork:
-
     def __init__(self, context_maker: DataStorageContextMaker):
         self._context_maker: DataStorageContextMaker = context_maker
         self._context: DataStorageContext | None = None

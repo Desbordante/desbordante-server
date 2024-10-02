@@ -20,11 +20,9 @@ class CRUD[
     FindSchema: BaseFindSchema,
     ResponseSchema: BaseResponseSchema,
 ]:
-
     def __init__(
         self, orm_model: Type[ORMModel], response_schema: Type[ResponseSchema]
     ) -> None:
-
         self._orm_model: Type[ORMModel] = orm_model
         self._response_schema: Type[ResponseSchema] = response_schema
 
@@ -56,7 +54,6 @@ class CRUD[
         create_schema: CreateSchema,
         context: Context,
     ) -> ResponseSchema:
-
         db_model_instance = self._find(find_schema, context)
         if not db_model_instance:
             db_model_instance = self.create(create_schema, context)
@@ -69,7 +66,6 @@ class CRUD[
         fields_to_update_if_none: set[str] | None,
         context: Context,
     ) -> ResponseSchema:
-
         db_model_instance = self._find(find_schema, context)
         if not db_model_instance:
             raise ModelNotFoundException(

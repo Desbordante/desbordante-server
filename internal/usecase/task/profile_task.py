@@ -23,21 +23,18 @@ from internal.uow import UnitOfWork, DataStorageContext
 
 
 class DatasetRepo(Protocol):
-
     def find_with_file_metadata(
         self, dataset_info: DatasetFindSchema, context: DataStorageContext
     ) -> tuple[DatasetResponseSchema, FileMetadataResponseSchema]: ...
 
 
 class FileRepo(Protocol):
-
     def find(
         self, file_info: CSVFileFindSchema, context: DataStorageContext
     ) -> CSVFileResponseSchema: ...
 
 
 class ProfileTask:
-
     def __init__(
         self,
         unit_of_work: UnitOfWork,
@@ -49,7 +46,6 @@ class ProfileTask:
         self.dataset_repo = dataset_repo
 
     def __call__(self, *, dataset_id: UUID, config: OneOfTaskConfig) -> OneOfTaskResult:
-
         with self.unit_of_work as context:
             try:
                 dataset, file_metadata = self.dataset_repo.find_with_file_metadata(

@@ -23,7 +23,6 @@ from internal.infrastructure.data_storage.relational import (
 
 
 class Context:
-
     def __init__(
         self, postgres_context: RelationalContextType, flat_context: FlatContext
     ):
@@ -76,7 +75,6 @@ class Context:
 
 
 class ContextMaker:
-
     def __init__(
         self,
         *,

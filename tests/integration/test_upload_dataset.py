@@ -47,7 +47,6 @@ async def test_upload_csv_dataset(client: TestClient, context, tmp_upload_dir):
 @pytest.mark.asyncio
 async def test_upload_csv_dataset_with_incorrect_mime_type(client: TestClient):
     file_name = "university.txt"
-    file_path = f"tests/datasets/{file_name}"
     mime_type = "text/plain"
     separator = ","
     header = [0]

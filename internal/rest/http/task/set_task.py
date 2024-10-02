@@ -15,7 +15,6 @@ def set_task(
     config: OneOfTaskConfig,
     set_task_use_case: SetTask = Depends(get_set_task_use_case),
 ) -> UUID:
-
     task_id = set_task_use_case(
         dataset_id=dataset_id,
         config=config,

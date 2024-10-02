@@ -7,7 +7,6 @@ from tests.integration.common_requests import upload_csv_dataset
 
 def test_retrieve_dataset(client: TestClient, context):
     file_name = "university_fd.csv"
-    file_path = f"tests/datasets/{file_name}"
     mime_type = "text/csv"
     separator = ","
     header = [0]

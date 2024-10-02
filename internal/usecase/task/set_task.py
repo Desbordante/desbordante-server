@@ -10,26 +10,22 @@ from internal.usecase.file.exception import DatasetNotFoundException
 
 
 class DatasetRepo(Protocol):
-
     def find(
         self, dataset_info: DatasetFindSchema, context: DataStorageContext
     ) -> DatasetResponseSchema | None: ...
 
 
 class TaskRepo(Protocol):
-
     def create(
         self, task_info: TaskCreateSchema, context: DataStorageContext
     ) -> TaskResponseSchema: ...
 
 
 class ProfilingTaskWorker(Protocol):
-
     def set(self, task_info: ProfilingTaskCreateSchema) -> None: ...
 
 
 class SetTask:
-
     def __init__(
         self,
         unit_of_work: UnitOfWork,
@@ -37,7 +33,6 @@ class SetTask:
         task_repo: TaskRepo,
         profiling_task_worker: ProfilingTaskWorker,
     ):
-
         self.unit_of_work = unit_of_work
         self.dataset_repo = dataset_repo
         self.task_repo = task_repo
@@ -49,7 +44,6 @@ class SetTask:
         dataset_id: UUID,
         config: OneOfTaskConfig,
     ) -> UUID:
-
         dataset_find_schema = DatasetFindSchema(id=dataset_id)
         task_create_schema = TaskCreateSchema(
             status=TaskStatus.CREATED,

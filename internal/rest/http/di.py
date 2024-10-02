@@ -14,14 +14,12 @@ from internal.uow import UnitOfWork
 
 
 def get_unit_of_work(context_maker=Depends(get_context_maker)) -> UnitOfWork:
-
     return UnitOfWork(context_maker)
 
 
 def get_unit_of_work_without_pool(
     context_maker=Depends(get_context_maker_without_pool),
 ) -> UnitOfWork:
-
     return UnitOfWork(context_maker)
 
 

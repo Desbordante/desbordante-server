@@ -20,7 +20,7 @@ All repository interfaces must be created using Python’s `Protocol` to ensure 
 Implement the use case. The use case should manage domain entities directly but interact with repositories, services, and external components strictly through interfaces.
 
 ### 4. Implement data storage context
-Implement interface `DataStorageContext` for your data storage. Place it in the `internal.infrastructure.data_storage` module.
+Implement interface `DataStorageContext` for your data storage and then add it into the universal context from `internal.infrastructure.data_storage` module.
 
 ### 4. Implement the repository
 If the repository isn't implemented, you will need to provide a concrete implementation for the repository interface. Place this in the `internal.repository` module.

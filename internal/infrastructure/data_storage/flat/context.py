@@ -13,7 +13,6 @@ CHUNK_SIZE = 1024
 
 
 class FlatAddModel:
-
     def __init__(self, file: File, file_name: str):
         self.file_name = file_name
         self.file = file
@@ -24,7 +23,6 @@ class FlatDeleteModel(BaseModel):
 
 
 class FlatContext:
-
     def __init__(self, upload_directory_path: Path):
         self._upload_directory_path = upload_directory_path
         self._is_closed = True
@@ -83,7 +81,6 @@ class FlatContext:
 
 
 class FlatContextMaker:
-
     def __init__(
         self, *, uploaded_files_dir_path: Path = settings.uploaded_files_dir_path
     ):

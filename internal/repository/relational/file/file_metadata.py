@@ -17,7 +17,6 @@ class FileMetadataRepository(
         FileMetadataResponseSchema,
     ]
 ):
-
     def __init__(self):
         super().__init__(
             orm_model=FileMetadataORM, response_schema=FileMetadataResponseSchema

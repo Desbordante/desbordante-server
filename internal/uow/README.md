@@ -5,23 +5,24 @@ This module implements the Unit of Work (UoW) pattern, which is designed to mana
 The Unit of Work pattern manages transactional operations within a business process. It groups multiple changes to a data store into a single logical transaction, ensuring that either all operations succeed or none do. This is particularly useful for preventing partial updates, ensuring data integrity, and managing rollbacks in case of errors.
 
 ## Implementation
-The Unit Of Work class works with a DataStorageContext interface, which defines essential methods like commit, flush, rollback, and close. This allows different types of data storage (e.g., relational databases, file systems) to be plugged in while adhering to a unified transaction control mechanism.
+The Unit Of Work class works with a DataStorageContext interface (it is assumed that the generic context from `internal.infrastructure.data_storage` will be used), which defines essential methods like commit, flush, rollback, and close. This allows different types of data storage (e.g., relational databases, file systems) to be plugged in while adhering to a unified transaction control mechanism.
 
-To use UoW in your use case, you need to implement the DataStorageContext interface for your data store (if not already done), and you also need to have a repository implementation that supports working with your DataStorageContext.
+To use UoW in your use case, you need to implement the DataStorageContext interface for your data store (if not already done), and then inject your context into the universal context from the infrastructure module.
 
 ### Example
 ```python
 
 from typing import Protocol, Type
 from uuid import UUID, uuid4
+from internal.infrastructure.data_storage import get_context_maker
 from sqlalchemy.orm import Session
 from internal.uow import UnitOfWork, DataStorageContext
 
 class DatasetRepo(Protocol):
     def create(self, file_id: UUID, context: DataStorageContext) -> None: ...
 
-def create_uow(context_maker: Type[Session]) -> UnitOfWork:
-    return UnitOfWork(context_maker=context_maker)
+def create_uow() -> UnitOfWork:
+    return UnitOfWork(context_maker=get_context_maker())
 
 def create_two_datasets(
         uow: UnitOfWork,

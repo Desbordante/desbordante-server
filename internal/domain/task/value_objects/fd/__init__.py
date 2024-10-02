@@ -9,9 +9,9 @@ from internal.domain.task.value_objects.fd.algo_result import (  # noqa: F401
     FdModel,
 )
 from internal.domain.task.value_objects.fd.algo_name import FdAlgoName  # noqa: F401
-from internal.domain.task.value_objects.fd.exception import (
+from internal.domain.task.value_objects.fd.exception import (  # noqa: F401
     IncorrectFDAlgorithmName,
-)  # noqa: F401
+)
 
 
 class BaseFdTaskModel(BaseModel):

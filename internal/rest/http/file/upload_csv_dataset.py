@@ -32,7 +32,6 @@ async def upload_csv_dataset(
     save_file: SaveFile = Depends(get_save_file_use_case),
     save_dataset: SaveDataset = Depends(get_save_dataset_use_case),
 ) -> UUID:
-
     adapted_file = UploadFileAdapter(file)
 
     check_content_type(upload_file=adapted_file)

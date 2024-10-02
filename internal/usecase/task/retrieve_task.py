@@ -16,7 +16,6 @@ from internal.usecase.task.exception import TaskNotFoundException
 
 
 class TaskRepo(Protocol):
-
     def find(
         self, task_info: TaskFindSchema, context: DataStorageContext
     ) -> TaskResponseSchema | None: ...
@@ -38,7 +37,6 @@ class RetrieveTaskUseCaseResult(BaseModel):
 
 
 class RetrieveTask:
-
     def __init__(self, unit_of_work: UnitOfWork, task_repo: TaskRepo):
         self.unit_of_work = unit_of_work
         self.task_repo = task_repo

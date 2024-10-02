@@ -13,7 +13,6 @@ from internal.infrastructure.data_storage import Context
 
 
 class FileRepository:
-
     async def create(
         self,
         file: File,
@@ -33,7 +32,6 @@ class FileRepository:
         file_info: CSVFileFindSchema,
         context: Context,
     ) -> CSVFileResponseSchema:
-
         path_to_file = Path(
             context.flat_context.upload_directory_path, str(file_info.file_name)
         )

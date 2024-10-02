@@ -11,7 +11,6 @@ from internal.dto.repository.base_schema import (
 
 
 class File(Protocol):
-
     filename: str
     content_type: str
 

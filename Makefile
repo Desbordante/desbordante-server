@@ -58,7 +58,7 @@ lint:
 
 ## Reformat code
 format:
-	poetry run ruff format tests app & poetry run ruff check --fix & poetry run black tests internal
+	poetry run ruff format tests internal & poetry run ruff check --fix & poetry run black tests internal
 
 ## Run all tests in project
 test:
