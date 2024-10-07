@@ -1,4 +1,4 @@
-.PHONY: env install-deps up open-db revision migrate downgrade worker app init lint test
+.PHONY: env install-deps up open-db pg-revision pg-migrate pg-downgrade celery-worker app init lint test check-types
 
 ifeq ($(shell test -e '.env' && echo -n yes), yes)
 	include .env
@@ -27,24 +27,24 @@ open-db:
 	docker exec -it desbordante-postgres psql -d $(POSTGRES_DB) -U $(POSTGRES_USER)
 
 ## Create new revision file automatically
-revision:
-	poetry run alembic -c app/settings/alembic.ini revision --autogenerate $(args)
+pg-revision:
+	poetry run alembic -c internal/infrastructure/data_storage/relational/postgres/migrations/alembic.ini revision --autogenerate $(args)
 
 ## Make migrations in database
-migrate:
-	poetry run alembic -c app/settings/alembic.ini upgrade $(args)
+pg-migrate:
+	poetry run alembic -c internal/infrastructure/data_storage/relational/postgres/migrations/alembic.ini upgrade $(args)
 
 ## Downgrade database
-downgrade:
-	poetry run alembic -c app/settings/alembic.ini downgrade $(args)
+pg-downgrade:
+	poetry run alembic -c internal/infrastructure/data_storage/relational/postgres/migrations/alembic.ini downgrade $(args)
 
 ## Run celery worker in watch mode
-worker:
-	watchmedo auto-restart --directory=./ --pattern='*.py' --recursive -- celery -A app.worker worker --loglevel=info --concurrency=1
+celery-worker:
+	watchmedo auto-restart --directory=./ --pattern='*.py' --recursive -- celery -A internal.infrastructure.background_task.celery worker --loglevel=info --concurrency=1
 
 ## Run application server in watch mode
 app:
-	poetry run uvicorn --port 8000 app.main:app --reload
+	poetry run uvicorn --port 8000 internal:app --reload
 
 ## Initiate repository
 init:
@@ -52,18 +52,21 @@ init:
 
 ## Run all formatters and linters in project
 lint:
-	poetry run ruff check tests app \
-	& poetry run ruff format --check tests app \
-	& poetry run black --check tests app
+	poetry run ruff check tests internal \
+	& poetry run ruff format --check tests internal \
+	& poetry run black --check tests internal
 
 ## Reformat code
 format:
-	poetry run ruff format tests app & poetry run ruff check --fix & poetry run black tests app
-
+	poetry run ruff format tests internal & poetry run ruff check --fix & poetry run black tests internal
 
 ## Run all tests in project
 test:
-	poetry run pytest -o log_cli=true --verbosity=2 --showlocals --log-cli-level=INFO --test-alembic --cov=app --cov-report term
+	poetry run pytest -o log_cli=true --verbosity=2 --showlocals --log-cli-level=INFO --cov=internal --cov-report term
+
+## Check all types
+check-types:
+	poetry run pyright .
 
 .DEFAULT_GOAL := help
 # See <https://gist.github.com/klmr/575726c7e05d8780505a> for explanation.
