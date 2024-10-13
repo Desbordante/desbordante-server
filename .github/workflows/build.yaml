@@ -5,6 +5,8 @@ on:
       - main
       - feat/ci-cd
       - dev
+    tags:
+      - 'v*'
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
