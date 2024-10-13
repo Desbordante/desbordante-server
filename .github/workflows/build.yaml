@@ -36,6 +36,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           # generate Docker tags based on the following events/attributes
           tags: |
+            type=sha
             type=semver,pattern=v{{version}}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -52,6 +53,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
 #         labels: ${{ steps.meta.outputs.labels }}
+          outputs: 'image,digest'
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
