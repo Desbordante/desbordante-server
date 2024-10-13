@@ -36,8 +36,8 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           # generate Docker tags based on the following events/attributes
           tags: |
-            type=ref,event=branch
-            type=semver,pattern={{version}}
+            type=sha
+            type=semver,pattern=v{{version}}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
