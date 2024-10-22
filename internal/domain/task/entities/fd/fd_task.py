@@ -13,13 +13,12 @@ from desbordante.fd.algorithms import (
 )
 
 from internal.domain.task.entities.task import Task
-from internal.domain.task.value_objects import PrimitiveName
+from internal.domain.task.value_objects import PrimitiveName, IncorrectAlgorithmName
 from internal.domain.task.value_objects.fd import FdTaskConfig, FdTaskResult
 from internal.domain.task.value_objects.fd import (
     FdAlgoName,
     FdModel,
     FdAlgoResult,
-    IncorrectFDAlgorithmName,
 )
 
 
@@ -82,4 +81,4 @@ class FdTask(Task[FdAlgorithm, FdTaskConfig, FdTaskResult]):
             case FdAlgoName.Tane:
                 return Tane()
             case _:
-                raise IncorrectFDAlgorithmName(algo_name)
+                raise IncorrectAlgorithmName(algo_name, "FD")
