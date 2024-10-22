@@ -16,6 +16,10 @@ from internal.domain.task.value_objects.task_failure_reason import (  # noqa: F4
     TaskFailureReason,
 )
 
+from internal.domain.task.value_objects.incorrect_algo_exception import (  # noqa: F401
+    IncorrectAlgorithmName,
+)
+
 OneOfTaskConfig = Annotated[
     Union[
         FdTaskConfig,
