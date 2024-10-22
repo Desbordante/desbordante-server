@@ -10,6 +10,7 @@ from desbordante.fd.algorithms import (
     HyFD,
     Pyro,
     Tane,
+    PFDTane,
 )
 
 from internal.domain.task.entities.task import Task
@@ -76,6 +77,8 @@ class FdTask(Task[FdAlgorithm, FdTaskConfig, FdTaskResult]):
                 return FdMine()
             case FdAlgoName.HyFD:
                 return HyFD()
+            case FdAlgoName.PFDTane:
+                return PFDTane()
             case FdAlgoName.Pyro:
                 return Pyro()
             case FdAlgoName.Tane:
