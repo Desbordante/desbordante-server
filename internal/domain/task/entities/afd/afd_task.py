@@ -2,15 +2,10 @@ from desbordante.fd import FdAlgorithm  # This is not a typo
 from desbordante.afd.algorithms import Pyro, Tane
 
 from internal.domain.task.entities.task import Task
-from internal.domain.task.value_objects import PrimitiveName
+from internal.domain.task.value_objects import PrimitiveName, IncorrectAlgorithmName
 
 from internal.domain.task.value_objects.afd import AfdTaskResult, AfdTaskConfig
-from internal.domain.task.value_objects.afd import (
-    AfdAlgoName,
-    AfdAlgoResult,
-    FdModel,
-    IncorrectAFDAlgorithmName,
-)
+from internal.domain.task.value_objects.afd import AfdAlgoName, AfdAlgoResult, FdModel
 
 
 class AfdTask(Task[FdAlgorithm, AfdTaskConfig, AfdTaskResult]):
@@ -56,4 +51,4 @@ class AfdTask(Task[FdAlgorithm, AfdTaskConfig, AfdTaskResult]):
             case AfdAlgoName.Tane:
                 return Tane()
             case _:
-                raise IncorrectAFDAlgorithmName(algo_name)
+                raise IncorrectAlgorithmName(algo_name, "AFD")
