@@ -15,12 +15,13 @@ class BaseFdConfig(OptionalModel):
 class AidConfig(BaseFdConfig):
     algo_name: Literal[FdAlgoName.Aid]
 
-    is_null_equal_null: bool
+    max_lhs: Annotated[int, Field(ge=1, le=10)]
 
 
 class DFDConfig(BaseFdConfig):
     algo_name: Literal[FdAlgoName.DFD]
 
+    max_lhs: Annotated[int, Field(ge=1, le=10)]
     is_null_equal_null: bool
     threads: Annotated[int, Field(ge=1, le=8)]
 
@@ -28,18 +29,20 @@ class DFDConfig(BaseFdConfig):
 class DepminerConfig(BaseFdConfig):
     algo_name: Literal[FdAlgoName.Depminer]
 
+    max_lhs: Annotated[int, Field(ge=1, le=10)]
     is_null_equal_null: bool
 
 
 class FDepConfig(BaseFdConfig):
     algo_name: Literal[FdAlgoName.FDep]
 
-    is_null_equal_null: bool
+    max_lhs: Annotated[int, Field(ge=1, le=10)]
 
 
 class FUNConfig(BaseFdConfig):
     algo_name: Literal[FdAlgoName.FUN]
 
+    max_lhs: Annotated[int, Field(ge=1, le=10)]
     is_null_equal_null: bool
 
 
@@ -54,13 +57,24 @@ class FastFDsConfig(BaseFdConfig):
 class FdMineConfig(BaseFdConfig):
     algo_name: Literal[FdAlgoName.FdMine]
 
+    max_lhs: Annotated[int, Field(ge=1, le=10)]
     is_null_equal_null: bool
 
 
 class HyFDConfig(BaseFdConfig):
     algo_name: Literal[FdAlgoName.HyFD]
 
+    max_lhs: Annotated[int, Field(ge=1, le=10)]
     is_null_equal_null: bool
+
+
+class PFDTaneConfig(BaseFdConfig):
+    algo_name: Literal[FdAlgoName.PFDTane]
+
+    is_null_equal_null: bool
+    error: Annotated[float, Field(ge=0, le=1)]
+    error_measure: Annotated[str, Literal["per_tuple", "per_value"]]
+    max_lhs: Annotated[int, Field(ge=1, le=10)]
 
 
 class PyroConfig(BaseFdConfig):
@@ -91,6 +105,7 @@ OneOfFdAlgoConfig = Annotated[
         FastFDsConfig,
         FdMineConfig,
         HyFDConfig,
+        PFDTaneConfig,
         PyroConfig,
         TaneConfig,
     ],
