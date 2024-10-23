@@ -113,3 +113,7 @@ coverage-report-html/
 
 .mypy_cache/
 .ruff_cache/
+
+# Volumes
+volumes/*
+!volumes/.gitkeep

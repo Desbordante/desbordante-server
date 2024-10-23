@@ -59,6 +59,18 @@ ENV PATH="$VIRTUAL_ENVIRONMENT_PATH/bin:$PATH"
 RUN groupadd -g 1001 python_application && \
     useradd -r -u 1001 -g python_application python_application
 
+COPY ./scripts/start.sh /start
+RUN sed -i 's/\r$//g' /start
+RUN chmod +x /start
+
+COPY ./scripts/celery.sh /celery
+RUN sed -i 's/\r$//g' /celery
+RUN chmod +x /celery
+
+COPY ./scripts/flower.sh /flower
+RUN sed -i 's/\r$//g' /flower
+RUN chmod +x /flower
+
 # Set the WORKDIR to the application root.
 # https://www.uvicorn.org/settings/#development
 # https://docs.docker.com/engine/reference/builder/#workdir
@@ -78,7 +90,8 @@ EXPOSE ${APPLICATION_SERVER_PORT}
 USER 1001
 
 # Run the uvicorn application server.
-CMD exec uvicorn --workers 1 --host 0.0.0.0 --port $APPLICATION_SERVER_PORT internal:app
+CMD /start
+
 
 FROM server-setup-build-stage as install-dependencies-build-stage
 # install [tool.poetry.dependencies]
