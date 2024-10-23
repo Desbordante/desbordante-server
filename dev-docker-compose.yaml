@@ -9,6 +9,8 @@ services:
       - .env
     ports:
       - '${POSTGRES_PORT}:5432'
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
 
   rabbitmq:
     container_name: desbordante-rabbitmq
@@ -17,3 +19,48 @@ services:
       - .env
     ports:
       - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_HTTP_PORT}:15672"
+    volumes:
+      - ./volumes/rabbitmq:/var/lib/rabbitmq
+
+#  backend:
+#    build:
+#      context: .
+#    volumes:
+#      - ./volumes/uploads:${UPLOADED_FILES_DIR_PATH}
+#    env_file:
+#      - .env
+#    depends_on:
+#      - postgres
+#      - rabbitmq
+#    restart: always
+#    ports:
+#      - "${BACKEND_PORT}:8000"
+
+  celery:
+    build:
+      context: .
+    command: /celery
+    volumes:
+      - ./volumes/uploads:${UPLOADED_FILES_DIR_PATH}
+    env_file:
+      - .env
+    depends_on:
+      - rabbitmq
+    restart: always
+
+
+  flower:
+    build:
+      context: .
+    command: /flower
+    volumes:
+      - ./volumes/uploads:${UPLOADED_FILES_DIR_PATH}
+    env_file:
+      - .env
+    depends_on:
+      - rabbitmq
+      - celery
+    restart: always
+    ports:
+      - "${FLOWER_PORT}:5555"

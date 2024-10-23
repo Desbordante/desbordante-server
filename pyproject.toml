@@ -25,6 +25,7 @@ pandas-stubs = "^2.2.0.240218"
 python-multipart = "^0.0.9"
 aiofiles = "^23.2.1"
 cfgv = "^3.4.0"
+flower = "^2.0.1"
 
 
 [tool.poetry.group.dev.dependencies]
