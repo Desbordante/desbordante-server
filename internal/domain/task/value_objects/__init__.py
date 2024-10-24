@@ -3,6 +3,7 @@ from pydantic import Field
 
 from internal.domain.task.value_objects.afd import AfdTaskConfig, AfdTaskResult
 from internal.domain.task.value_objects.fd import FdTaskConfig, FdTaskResult
+from internal.domain.task.value_objects.ac import AcTaskConfig, AcTaskResult
 
 from internal.domain.task.value_objects.config import TaskConfig  # noqa: F401
 from internal.domain.task.value_objects.result import TaskResult  # noqa: F401
@@ -21,17 +22,11 @@ from internal.domain.task.value_objects.incorrect_algo_exception import (  # noq
 )
 
 OneOfTaskConfig = Annotated[
-    Union[
-        FdTaskConfig,
-        AfdTaskConfig,
-    ],
+    Union[FdTaskConfig, AfdTaskConfig, AcTaskConfig],
     Field(discriminator="primitive_name"),
 ]
 
 OneOfTaskResult = Annotated[
-    Union[
-        FdTaskResult,
-        AfdTaskResult,
-    ],
+    Union[FdTaskResult, AfdTaskResult, AcTaskResult],
     Field(discriminator="primitive_name"),
 ]

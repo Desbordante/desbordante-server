@@ -45,6 +45,9 @@ services:
       - ./volumes/uploads:${UPLOADED_FILES_DIR_PATH}
     env_file:
       - .env
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - POSTGRES_HOST=postgres
     depends_on:
       - rabbitmq
     restart: always
@@ -58,6 +61,9 @@ services:
       - ./volumes/uploads:${UPLOADED_FILES_DIR_PATH}
     env_file:
       - .env
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - POSTGRES_HOST=postgres
     depends_on:
       - rabbitmq
       - celery
