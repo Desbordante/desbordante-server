@@ -60,6 +60,10 @@ class Task[A: desbordante.Algorithm, C: TaskConfig, R: TaskResult](ABC):
         algo_config = task_config.config
         options = algo_config.model_dump(exclude_unset=True, exclude={"algo_name"})
         algo = self._match_algo_by_name(algo_config.algo_name)
-        algo.load_data(table=table)
+        # TODO: IND, AIND requires multiple tables
+        try:
+            algo.load_data(table=table)
+        except desbordante.ConfigurationError:
+            algo.load_data(tables=[table])
         algo.execute(**options)
         return self._collect_result(algo)

@@ -42,12 +42,13 @@ services:
       context: .
     command: /celery
     volumes:
-      - ./volumes/uploads:${UPLOADED_FILES_DIR_PATH}
+      - ./volumes/uploads:/volumes/uploads
     env_file:
       - .env
     environment:
       - RABBITMQ_HOST=rabbitmq
       - POSTGRES_HOST=postgres
+      - UPLOADED_FILES_DIR_PATH=/volumes/uploads
     depends_on:
       - rabbitmq
     restart: always
@@ -58,12 +59,13 @@ services:
       context: .
     command: /flower
     volumes:
-      - ./volumes/uploads:${UPLOADED_FILES_DIR_PATH}
+      - ./volumes/uploads:/volumes/uploads
     env_file:
       - .env
     environment:
       - RABBITMQ_HOST=rabbitmq
       - POSTGRES_HOST=postgres
+      - UPLOADED_FILES_DIR_PATH=/volumes/uploads
     depends_on:
       - rabbitmq
       - celery

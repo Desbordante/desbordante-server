@@ -6,6 +6,8 @@ class PrimitiveName(StrEnum):
     afd = auto()
     # ar = auto()
     ac = auto()
+    ind = auto()
+    aind = auto()
     # fd_verification = auto()
     # mfd_verification = auto()
     # statistics = auto()
