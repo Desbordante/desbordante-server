@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import desbordante
 import pandas
-from internal.domain.task.value_objects import TaskConfig, TaskResult
+from internal.domain.task.value_objects import PrimitiveName, TaskConfig, TaskResult
 
 
 class Task[A: desbordante.Algorithm, C: TaskConfig, R: TaskResult](ABC):
@@ -60,10 +60,15 @@ class Task[A: desbordante.Algorithm, C: TaskConfig, R: TaskResult](ABC):
         algo_config = task_config.config
         options = algo_config.model_dump(exclude_unset=True, exclude={"algo_name"})
         algo = self._match_algo_by_name(algo_config.algo_name)
-        # TODO: IND, AIND requires multiple tables
-        try:
-            algo.load_data(table=table)
-        except desbordante.ConfigurationError:
-            algo.load_data(tables=[table])
+
+        # TODO: FIX THIS PLS!!!
+        match task_config.primitive_name:
+            case PrimitiveName.ind | PrimitiveName.aind:
+                algo.load_data(tables=[table])
+            case PrimitiveName.ar:
+                algo.load_data(table=table, input_format=options["input_format"])
+            case _:
+                algo.load_data(table=table)
+
         algo.execute(**options)
         return self._collect_result(algo)
