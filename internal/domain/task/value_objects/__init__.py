@@ -7,6 +7,7 @@ from internal.domain.task.value_objects.ac import AcTaskConfig, AcTaskResult
 from internal.domain.task.value_objects.ind import IndTaskConfig, IndTaskResult
 from internal.domain.task.value_objects.aind import AindTaskConfig, AindTaskResult
 from internal.domain.task.value_objects.ar import ArTaskConfig, ArTaskResult
+from internal.domain.task.value_objects.cfd import CfdTaskConfig, CfdTaskResult
 
 from internal.domain.task.value_objects.config import TaskConfig  # noqa: F401
 from internal.domain.task.value_objects.result import TaskResult  # noqa: F401
@@ -32,6 +33,7 @@ OneOfTaskConfig = Annotated[
         IndTaskConfig,
         AindTaskConfig,
         ArTaskConfig,
+        CfdTaskConfig,
     ],
     Field(discriminator="primitive_name"),
 ]
@@ -44,6 +46,7 @@ OneOfTaskResult = Annotated[
         IndTaskResult,
         AindTaskResult,
         ArTaskResult,
+        CfdTaskResult,
     ],
     Field(discriminator="primitive_name"),
 ]
