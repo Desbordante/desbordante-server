@@ -7,6 +7,7 @@ from internal.domain.task.entities.ind import IndTask
 from internal.domain.task.entities.aind import AindTask
 from internal.domain.task.entities.ar import ArTask
 from internal.domain.task.entities.cfd import CfdTask
+from internal.domain.task.entities.dd import DdTask
 from internal.domain.task.value_objects import PrimitiveName
 
 
@@ -38,4 +39,6 @@ def match_task_by_primitive_name(primitive_name: PrimitiveName):
             return ArTask()
         case PrimitiveName.cfd:
             return CfdTask()
+        case PrimitiveName.dd:
+            return DdTask()
     assert_never(primitive_name)

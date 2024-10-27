@@ -9,6 +9,7 @@ class PrimitiveName(StrEnum):
     ind = auto()
     aind = auto()
     cfd = auto()
+    dd = auto()
     # fd_verification = auto()
     # mfd_verification = auto()
     # statistics = auto()
