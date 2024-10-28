@@ -1,6 +1,4 @@
 # Development only
-version: '3.8'
-
 services:
   postgres:
     container_name: desbordante-postgres
@@ -37,17 +35,21 @@ services:
 #    ports:
 #      - "${BACKEND_PORT}:8000"
 
-  celery:
-    build:
-      context: .
-    command: /celery
-    volumes:
-      - ./volumes/uploads:${UPLOADED_FILES_DIR_PATH}
-    env_file:
-      - .env
-    depends_on:
-      - rabbitmq
-    restart: always
+#  celery:
+#    build:
+#      context: .
+#    command: /celery
+#    volumes:
+#      - ./volumes/uploads:/volumes/uploads
+#    env_file:
+#      - .env
+#    environment:
+#      - RABBITMQ_HOST=rabbitmq
+#      - POSTGRES_HOST=postgres
+#      - UPLOADED_FILES_DIR_PATH=/volumes/uploads
+#    depends_on:
+#      - rabbitmq
+#    restart: always
 
 
   flower:
@@ -55,12 +57,16 @@ services:
       context: .
     command: /flower
     volumes:
-      - ./volumes/uploads:${UPLOADED_FILES_DIR_PATH}
+      - ./volumes/uploads:/volumes/uploads
     env_file:
       - .env
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - POSTGRES_HOST=postgres
+      - UPLOADED_FILES_DIR_PATH=/volumes/uploads
     depends_on:
       - rabbitmq
-      - celery
+#      - celery
     restart: always
     ports:
       - "${FLOWER_PORT}:5555"
