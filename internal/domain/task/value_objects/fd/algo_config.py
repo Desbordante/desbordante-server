@@ -88,7 +88,6 @@ class PFDTaneConfig(BaseFdConfig):
     ]
     error: Annotated[float, Field(ge=0, le=1, description=descriptions["error"])]
     error_measure: Annotated[
-        str,
         Literal["per_tuple", "per_value"],
         Field(description=descriptions["error_measure"]),
     ]
