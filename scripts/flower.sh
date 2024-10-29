@@ -16,5 +16,5 @@ done
 celery \
     --app=internal.infrastructure.background_task.celery \
     flower \
-    --port=5555
-    --basic-auth=${FLOWER_USER}:${FLOWER_PASSWORD}
+    --port=5555 \
+    --basic_auth=$FLOWER_USER:$FLOWER_PASSWORD
