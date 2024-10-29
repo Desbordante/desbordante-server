@@ -69,7 +69,7 @@ format:
 
 ## Run all tests in project
 test:
-	poetry run pytest -o log_cli=true --verbosity=2 --showlocals --log-cli-level=INFO --cov=internal --cov-report term
+	poetry run pytest -o log_cli=true --verbosity=2 --showlocals --log-cli-level=INFO --cov=internal --cov-report term --ignore=volumes
 
 ## Check all types
 check-types:
