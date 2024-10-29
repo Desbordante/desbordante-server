@@ -18,8 +18,11 @@ Execute `make` to see all available rules with documentation
 
 ## Docs
 
-1. Run server application
-2. Open https://localhost:8000/docs
+1. Run the server application
+2. Access the following documentation and monitoring interfaces on `localhost`:
+   - **FastAPI documentation (Swagger UI):** [http://localhost:8000/docs](http://localhost:8000/docs)
+   - **Flower Celery monitoring panel:** [http://localhost:5555](http://localhost:5555)
+
 
 ## License
 

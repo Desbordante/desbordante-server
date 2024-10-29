@@ -17,7 +17,6 @@ services:
       - .env
     ports:
       - "${RABBITMQ_PORT}:5672"
-      - "${RABBITMQ_HTTP_PORT}:15672"
     volumes:
       - ./volumes/rabbitmq:/var/lib/rabbitmq
 
@@ -61,6 +60,8 @@ services:
     env_file:
       - .env
     environment:
+      - FLOWER_USER=admin
+      - FLOWER_PASSWORD=admin
       - RABBITMQ_HOST=rabbitmq
       - POSTGRES_HOST=postgres
       - UPLOADED_FILES_DIR_PATH=/volumes/uploads
@@ -69,4 +70,4 @@ services:
 #      - celery
     restart: always
     ports:
-      - "${FLOWER_PORT}:5555"
+      - "5555:5555"
