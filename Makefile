@@ -1,4 +1,4 @@
-.PHONY: env install-deps up open-db pg-revision pg-migrate pg-downgrade celery-worker app init lint test check-types
+.PHONY: env volumes install-deps up open-db pg-revision pg-migrate pg-downgrade celery-worker app init lint test check-types
 
 ifeq ($(shell test -e '.env' && echo -n yes), yes)
 	include .env
@@ -11,6 +11,13 @@ env:
 	@cp .env.example .env
 	@echo >> .env
 	@echo "SECRET_KEY=$$(openssl rand -hex 32)" >> .env
+
+## Create folders for volumes
+volumes:
+	@for volume in postgres rabbitmq uploads; do \
+    	mkdir -p ./volumes/$$volume; \
+    	chmod 777 ./volumes/$$volume; \
+    done
 
 ## Install dependencies
 install-deps:
@@ -49,7 +56,7 @@ app:
 
 ## Initiate repository
 init:
-	make env install-deps
+	make env install-deps volumes
 
 ## Run all formatters and linters in project
 lint:
