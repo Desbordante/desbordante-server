@@ -52,7 +52,7 @@ def dataset_id(dataset_create_schema, postgres_context):
 def get_config():
     return FdTaskConfig(
         primitive_name=PrimitiveName.fd,
-        config=AidConfig(algo_name=FdAlgoName.Aid, is_null_equal_null=True),
+        config=AidConfig(algo_name=FdAlgoName.Aid, max_lhs=1),
     )
 
 
