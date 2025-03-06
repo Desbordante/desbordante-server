@@ -1,4 +1,4 @@
-.PHONY: env install list format dev
+.PHONY: env install list format app services dev
 
 ifeq ($(shell test -e '.env' && echo -n yes), yes)
 	include .env
@@ -30,8 +30,17 @@ format:
 	uv run ruff format
 
 ## Run application server in watch mode
-dev:
+app:
 	uv run uvicorn --port 8000 app.main:app --reload
+
+## Run development-only docker containers
+services:
+	(trap 'docker compose -f dev-docker-compose.yaml down' INT; \
+	docker compose -f dev-docker-compose.yaml up -d --build --force-recreate --remove-orphans $(args))
+
+## Run app and services in dev mode
+dev:
+	make services app
 
 .DEFAULT_GOAL := help
 # See <https://gist.github.com/klmr/575726c7e05d8780505a> for explanation.
