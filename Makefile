@@ -40,7 +40,8 @@ services:
 
 ## Run app and services in dev mode
 dev:
-	make services app
+	make services
+	make app
 
 .DEFAULT_GOAL := help
 # See <https://gist.github.com/klmr/575726c7e05d8780505a> for explanation.
