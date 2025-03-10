@@ -1,4 +1,4 @@
-.PHONY: env install list format app services dev
+.PHONY: env install list format app services dev revision migrate downgrade
 
 ifeq ($(shell test -e '.env' && echo -n yes), yes)
 	include .env
@@ -27,7 +27,7 @@ lint:
 
 ## Reformat code
 format:
-	uv run ruff format
+	uv run ruff format & uv run ruff check --fix
 
 ## Run application server in watch mode
 app:
@@ -42,6 +42,18 @@ services:
 dev:
 	make services
 	make app
+
+## Create new revision file
+revision:
+	uv run alembic revision --autogenerate $(args)
+
+## Make all migrations in database
+migrate:
+	uv run alembic upgrade $(if $(args),$(args),head)
+
+## Downgrade database
+downgrade:
+	poetry run alembic downgrade $(args)
 
 .DEFAULT_GOAL := help
 # See <https://gist.github.com/klmr/575726c7e05d8780505a> for explanation.
