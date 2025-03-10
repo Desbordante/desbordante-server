@@ -1,67 +1,65 @@
-from functools import cached_property, lru_cache
+from functools import cached_property
+from dotenv import find_dotenv, load_dotenv
 from pydantic import AmqpDsn, PostgresDsn, AnyUrl
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings
+
+load_dotenv(find_dotenv(".env"))
 
 
 class Settings(BaseSettings):
     # Postgres settings
-    postgres_dialect_driver: str = "postgresql"
-    postgres_user: str
-    postgres_password: str
-    postgres_host: str
-    postgres_db: str
-    postgres_port: int = 5432
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+    POSTGRES_HOST: str
+    POSTGRES_DB: str
+    POSTGRES_PORT: int = 5432
 
     # RabbitMQ settings
-    rabbitmq_default_user: str
-    rabbitmq_default_password: str
-    rabbitmq_host: str
-    rabbitmq_port: int = 5672
+    RABBITMQ_DEFAULT_USER: str
+    RABBITMQ_DEFAULT_PASS: str
+    RABBITMQ_HOST: str
+    RABBITMQ_PORT: int = 5672
 
     # MinIO settings
-    minio_root_user: str
-    minio_root_password: str
-    minio_default_buckets: str
-    minio_host: str
-    minio_port: int = 9000
+    MINIO_ROOT_USER: str
+    MINIO_ROOT_PASSWORD: str
+    MINIO_DEFAULT_BUCKETS: str
+    MINIO_HOST: str
+    MINIO_PORT: int = 9000
 
     # Secret key
-    secret_key: str
+    SECRET_KEY: str
 
     @cached_property
-    def rabbitmq_dsn(self) -> AmqpDsn:
+    def rabbitmq_url(self) -> AmqpDsn:
         return AmqpDsn.build(
             scheme="amqp",
-            username=self.rabbitmq_default_user,
-            password=self.rabbitmq_default_password,
-            host=self.rabbitmq_host,
-            port=self.rabbitmq_port,
+            username=self.RABBITMQ_DEFAULT_USER,
+            password=self.RABBITMQ_DEFAULT_PASS,
+            host=self.RABBITMQ_HOST,
+            port=self.RABBITMQ_PORT,
         )
 
     @cached_property
-    def postgres_dsn(self) -> PostgresDsn:
+    def postgres_url(self) -> PostgresDsn:
         return PostgresDsn.build(
-            scheme=self.postgres_dialect_driver,
-            username=self.postgres_user,
-            password=self.postgres_password,
-            host=self.postgres_host,
-            port=self.postgres_port,
-            path=self.postgres_db,
+            scheme="postgresql+asyncpg",
+            username=self.POSTGRES_USER,
+            password=self.POSTGRES_PASSWORD,
+            host=self.POSTGRES_HOST,
+            port=self.POSTGRES_PORT,
+            path=self.POSTGRES_DB,
         )
 
     @cached_property
-    def minio_dsn(self) -> AnyUrl:
+    def minio_url(self) -> AnyUrl:
         return AnyUrl.build(
             scheme="http",
-            host=self.minio_host,
-            port=self.minio_port,
-            user=self.minio_root_user,
-            password=self.minio_root_password,
+            host=self.MINIO_HOST,
+            port=self.MINIO_PORT,
+            user=self.MINIO_ROOT_USER,
+            password=self.MINIO_ROOT_PASSWORD,
         )
 
-    model_config = SettingsConfigDict(env_file=".env")
 
-
-@lru_cache()
-def get_settings() -> Settings:
-    return Settings()
+settings = Settings()
