@@ -2,7 +2,7 @@ from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, ConfigDict
 
 
-class CustoBaseModel(BaseModel):
+class BaseSchema(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )

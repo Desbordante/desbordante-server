@@ -1,5 +1,4 @@
-from .session import engine, SessionLocal
-from .models import Base
+from .session import get_session
 from .annotations import (
     int_pk,
     created_at,
@@ -10,9 +9,7 @@ from .annotations import (
 )
 
 __all__ = [
-    "engine",
-    "SessionLocal",
-    "Base",
+    "get_session",
     "int_pk",
     "created_at",
     "updated_at",
