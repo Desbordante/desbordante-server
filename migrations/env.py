@@ -6,6 +6,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
+from alembic.util import CommandError
 
 from app.config import settings
 from app.models import Base
@@ -62,7 +63,13 @@ def do_run_migrations(connection: Connection) -> None:
     context.configure(connection=connection, target_metadata=target_metadata)
 
     with context.begin_transaction():
-        context.run_migrations()
+        try:
+            context.run_migrations()
+        except CommandError as e:
+            if "Can't locate revision identified by" in str(e):
+                print(f"Migration error: {e}")
+            else:
+                raise e
 
 
 async def run_async_migrations() -> None:
