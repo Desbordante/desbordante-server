@@ -1,9 +1,9 @@
 from functools import cached_property
-from dotenv import find_dotenv, load_dotenv
+from dotenv import load_dotenv
 from pydantic import AmqpDsn, PostgresDsn, AnyUrl
 from pydantic_settings import BaseSettings
 
-load_dotenv(find_dotenv(".env"))
+load_dotenv()
 
 
 class Settings(BaseSettings):
@@ -26,9 +26,6 @@ class Settings(BaseSettings):
     MINIO_DEFAULT_BUCKETS: str
     MINIO_HOST: str
     MINIO_PORT: int = 9000
-
-    # Secret key
-    SECRET_KEY: str
 
     @cached_property
     def rabbitmq_url(self) -> AmqpDsn:

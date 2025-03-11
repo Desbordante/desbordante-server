@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncAttrs
 
-from .annotations import created_at, updated_at
+from app.db.annotations import created_at, updated_at
 
 from sqlalchemy.orm import DeclarativeBase, declared_attr, Mapped
 
