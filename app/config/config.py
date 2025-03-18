@@ -1,6 +1,6 @@
 from functools import cached_property
 from dotenv import load_dotenv
-from pydantic import AmqpDsn, PostgresDsn, AnyUrl
+from pydantic import AmqpDsn, PostgresDsn
 from pydantic_settings import BaseSettings
 
 load_dotenv()
@@ -19,13 +19,6 @@ class Settings(BaseSettings):
     RABBITMQ_DEFAULT_PASS: str
     RABBITMQ_HOST: str
     RABBITMQ_PORT: int = 5672
-
-    # MinIO settings
-    MINIO_ROOT_USER: str
-    MINIO_ROOT_PASSWORD: str
-    MINIO_DEFAULT_BUCKETS: str
-    MINIO_HOST: str
-    MINIO_PORT: int = 9000
 
     @cached_property
     def rabbitmq_url(self) -> AmqpDsn:
@@ -46,16 +39,6 @@ class Settings(BaseSettings):
             host=self.POSTGRES_HOST,
             port=self.POSTGRES_PORT,
             path=self.POSTGRES_DB,
-        )
-
-    @cached_property
-    def minio_url(self) -> AnyUrl:
-        return AnyUrl.build(
-            scheme="http",
-            host=self.MINIO_HOST,
-            port=self.MINIO_PORT,
-            user=self.MINIO_ROOT_USER,
-            password=self.MINIO_ROOT_PASSWORD,
         )
 
 
