@@ -50,7 +50,6 @@ router = APIRouter()
 async def login(
     response: Response,
     user: UserSchema = Depends(get_authorized_user),
-    auth_service: AuthService = Depends(get_auth_service),
 ) -> LoginResponseSchema:
     """
     Authenticate user and return tokens:

@@ -7,8 +7,10 @@ requires-python = ">=3.13"
 dependencies = [
     "alembic>=1.15.1",
     "asyncpg>=0.30.0",
+    "desbordante>=2.3.2",
     "fastapi[standard]>=0.115.8",
     "greenlet>=3.1.1",
+    "minio>=7.2.15",
     "passlib[bcrypt]>=1.7.4",
     "pydantic>=2.10.6",
     "pydantic-settings>=2.8.1",

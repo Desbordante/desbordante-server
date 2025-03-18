@@ -47,3 +47,13 @@ class UnauthorizedException(BaseAppException):
             status_code=status.HTTP_401_UNAUTHORIZED,
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+
+class ForbiddenException(BaseAppException):
+    """Raised when user is authenticated but doesn't have required permissions"""
+
+    def __init__(self, message: str):
+        super().__init__(
+            message,
+            status_code=status.HTTP_403_FORBIDDEN,
+        )

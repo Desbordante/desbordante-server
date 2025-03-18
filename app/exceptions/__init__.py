@@ -3,6 +3,7 @@ from .exceptions import (
     ResourceNotFoundException,
     ValidationException,
     UnauthorizedException,
+    ForbiddenException,
 )
 
 __all__ = [
@@ -10,4 +11,5 @@ __all__ = [
     "ResourceNotFoundException",
     "ValidationException",
     "UnauthorizedException",
+    "ForbiddenException",
 ]
