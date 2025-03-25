@@ -1,3 +1,3 @@
-from .models import Base
+from .models import BaseIDModel, BaseModel, BaseUUIDModel
 
-__all__ = ["Base"]
+__all__ = ["BaseIDModel", "BaseUUIDModel", "BaseModel"]

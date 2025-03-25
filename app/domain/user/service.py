@@ -1,15 +1,12 @@
-from app.domain.user.repository import UserRepository
-from app.domain.user.schemas import UserSchema
+from app.domain.user.models import User
+from app.domain.user.schemas import UserPublic
+from app.repository import BaseRepository
 
 
 class UserService:
-    def __init__(self, repository: UserRepository):
+    def __init__(self, repository: BaseRepository[User]):
         self._repository = repository
 
-    async def get_by_email(self, email: str) -> UserSchema:
-        user = await self._repository.get_by_email(email)
-        return UserSchema.model_validate(user)
-
-    async def get_by_id(self, id: int) -> UserSchema:
-        user = await self._repository.get_by_id(id)
-        return UserSchema.model_validate(user)
+    def get_by_id(self, id: int) -> UserPublic:
+        user = self._repository.get_by_id(id)
+        return UserPublic.model_validate(user)

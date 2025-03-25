@@ -1,5 +1,6 @@
 import http
 from typing import Mapping
+
 from fastapi import status
 
 
@@ -57,3 +58,10 @@ class ForbiddenException(BaseAppException):
             message,
             status_code=status.HTTP_403_FORBIDDEN,
         )
+
+
+class ResourceAlreadyExistsException(BaseAppException):
+    """Raised when attempting to create a resource that already exists"""
+
+    def __init__(self, message: str):
+        super().__init__(message, status_code=status.HTTP_409_CONFLICT)

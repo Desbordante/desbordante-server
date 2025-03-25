@@ -1,4 +1,5 @@
 from functools import cached_property
+
 from dotenv import load_dotenv
 from pydantic import AmqpDsn, PostgresDsn
 from pydantic_settings import BaseSettings
@@ -33,7 +34,7 @@ class Settings(BaseSettings):
     @cached_property
     def postgres_url(self) -> PostgresDsn:
         return PostgresDsn.build(
-            scheme="postgresql+asyncpg",
+            scheme="postgresql+psycopg",
             username=self.POSTGRES_USER,
             password=self.POSTGRES_PASSWORD,
             host=self.POSTGRES_HOST,

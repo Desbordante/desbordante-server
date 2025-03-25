@@ -1,16 +1,51 @@
-from sqlalchemy.ext.asyncio import AsyncAttrs
+from datetime import datetime, timezone
+from typing import Optional
+from uuid import UUID, uuid4
 
-from app.db.annotations import created_at, updated_at
+from sqlalchemy import DateTime
+from sqlalchemy.orm import declared_attr
+from sqlmodel import Field, SQLModel
 
-from sqlalchemy.orm import DeclarativeBase, declared_attr, Mapped
 
+class BaseModel(SQLModel):
+    """Base model with created_at and updated_at timestamps in UTC"""
 
-class Base(AsyncAttrs, DeclarativeBase):
-    __abstract__ = True
-
-    @declared_attr.directive
+    @declared_attr
     def __tablename__(cls) -> str:
         return f"{cls.__name__.lower()}s"
 
-    created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
+    updated_at: datetime = Field(
+        sa_type=DateTime(timezone=True),
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_column_kwargs={
+            "onupdate": lambda: datetime.now(timezone.utc),
+        },
+        nullable=False,
+    )
+    created_at: datetime = Field(
+        sa_type=DateTime(timezone=True),
+        default_factory=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+
+class BaseIDModel(BaseModel):
+    """Base model with auto-incrementing integer primary key"""
+
+    id: Optional[int] = Field(
+        default=None,
+        primary_key=True,
+        index=True,
+        nullable=False,
+    )
+
+
+class BaseUUIDModel(BaseModel):
+    """Base model with UUID primary key"""
+
+    id: UUID = Field(
+        default_factory=uuid4,
+        primary_key=True,
+        index=True,
+        nullable=False,
+    )
