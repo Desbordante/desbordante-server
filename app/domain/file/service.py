@@ -11,7 +11,7 @@ class FileService:
         self._repository = repository
 
     def upload_file(self, file: UploadFile, owner_id: int) -> File:
-        file_id = "{owner_id}/{file.filename}"
+        file_id = f"{owner_id}/{file.filename}"
 
         # Upload to MinIO
         storage.upload_file(
