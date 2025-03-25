@@ -124,6 +124,35 @@ class BaseRepository(Generic[ModelType]):
             )
         return obj
 
+    def get_many_by(
+        self,
+        *,
+        field: str,
+        value: Any,
+    ) -> list[ModelType]:
+        """
+        Get multiple records by any field value with pagination.
+
+        Args:
+            field: Model field name to filter by
+            value: Value to search for
+
+        Returns:
+            List of found model instances
+
+        Raises:
+            ValueError: When field doesn't exist in model
+        """
+        if not hasattr(self.model, field):
+            raise ValueError(
+                f"Field '{field}' does not exist in model {self.model.__name__}"
+            )
+
+        statement = select(self.model).where(getattr(self.model, field) == value)
+
+        results = self._session.exec(statement).all()
+        return results
+
     def delete(self, *, id: int | UUID) -> ModelType:
         """
         Delete a record by ID.
