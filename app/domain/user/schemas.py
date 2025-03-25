@@ -1,12 +1,5 @@
-from app.schemas import BaseSchema
-from pydantic import ConfigDict
+from app.domain.user.models import UserBase
 
 
-class UserSchema(BaseSchema):
-    model_config = ConfigDict(from_attributes=True)
-
+class UserPublic(UserBase):
     id: int
-    email: str
-    is_admin: bool
-    first_name: str
-    last_name: str

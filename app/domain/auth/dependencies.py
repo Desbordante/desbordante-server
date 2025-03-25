@@ -1,55 +1,73 @@
 from datetime import datetime, timezone
 from typing import Annotated
-from fastapi import Depends, Form, Request
+
 import jwt
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.session import get_session
+from fastapi import Depends, Form, Request
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
+from app.dependencies import SessionDep
 from app.domain.auth.exceptions import CredentialsException
 from app.domain.auth.schemas import (
-    AccessTokenSchema,
-    LoginFormDataSchema,
-    RefreshTokenSchema,
+    AccessTokenPayload,
+    RefreshTokenPayload,
+    UserLogin,
 )
 from app.domain.auth.service import AuthService
-from app.domain.user.repository import UserRepository
-from app.domain.user.schemas import UserSchema
+from app.domain.user.models import User
+from app.domain.user.schemas import UserPublic
+from app.repository import BaseRepository
+
 from .config import settings
 
+oauth2 = OAuth2PasswordBearer(tokenUrl="/auth/token", auto_error=False)
+TokenDep = Annotated[str, Depends(oauth2)]
 
-async def get_auth_service(session: AsyncSession = Depends(get_session)) -> AuthService:
-    return AuthService(repository=UserRepository(session=session))
+
+def get_auth_service(session: SessionDep) -> AuthService:
+    return AuthService(repository=BaseRepository(model=User, session=session))
 
 
-async def get_authorized_user(
-    form_data: Annotated[LoginFormDataSchema, Form()],
-    auth_service: AuthService = Depends(get_auth_service),
-) -> UserSchema:
-    return await auth_service.authenticate_user(
-        email=form_data.email, password=form_data.password
+AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]
+
+
+def get_authorized_user(
+    form_data: Annotated[UserLogin, Form()],
+    auth_service: AuthServiceDep,
+) -> UserPublic:
+    return auth_service.authenticate_user(form_data)
+
+
+AuthorizedUserDep = Annotated[UserPublic, Depends(get_authorized_user)]
+
+
+def get_oauth2_authorized_user(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    auth_service: AuthServiceDep,
+) -> UserPublic:
+    return auth_service.authenticate_user(
+        UserLogin(email=form_data.username, password=form_data.password)
     )
 
 
-async def get_access_token_data(
+OAuth2uthorizedUserDep = Annotated[UserPublic, Depends(get_oauth2_authorized_user)]
+
+
+def get_access_token_payload(
+    token: TokenDep,
     request: Request,
-) -> AccessTokenSchema:
-    # Try to get token from cookies first
-    token = request.cookies.get(settings.ACCESS_TOKEN_KEY)
-
-    # If not in cookies, try to get from headers
+) -> AccessTokenPayload:
     if not token:
-        authorization = request.headers.get("Authorization")
-        if not authorization:
+        cookiesToken = request.cookies.get(settings.ACCESS_TOKEN_KEY)
+        if not cookiesToken:
             raise CredentialsException()
 
-        scheme, _, token = authorization.partition(" ")
-        if scheme.lower() != "bearer":
-            raise CredentialsException()
+        token = cookiesToken
 
     try:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
-        token_data = AccessTokenSchema.model_validate(payload)
+        token_data = AccessTokenPayload.model_validate(payload)
 
         # Check if token has expired
         if token_data.exp <= datetime.now(timezone.utc):
@@ -61,9 +79,12 @@ async def get_access_token_data(
     return token_data
 
 
-async def get_refresh_token_data(
+AccessTokenPayloadDep = Annotated[AccessTokenPayload, Depends(get_access_token_payload)]
+
+
+def get_refresh_token_data(
     request: Request,
-) -> RefreshTokenSchema:
+) -> RefreshTokenPayload:
     token = request.cookies.get(settings.REFRESH_TOKEN_KEY)
     if not token:
         raise CredentialsException()
@@ -72,7 +93,7 @@ async def get_refresh_token_data(
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
-        token_data = RefreshTokenSchema.model_validate(payload)
+        token_data = RefreshTokenPayload.model_validate(payload)
 
         # Check if token has expired
         if token_data.exp <= datetime.now(timezone.utc):
@@ -82,3 +103,6 @@ async def get_refresh_token_data(
         raise CredentialsException()
 
     return token_data
+
+
+RefreshTokenPayloadDep = Annotated[RefreshTokenPayload, Depends(get_refresh_token_data)]

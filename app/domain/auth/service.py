@@ -1,18 +1,19 @@
-from app.domain.user.models import User
-from app.domain.user.repository import UserRepository
-
-from .schemas import RegisterUserSchema
-from app.domain.user.schemas import UserSchema
-from .exceptions import IncorrectCredentialsException
 from passlib.context import CryptContext
 
-from app.domain.user.exceptions import UserNotFoundException
+from app.domain.user.models import User
+from app.domain.user.schemas import UserPublic
+from app.exceptions import ResourceNotFoundException
+from app.exceptions.exceptions import ResourceAlreadyExistsException
+from app.repository import BaseRepository
+
+from .exceptions import IncorrectCredentialsException
+from .schemas import UserLogin, UserRegister
 
 
 class AuthService:
     _pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    def __init__(self, repository: UserRepository):
+    def __init__(self, repository: BaseRepository[User]):
         self._repository = repository
 
     @classmethod
@@ -23,23 +24,28 @@ class AuthService:
     def _get_password_hash(cls, password: str) -> str:
         return cls._pwd_context.hash(password)
 
-    async def authenticate_user(self, email: str, password: str) -> UserSchema:
+    def authenticate_user(self, data: UserLogin) -> UserPublic:
         try:
-            user = await self._repository.get_by_email(email)
-            if not self._verify_password(password, user.hashed_password):
+            user = self._repository.get_by(field="email", value=data.email)
+            if not self._verify_password(data.password, user.hashed_password):
                 raise IncorrectCredentialsException()
-            return UserSchema.model_validate(user)
-        except UserNotFoundException as e:
+            return UserPublic.model_validate(user)
+        except ResourceNotFoundException as e:
             raise IncorrectCredentialsException() from e
 
-    async def register_user(self, data: RegisterUserSchema) -> UserSchema:
+    def register_user(self, data: UserRegister) -> UserPublic:
         hashed_password = self._get_password_hash(data.password)
-        user_model = User(
-            email=data.email,
-            hashed_password=hashed_password,
-            first_name=data.first_name,
-            last_name=data.last_name,
+
+        user_model = User.model_validate(
+            data,
+            update={"hashed_password": hashed_password},
         )
 
-        new_user = await self._repository.add_user(user_model)
-        return UserSchema.model_validate(new_user)
+        try:
+            new_user = self._repository.create(user_model)
+            return UserPublic.model_validate(new_user)
+
+        except ResourceAlreadyExistsException as e:
+            raise ResourceAlreadyExistsException(
+                f"User with email {data.email} already exists"
+            ) from e

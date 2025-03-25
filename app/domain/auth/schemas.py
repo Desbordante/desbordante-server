@@ -1,55 +1,29 @@
-from datetime import datetime
 import re
+from datetime import datetime
 
 from pydantic import EmailStr, Field, field_validator
-from app.schemas import BaseSchema
 
-from app.domain.user.schemas import UserSchema
-
-
-class AccessTokenSchema(BaseSchema):
-    id: int
-    exp: datetime
-    is_admin: bool
+from app.domain.user.schemas import UserPublic
+from app.schemas.schemas import BaseSchema
 
 
-class RefreshTokenSchema(BaseSchema):
-    id: int
-    exp: datetime
+class UserLogin(BaseSchema):
+    email: EmailStr = Field(description="The email address of the user")
+    password: str = Field(min_length=8, description="The password of the user")
 
 
-class LoginResponseSchema(BaseSchema):
-    access_token: str
-    user: UserSchema
-
-
-class RegisterResponseSchema(LoginResponseSchema):
-    pass
-
-
-class RefreshResponseSchema(LoginResponseSchema):
-    pass
-
-
-class RegisterUserSchema(BaseSchema):
-    email: str
-    password: str
-    first_name: str
-    last_name: str
-
-
-class RegisterFormDataSchema(BaseSchema):
-    email: EmailStr = Field(..., description="The email address of the user")
-    password: str = Field(
-        ...,
-        min_length=8,
-        description="The password of the user. Must contain at least one uppercase letter, one lowercase letter, one digit, and one special character",
-    )
+class UserRegister(BaseSchema):
     first_name: str = Field(
-        ..., min_length=1, max_length=50, description="The first name of the user"
+        min_length=1, max_length=50, description="The first name of the user"
     )
     last_name: str = Field(
-        ..., min_length=1, max_length=50, description="The last name of the user"
+        min_length=1, max_length=50, description="The last name of the user"
+    )
+    email: EmailStr = Field(max_length=255, description="The email address of the user")
+
+    password: str = Field(
+        min_length=8,
+        description="The password of the user. Must contain at least one uppercase letter, one lowercase letter, one digit, and one special character",
     )
 
     @field_validator("password")
@@ -65,6 +39,38 @@ class RegisterFormDataSchema(BaseSchema):
         return value
 
 
-class LoginFormDataSchema(BaseSchema):
-    email: EmailStr = Field(..., description="The email address of the user")
-    password: str = Field(..., min_length=8, description="The password of the user")
+class TokenResponse(BaseSchema):
+    access_token: str
+    token_type: str = "bearer"
+
+
+class AuthResponse(BaseSchema):
+    access_token: str
+    user: UserPublic
+
+
+class LoginResponse(AuthResponse):
+    token_type: str = "bearer"
+
+
+class RegisterResponse(AuthResponse):
+    pass
+
+
+class RefreshResponse(AuthResponse):
+    pass
+
+
+class TokenPayload(BaseSchema):
+    id: int
+    exp: datetime
+    type: str
+
+
+class AccessTokenPayload(TokenPayload):
+    type: str = "access"
+    is_admin: bool
+
+
+class RefreshTokenPayload(TokenPayload):
+    type: str = "refresh"

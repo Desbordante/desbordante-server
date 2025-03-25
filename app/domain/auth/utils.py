@@ -1,20 +1,22 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Tuple
+
 import jwt
 from fastapi import Response
 
-from app.domain.user.schemas import UserSchema
+from app.domain.user.schemas import UserPublic
+
 from .config import settings
-from .schemas import AccessTokenSchema, RefreshTokenSchema
+from .schemas import AccessTokenPayload, RefreshTokenPayload
 
 
 def create_access_token(
-    user: UserSchema, expires_delta: Optional[timedelta] = None
+    user: UserPublic, expires_delta: Optional[timedelta] = None
 ) -> Tuple[str, datetime]:
     expire = datetime.now(timezone.utc) + (
         expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
-    to_encode = AccessTokenSchema(
+    to_encode = AccessTokenPayload(
         id=user.id, exp=expire, is_admin=user.is_admin
     ).model_dump()
     token = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
@@ -22,12 +24,12 @@ def create_access_token(
 
 
 def create_refresh_token(
-    user: UserSchema, expires_delta: Optional[timedelta] = None
+    user: UserPublic, expires_delta: Optional[timedelta] = None
 ) -> Tuple[str, datetime]:
     expire = datetime.now(timezone.utc) + (
         expires_delta or timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
     )
-    to_encode = RefreshTokenSchema(id=user.id, exp=expire).model_dump()
+    to_encode = RefreshTokenPayload(id=user.id, exp=expire).model_dump()
     token = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return token, expire
 

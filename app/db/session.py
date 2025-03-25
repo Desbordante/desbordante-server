@@ -1,11 +1,13 @@
-from typing import AsyncIterator
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from typing import Generator
+
+from sqlmodel import Session, create_engine
+
 from app.config import settings
+from app.domain.user.models import User  # noqa: F401
 
-engine = create_async_engine(settings.postgres_url.unicode_string(), echo=True)
-AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
+engine = create_engine(settings.postgres_url.unicode_string(), echo=True)
 
 
-async def get_session() -> AsyncIterator[AsyncSession]:
-    async with AsyncSessionLocal() as session:
+def get_session() -> Generator[Session, None, None]:
+    with Session(engine) as session:
         yield session

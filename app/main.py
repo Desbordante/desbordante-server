@@ -20,7 +20,7 @@ app.add_middleware(
 
 # Global exception handler
 @app.exception_handler(BaseAppException)
-async def app_exception_handler(request, exc: BaseAppException):
+def app_exception_handler(request, exc: BaseAppException):
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
 

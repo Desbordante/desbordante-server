@@ -1,117 +1,125 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form, Response, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import APIRouter, Form, Response, status
 
-from app.domain.user.dependencies import get_user_service
-from app.domain.user.schemas import UserSchema
-from app.domain.user.service import UserService
+from app.domain.user.dependencies import UserServiceDep
 
 from .config import settings
-
-from .schemas import (
-    LoginResponseSchema,
-    RefreshResponseSchema,
-    RefreshTokenSchema,
-    RegisterFormDataSchema,
-    RegisterResponseSchema,
+from .dependencies import (
+    AuthorizedUserDep,
+    AuthServiceDep,
+    OAuth2uthorizedUserDep,
+    RefreshTokenPayloadDep,
 )
-
-from .dependencies import get_auth_service, get_authorized_user, get_refresh_token_data
-from .service import AuthService
-from .utils import set_auth_cookies, create_access_token, create_refresh_token
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+from .schemas import (
+    LoginResponse,
+    RefreshResponse,
+    RegisterResponse,
+    TokenResponse,
+    UserRegister,
+)
+from .utils import create_access_token, create_refresh_token, set_auth_cookies
 
 router = APIRouter()
 
 
 @router.post(
+    "/token",
+    response_model=TokenResponse,
+    summary="Get access token (API docs only)",
+    description="Get access token using OAuth2 password flow. This endpoint is for Swagger/OpenAPI documentation testing only.",
+)
+def get_access_token(
+    user: OAuth2uthorizedUserDep,
+) -> TokenResponse:
+    """
+    Get access token using OAuth2 password flow.
+
+    Note:
+        This endpoint is only for testing in Swagger/OpenAPI documentation.
+        Frontend applications should use /login endpoint instead, which:
+        - Sets secure HTTP-only cookies
+        - Provides proper CSRF protection
+        - Handles refresh tokens
+
+    Args:
+        user: Authenticated user from OAuth2 password flow
+
+    Returns:
+        Access token response with token and type
+    """
+    access_token_pair = create_access_token(user=user)
+    return TokenResponse(access_token=access_token_pair[0])
+
+
+@router.post(
     "/login",
-    response_model=LoginResponseSchema,
+    response_model=LoginResponse,
+    summary="Authenticate user",
+    description="Authenticate user with email and password, set auth cookies and return tokens",
     responses={
         401: {
-            "description": "Authentication failed",
+            "description": "Invalid credentials",
             "content": {
                 "application/json": {
-                    "examples": {
-                        "incorrect_credentials": {
-                            "summary": "Incorrect credentials",
-                            "value": {"detail": "Incorrect username or password"},
-                        },
-                    }
+                    "example": {"detail": "Incorrect email or password"}
                 }
             },
         }
     },
-    summary="Authenticate user",
-    description="Login with email and password to get access and refresh tokens",
 )
-async def login(
+def login(
     response: Response,
-    user: UserSchema = Depends(get_authorized_user),
-) -> LoginResponseSchema:
+    user: AuthorizedUserDep,
+) -> LoginResponse:
     """
     Authenticate user and return tokens:
     - Validates user credentials
     - Sets HTTP-only cookies with tokens
     - Returns access token and user info
 
+    Returns:
+        LoginResponse: Access token and user information
+
     Raises:
-        IncorrectCredentialsException: When email or password is incorrect
-        CredentialsException: When token validation fails
+        UnauthorizedException: When credentials are invalid
     """
     access_token_pair = create_access_token(user=user)
     refresh_token_pair = create_refresh_token(user=user)
     set_auth_cookies(response, access_token_pair, refresh_token_pair)
-    return LoginResponseSchema(access_token=access_token_pair[0], user=user)
+    return LoginResponse(access_token=access_token_pair[0], user=user)
 
 
 @router.post(
     "/register",
-    response_model=RegisterResponseSchema,
+    response_model=RegisterResponse,
     status_code=status.HTTP_201_CREATED,
+    summary="Register new user",
+    description="Create new user account with email and password",
     responses={
         400: {
-            "description": "Registration failed",
+            "description": "Validation error",
             "content": {
                 "application/json": {
-                    "examples": {
-                        "user_exists": {
-                            "summary": "User already exists",
-                            "value": {
-                                "detail": "User with email example@email.com already exists"
-                            },
-                        }
-                    }
+                    "example": {"detail": "Password must contain at least 8 characters"}
                 }
             },
         },
-        422: {
-            "description": "Validation Error",
+        409: {
+            "description": "User already exists",
             "content": {
                 "application/json": {
-                    "example": {
-                        "detail": [
-                            {
-                                "loc": ["body", "password"],
-                                "msg": "Password must contain at least one uppercase letter",
-                                "type": "value_error",
-                            }
-                        ]
-                    }
+                    "example": {"detail": "User with this email already exists"}
                 }
             },
         },
     },
-    summary="Register new user",
-    description="Create new user account with email and password",
 )
-async def register(
+def register(
     response: Response,
-    form_data: Annotated[RegisterFormDataSchema, Form()],
-    auth_service: AuthService = Depends(get_auth_service),
-) -> RegisterResponseSchema:
+    form_data: Annotated[UserRegister, Form()],
+    auth_service: AuthServiceDep,
+) -> RegisterResponse:
     """
     Register new user:
     - Validates registration data
@@ -119,25 +127,27 @@ async def register(
     - Sets HTTP-only cookies with tokens
     - Returns access token and user info
 
+    Returns:
+        RegisterResponse: Access token and user information
+
     Raises:
-        UserAlreadyExistsException: When email is already registered
-        ValidationError: When form data validation fails
+        ValidationException: When registration data is invalid
+        ResourceAlreadyExistsException: When user with email already exists
     """
-    user = await auth_service.register_user(form_data)
+    user = auth_service.register_user(form_data)
     access_token_pair = create_access_token(user=user)
     refresh_token_pair = create_refresh_token(user=user)
     set_auth_cookies(response, access_token_pair, refresh_token_pair)
-    return RegisterResponseSchema(access_token=access_token_pair[0], user=user)
+    return RegisterResponse(access_token=access_token_pair[0], user=user)
 
 
 @router.post(
     "/logout",
     status_code=status.HTTP_204_NO_CONTENT,
-    responses={204: {"description": "Successfully logged out"}},
     summary="Logout user",
     description="Clear authentication cookies",
 )
-async def logout(response: Response):
+def logout(response: Response):
     """
     Logout current user:
     - Clears authentication cookies
@@ -150,48 +160,25 @@ async def logout(response: Response):
 
 @router.post(
     "/refresh",
-    response_model=LoginResponseSchema,
-    responses={
-        401: {
-            "description": "Refresh token is invalid or expired",
-            "content": {
-                "application/json": {
-                    "examples": {
-                        "invalid_token": {
-                            "summary": "Invalid token",
-                            "value": {"detail": "Could not validate credentials"},
-                        },
-                    }
-                }
-            },
-        },
-        404: {
-            "description": "User not found",
-            "content": {"application/json": {"example": {"detail": "User not found"}}},
-        },
-    },
+    response_model=RefreshResponse,
     summary="Refresh access token",
     description="Get new access token using refresh token from cookies",
 )
-async def refresh_token(
+def refresh_token(
     response: Response,
-    token_data: RefreshTokenSchema = Depends(get_refresh_token_data),
-    user_service: UserService = Depends(get_user_service),
-) -> RefreshResponseSchema:
+    refresh_token_payload: RefreshTokenPayloadDep,
+    user_service: UserServiceDep,
+) -> RefreshResponse:
     """
     Refresh access token using refresh token:
     - Validates refresh token from cookies
     - Creates new access token
     - Updates cookies with new tokens
     - Returns new access token and user info
-
-    Raises:
-        CredentialsException: When refresh token is missing or invalid
-        UserNotFoundException: When user from token not found
     """
-    user = await user_service.get_by_id(token_data.id)
+    user = user_service.get_by_id(refresh_token_payload.id)
 
     access_token_pair = create_access_token(user=user)
     refresh_token_pair = create_refresh_token(user=user)
     set_auth_cookies(response, access_token_pair, refresh_token_pair)
-    return RefreshResponseSchema(access_token=access_token_pair[0], user=user)
+    return RefreshResponse(access_token=access_token_pair[0], user=user)
