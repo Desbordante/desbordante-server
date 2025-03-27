@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, File, UploadFile, status
 
-from app.domain.user.dependencies import CurrentUserDep
+from app.domain.auth.dependencies import AuthorizedUserDep
 
 from .dependencies import FileServiceDep
 from .models import FilePublic
@@ -18,7 +18,7 @@ router = APIRouter()
     description="Upload a file to the server. The file will be associated with the current user.",
 )
 def upload_file(
-    current_user: CurrentUserDep,
+    current_user: AuthorizedUserDep,
     file_service: FileServiceDep,
     file: UploadFile = File(),
 ) -> FilePublic:
@@ -39,7 +39,7 @@ def upload_file(
     description="Get a list of all files uploaded by the current user.",
 )
 def get_my_files(
-    current_user: CurrentUserDep,
+    current_user: AuthorizedUserDep,
     file_service: FileServiceDep,
 ) -> List[FilePublic]:
     """

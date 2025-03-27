@@ -1,8 +1,7 @@
 from fastapi import APIRouter
 
+from app.domain.auth.dependencies import AuthorizedUserDep
 from app.domain.user.schemas import UserPublic
-
-from .dependencies import CurrentUserDep
 
 router = APIRouter()
 
@@ -14,7 +13,7 @@ router = APIRouter()
     description="Returns information about the currently authenticated user",
 )
 def get_current_user(
-    current_user: CurrentUserDep,
+    current_user: AuthorizedUserDep,
 ) -> UserPublic:
     """
     Get current authenticated user profile
