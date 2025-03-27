@@ -1,3 +1,3 @@
-from .schemas import TaskStatus
+from .types import TaskStatus
 
 __all__ = ["TaskStatus"]

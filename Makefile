@@ -38,14 +38,14 @@ services:
 	(trap 'docker compose -f dev-docker-compose.yaml down' INT; \
 	docker compose -f dev-docker-compose.yaml up -d --build --force-recreate --remove-orphans $(args))
 
-## Run celery worker in watch mode
+## Run celery worker
 worker:
-	uv run watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery -A app.domain.worker worker --loglevel=info
+	uv run celery -A app.domain.worker worker --loglevel=info
 
 ## Run app and services in dev mode
 dev:
 	make services
-	make app & make worker
+	make app
 
 ## Create new revision file
 revision:

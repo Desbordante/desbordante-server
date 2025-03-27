@@ -1,12 +1,16 @@
-import time
+from io import BytesIO
 from uuid import UUID
 
+import pandas as pd
 from celery.signals import task_failure, task_postrun, task_prerun
 from sqlmodel import Session
 
 from app.db import engine
+from app.domain.storage import storage
 from app.domain.task.models import Task
-from app.domain.task.schemas.schemas import OneOfTaskResult, TaskStatus
+from app.domain.task.schemas.schemas import OneOfTaskConfig, OneOfTaskResult
+from app.domain.task.schemas.types import TaskStatus
+from app.domain.task.utils import match_task_by_primitive_name
 from app.domain.worker import worker
 from app.repository import BaseRepository
 
@@ -14,12 +18,15 @@ from app.repository import BaseRepository
 @worker.task(name="tasks.profiling", ignore_result=True, max_retries=0)
 def data_profiling_task(
     task_id: UUID,
-    config: dict,
+    paths: list[str],
+    raw_config: dict,
 ) -> OneOfTaskResult:
-    time.sleep(30)
+    config = OneOfTaskConfig.model_validate(raw_config)
 
-    return OneOfTaskResult(
-        primitive_name=config["primitive_name"],
+    tables = [pd.read_csv(BytesIO(storage.download_file(path))) for path in paths]
+
+    return match_task_by_primitive_name(config.primitive_name).execute(
+        tables=tables, task_config=config
     )
 
 

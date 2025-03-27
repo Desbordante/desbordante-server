@@ -3,7 +3,7 @@ from typing import BinaryIO
 
 from minio import Minio
 
-from .config import settings
+from app.domain.storage.config import settings
 
 
 class MinioClient:
@@ -43,6 +43,12 @@ class MinioClient:
             length=length,
             content_type=content_type,
         )
+
+    def download_file(self, name: str) -> bytes:
+        response = self.client.get_object(self.bucket, name)
+        data = response.read()
+        response.close()
+        return data
 
     def get_presigned_url(self, file_id: str) -> str:
         """Generate presigned URL for file download"""
