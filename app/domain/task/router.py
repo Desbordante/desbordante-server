@@ -36,7 +36,9 @@ async def get_task(
 ) -> TaskPublic:
     task = task_service.get_by_id(id)
 
-    if task.owner_id != user.id:
+    user_id = user.id if user else None
+
+    if task.owner_id != user_id:
         raise ForbiddenException("Access denied")
 
     return task
