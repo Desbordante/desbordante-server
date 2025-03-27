@@ -23,7 +23,7 @@ def upload_file(
     user: AuthorizedUserDep,
     file_service: FileServiceDep,
     file: UploadFile = File(),
-    public: bool = False,
+    make_public: bool = False,
 ) -> FilePublic:
     """
     Upload a new file:
@@ -32,10 +32,10 @@ def upload_file(
     - Creates database record
     - Returns file metadata
     """
-    if public and not user.is_admin:
+    if make_public and not user.is_admin:
         raise ForbiddenException("Access denied")
 
-    return file_service.upload_file(file, user.id if not public else None)
+    return file_service.upload_file(file, user.id if not make_public else None)
 
 
 @router.get(
@@ -47,7 +47,7 @@ def upload_file(
 def get_my_files(
     user: OptionallyAuthorizedUserDep,
     file_service: FileServiceDep,
-    public: bool = True,
+    with_public: bool = True,
 ) -> List[FilePublic]:
     """
     List all files:
@@ -56,6 +56,6 @@ def get_my_files(
     """
 
     user_files = file_service.get_user_files(user.id) if user else []
-    public_files = file_service.get_public_files() if public else []
+    public_files = file_service.get_public_files() if with_public else []
 
     return user_files + public_files

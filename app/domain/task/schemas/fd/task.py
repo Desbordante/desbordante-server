@@ -70,8 +70,9 @@ class FdTask(BaseTask[FdTaskConfig, FdTaskResult]):
         algo.execute(**options)
 
         return FdTaskResult(
+            primitive_name=PrimitiveName.FD,
             result=[
                 FdModel(lhs_indices=fd.lhs_indices, rhs_index=fd.rhs_index)
                 for fd in algo.get_fds()
-            ]
+            ],
         )
