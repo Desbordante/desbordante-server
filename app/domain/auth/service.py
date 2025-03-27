@@ -49,3 +49,7 @@ class AuthService:
             raise ResourceAlreadyExistsException(
                 f"User with email {data.email} already exists"
             ) from e
+
+    def get_by_id(self, id: int) -> User:
+        user = self._repository.get_by_id(id)
+        return user

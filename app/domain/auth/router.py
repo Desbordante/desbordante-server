@@ -1,14 +1,13 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Form, Response, status
+from fastapi import APIRouter, Depends, Form, Response, status
+from fastapi.security import OAuth2PasswordRequestForm
 
 from app.domain.user.dependencies import UserServiceDep
 
 from .config import settings
 from .dependencies import (
-    AuthorizedUserDep,
     AuthServiceDep,
-    OAuth2uthorizedUserDep,
     RefreshTokenPayloadDep,
 )
 from .schemas import (
@@ -16,6 +15,7 @@ from .schemas import (
     RefreshResponse,
     RegisterResponse,
     TokenResponse,
+    UserLogin,
     UserRegister,
 )
 from .utils import create_access_token, create_refresh_token, set_auth_cookies
@@ -30,7 +30,8 @@ router = APIRouter()
     description="Get access token using OAuth2 password flow. This endpoint is for Swagger/OpenAPI documentation testing only.",
 )
 def get_access_token(
-    user: OAuth2uthorizedUserDep,
+    auth_service: AuthServiceDep,
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> TokenResponse:
     """
     Get access token using OAuth2 password flow.
@@ -48,6 +49,9 @@ def get_access_token(
     Returns:
         Access token response with token and type
     """
+    user = auth_service.authenticate_user(
+        UserLogin(email=form_data.username, password=form_data.password)
+    )
     access_token_pair = create_access_token(user=user)
     return TokenResponse(access_token=access_token_pair[0])
 
@@ -70,7 +74,8 @@ def get_access_token(
 )
 def login(
     response: Response,
-    user: AuthorizedUserDep,
+    auth_service: AuthServiceDep,
+    form_data: Annotated[UserLogin, Form()],
 ) -> LoginResponse:
     """
     Authenticate user and return tokens:
@@ -84,6 +89,7 @@ def login(
     Raises:
         UnauthorizedException: When credentials are invalid
     """
+    user = auth_service.authenticate_user(form_data)
     access_token_pair = create_access_token(user=user)
     refresh_token_pair = create_refresh_token(user=user)
     set_auth_cookies(response, access_token_pair, refresh_token_pair)

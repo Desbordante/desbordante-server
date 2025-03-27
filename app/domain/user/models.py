@@ -7,6 +7,7 @@ from app.models import BaseIDModel
 
 if TYPE_CHECKING:
     from app.domain.file.models import File
+    from app.domain.task.models import Task
 
 
 class UserBase(SQLModel):
@@ -19,3 +20,4 @@ class UserBase(SQLModel):
 class User(BaseIDModel, UserBase, table=True):
     hashed_password: str = Field(nullable=False, index=True)
     files: list["File"] = Relationship(back_populates="owner")
+    tasks: list["Task"] = Relationship(back_populates="owner")

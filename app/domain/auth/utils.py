@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta, timezone
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Type, TypeVar
 
 import jwt
 from fastapi import Response
 
+from app.domain.auth.exceptions import CredentialsException
 from app.domain.user.schemas import UserPublic
 
 from .config import settings
@@ -68,3 +69,26 @@ def set_auth_cookies(
         samesite="strict",
         path="/",
     )
+
+
+T = TypeVar("T", AccessTokenPayload, RefreshTokenPayload)
+
+
+def validate_token(
+    token: str,
+    payload_class: Type[T],
+) -> T:
+    try:
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
+        token_data = payload_class.model_validate(payload)
+
+        # Check if token has expired
+        if token_data.exp <= datetime.now(timezone.utc):
+            raise CredentialsException()
+
+    except (jwt.PyJWTError, ValueError):
+        raise CredentialsException()
+
+    return token_data
