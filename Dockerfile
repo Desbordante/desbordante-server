@@ -37,10 +37,6 @@ COPY ./scripts/celery.sh /celery
 RUN sed -i 's/\r$//g' /celery
 RUN chmod +x /celery
 
-COPY ./scripts/flower.sh /flower
-RUN sed -i 's/\r$//g' /flower
-RUN chmod +x /flower
-
 COPY ./pyproject.toml ./uv.lock ./alembic.ini /app/
 
 COPY ./migrations /app/migrations
