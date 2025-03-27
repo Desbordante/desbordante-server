@@ -1,3 +1,3 @@
-from .session import get_session
+from .session import engine, get_session
 
-__all__ = ["get_session"]
+__all__ = ["get_session", "engine"]

@@ -53,7 +53,12 @@ migrate:
 
 ## Downgrade database
 downgrade:
-	poetry run alembic downgrade $(args)
+	uv run alembic downgrade $(args)
+
+## Run celery worker in watch mode
+worker:
+	uv run watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery -A app.domain.worker worker --loglevel=info
+
 
 .DEFAULT_GOAL := help
 # See <https://gist.github.com/klmr/575726c7e05d8780505a> for explanation.
