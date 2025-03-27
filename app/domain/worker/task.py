@@ -44,11 +44,9 @@ def task_prerun_notifier(kwargs, **_):
 # task_postrun is used instead of task_success because task_success signal
 # does not provide kwargs parameter which is needed to access task_id
 @task_postrun.connect(sender=data_profiling_task)
-def task_postrun_notifier(retval: dict | None, kwargs, **_):
+def task_postrun_notifier(retval: OneOfTaskResult | None, kwargs, **_):
     if not retval:
         return
-
-    result = OneOfTaskResult.model_validate(retval)
 
     task_id: UUID = kwargs["task_id"]
     with Session(engine) as session:
@@ -57,7 +55,7 @@ def task_postrun_notifier(retval: dict | None, kwargs, **_):
         task_repository.update_by_id(
             id=task_id,
             status=TaskStatus.COMPLETED,
-            result=result.serializable_dict(),
+            result=retval.serializable_dict(),
         )
 
 
