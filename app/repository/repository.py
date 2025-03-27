@@ -50,30 +50,27 @@ class BaseRepository(Generic[ModelType]):
                 f"{self.model.__name__} already exists"
             )
 
-    def update(
-        self, *, obj_current: ModelType, obj_new: dict[str, Any] | ModelType
-    ) -> ModelType:
+    def update_by_id(self, *, id: int | UUID, **kwargs: dict[str, Any]) -> ModelType:
         """
-        Update an existing record.
+        Update an existing record by ID.
 
         Args:
-            obj_current: Existing model instance to update
-            obj_new: New data as dict or model instance
+            id: ID of record to update
+            kwargs: Dictionary of field names and values to update
 
         Returns:
             Updated model instance
-        """
-        update_data = (
-            obj_new
-            if isinstance(obj_new, dict)
-            else obj_new.model_dump(exclude_unset=True)
-        )
 
-        obj_current.sqlmodel_update(update_data)
-        self._session.add(obj_current)
+        Raises:
+            ResourceNotFoundException: When record with given ID is not found
+        """
+        obj = self.get_by_id(id)
+
+        obj.sqlmodel_update(kwargs)
+        self._session.add(obj)
         self._session.commit()
-        self._session.refresh(obj_current)
-        return obj_current
+        self._session.refresh(obj)
+        return obj
 
     def get_by_id(self, id: int | UUID) -> ModelType:
         """

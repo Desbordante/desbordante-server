@@ -6,8 +6,11 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "alembic>=1.15.1",
+    "celery>=5.4.0",
     "desbordante>=2.3.2",
+    "desbordante-stubs>=0.3.0",
     "fastapi[standard]>=0.115.8",
+    "flower>=2.0.1",
     "greenlet>=3.1.1",
     "minio>=7.2.15",
     "passlib[bcrypt]>=1.7.4",
@@ -25,4 +28,5 @@ dependencies = [
 dev = [
     "pre-commit>=4.1.0",
     "ruff>=0.9.6",
+    "watchdog>=6.0.0",
 ]
