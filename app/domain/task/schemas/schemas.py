@@ -1,26 +1,15 @@
-from enum import StrEnum, auto
+from typing import Union
+from uuid import UUID
 
+
+from app.domain.task.schemas.fd.task import FdTaskConfig, FdTaskResult
 from app.schemas.schemas import BaseSchema
 
+OneOfTaskConfig = Union[FdTaskConfig]
 
-class PrimitiveName(StrEnum):
-    FD = auto()
-
-
-class TaskStatus(StrEnum):
-    CREATED = auto()
-    RUNNING = auto()
-    COMPLETED = auto()
-    FAILED = auto()
+OneOfTaskResult = Union[FdTaskResult]
 
 
-class OneOfTaskConfig(BaseSchema):
-    primitive_name: PrimitiveName
-
-
-class OneOfTaskResult(BaseSchema):
-    primitive_name: PrimitiveName
-
-
-class TaskCreate(OneOfTaskConfig):
-    pass
+class TaskCreate(BaseSchema):
+    files_ids: list[UUID]
+    config: OneOfTaskConfig

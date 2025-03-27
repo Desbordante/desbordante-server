@@ -20,4 +20,4 @@ class UserBase(SQLModel):
 class User(BaseIDModel, UserBase, table=True):
     hashed_password: str = Field(nullable=False, index=True)
     files: list["File"] = Relationship(back_populates="owner")
-    tasks: list["Task"] = Relationship(back_populates="owner")
+    tasks: list["Task"] = Relationship(back_populates="initiator")

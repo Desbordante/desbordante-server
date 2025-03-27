@@ -150,6 +150,11 @@ class BaseRepository(Generic[ModelType]):
         results = self._session.exec(statement).all()
         return results
 
+    def get_many_by_ids(self, ids: list[UUID | int]) -> list[ModelType]:
+        statement = select(self.model).where(self.model.id.in_(ids))
+        results = self._session.exec(statement).all()
+        return results
+
     def delete(self, *, id: int | UUID) -> ModelType:
         """
         Delete a record by ID.
