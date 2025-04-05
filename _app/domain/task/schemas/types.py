@@ -3,6 +3,8 @@ from enum import StrEnum, auto
 
 class PrimitiveName(StrEnum):
     FD = auto()
+    DD = auto()
+    NAR = auto()
 
 
 class TaskStatus(StrEnum):

@@ -23,8 +23,8 @@ from _app.schemas.schemas import BaseSchema
 
 
 class FdModel(BaseSchema):
-    lhs_indices: list[int]
-    rhs_index: int
+    lhs: list[str]
+    rhs: list[str]
 
 
 class BaseFdTaskModel(BaseSchema):
@@ -62,17 +62,20 @@ class FdTask(BaseTask[FdTaskConfig, FdTaskResult]):
         self, tables: list[pandas.DataFrame], task_config: FdTaskConfig
     ) -> FdTaskResult:
         table = tables[0]
-        algo_config = task_config.config
-        options = algo_config.model_dump(exclude_unset=True, exclude={"algo_name"})
+        columns = table.columns
+        algo_config = task_config["config"]
+        options = FdTaskConfig.model_validate(task_config).config.model_dump(
+            exclude_unset=True, exclude={"algo_name"}
+        )
 
-        algo = self.match_algo_by_name(algo_config.algo_name)
+        algo = self.match_algo_by_name(algo_config["algo_name"])
         algo.load_data(table=table)
         algo.execute(**options)
 
         return FdTaskResult(
             primitive_name=PrimitiveName.FD,
             result=[
-                FdModel(lhs_indices=fd.lhs_indices, rhs_index=fd.rhs_index)
+                FdModel(lhs=[columns[index] for index in fd.lhs_indices], rhs=[columns[fd.rhs_index]])
                 for fd in algo.get_fds()
             ],
         )
