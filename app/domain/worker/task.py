@@ -19,14 +19,12 @@ from app.repository import BaseRepository
 def data_profiling_task(
     task_id: UUID,
     paths: list[str],
-    raw_config: dict,
+    raw_config: OneOfTaskConfig,
 ) -> OneOfTaskResult:
-    config = OneOfTaskConfig.model_validate(raw_config)
-
     tables = [pd.read_csv(BytesIO(storage.download_file(path))) for path in paths]
 
-    return match_task_by_primitive_name(config.primitive_name).execute(
-        tables=tables, task_config=config
+    return match_task_by_primitive_name(raw_config["primitive_name"]).execute(
+        tables=tables, task_config=raw_config
     )
 
 
@@ -55,7 +53,7 @@ def task_postrun_notifier(retval: OneOfTaskResult | None, kwargs, **_):
         task_repository.update_by_id(
             id=task_id,
             status=TaskStatus.COMPLETED,
-            result=retval.serializable_dict(),
+            result=retval.model_dump(),
         )
 
 
