@@ -4,6 +4,7 @@ from enum import StrEnum, auto
 class PrimitiveName(StrEnum):
     FD = auto()
     DD = auto()
+    MD = auto()
     NAR = auto()
 
 

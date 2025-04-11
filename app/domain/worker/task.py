@@ -20,7 +20,6 @@ def data_profiling_task(
     task_id: UUID,
     paths: list[str],
     raw_config: OneOfTaskConfig,
-    raw_config: OneOfTaskConfig,
 ) -> OneOfTaskResult:
     tables = [pd.read_csv(BytesIO(storage.download_file(path))) for path in paths]
 
@@ -55,7 +54,6 @@ def task_postrun_notifier(retval: OneOfTaskResult | None, kwargs, **_):
         task_repository.update_by_id(
             id=task_id,
             status=TaskStatus.COMPLETED,
-            result=retval.model_dump(),
             result=retval.model_dump(),
         )
 
