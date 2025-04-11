@@ -77,7 +77,6 @@ class MdTask(BaseTask[MdTaskConfig, MdTaskResult]):
             metrics = s.column_match_description.column_match_name
             column1 = s.column_match_description.left_column_description.column_name
             column2 = s.column_match_description.right_column_description.column_name
-            print(8888, metrics, column1, column2, boundary)
             sides.append(MdSideModel(metrics=metrics, 
                                      left_column=column1, 
                                      right_column=column2,
@@ -100,10 +99,8 @@ class MdTask(BaseTask[MdTaskConfig, MdTaskResult]):
         options = MdTaskConfig.model_validate(task_config).config.model_dump(
             exclude_unset=True, exclude={"algo_name", "column_matches"}
         )
-        print(777, options)
         cm_array = []
         for cm in column_matches:
-            print(55, cm)
             metrics_class = self.match_metrics_by_name(cm['metrics'])
             del cm['metrics']
             cm_array.append(metrics_class(**cm))
@@ -111,10 +108,11 @@ class MdTask(BaseTask[MdTaskConfig, MdTaskResult]):
 
         algo = self.match_algo_by_name(algo_config["algo_name"])
         
-        algo.load_data(left_table=left_table)
+        algo.load_data(left_table=left_table, right_table=right_table)
+        if options['max_cardinality'] == -1:
+            options['max_cardinality'] = 2**64 - 1
         algo.execute(**options, column_matches=cm_array)
-        #algo.load_data(left_table=left_table, right_table=right_table)
-        #algo.execute(**options, column_matches=cm_array, right_table=right_table)
+        
 
         return MdTaskResult(
             primitive_name=PrimitiveName.MD,
