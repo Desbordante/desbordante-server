@@ -1,3 +1,3 @@
-from .schemas import BaseSchema
+from .schemas import BaseSchema, HTTPApiError
 
-__all__ = ["BaseSchema"]
+__all__ = ["BaseSchema", "HTTPApiError"]

@@ -1,7 +1,7 @@
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
 from app.domain.auth.dependencies.auth import (
     AuthorizedUserDep,
@@ -12,11 +12,16 @@ from app.domain.task.dependencies import TaskServiceDep
 from app.domain.task.models import TaskPublic
 from app.domain.task.schemas.schemas import TaskCreate
 from app.exceptions.exceptions import ForbiddenException
+from app.schemas import HTTPApiError
 
 router = APIRouter()
 
 
-@router.post("/", response_model=TaskPublic)
+@router.post(
+    "/",
+    response_model=TaskPublic,
+    responses={status.HTTP_403_FORBIDDEN: {"model": HTTPApiError}},
+)
 async def create_task(
     user: OptionallyAuthorizedUserDep,
     form_data: TaskCreate,
@@ -38,7 +43,11 @@ async def create_task(
     return task
 
 
-@router.get("/{id}", response_model=TaskPublic)
+@router.get(
+    "/{id}",
+    response_model=TaskPublic,
+    responses={status.HTTP_403_FORBIDDEN: {"model": HTTPApiError}},
+)
 async def get_task(
     id: UUID,
     user: OptionallyAuthorizedUserDep,
@@ -54,7 +63,11 @@ async def get_task(
     return task
 
 
-@router.get("/", response_model=List[TaskPublic])
+@router.get(
+    "/",
+    response_model=List[TaskPublic],
+    responses={status.HTTP_401_UNAUTHORIZED: {"model": HTTPApiError}},
+)
 async def get_tasks(
     user: AuthorizedUserDep,
     task_service: TaskServiceDep,
