@@ -12,3 +12,7 @@ class BaseSchema(BaseModel):
         default_dict = self.model_dump()
 
         return jsonable_encoder(default_dict)
+
+
+class HTTPApiError(BaseSchema):
+    detail: str
