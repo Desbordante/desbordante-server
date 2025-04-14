@@ -4,6 +4,8 @@ from _app.domain.task.schemas.fd.task import FdTask
 from _app.domain.task.schemas.dd.task import DdTask
 from _app.domain.task.schemas.md.task import MdTask
 from _app.domain.task.schemas.nar.task import NarTask
+from _app.domain.task.schemas.adc.task import AdcTask
+
 from _app.domain.task.schemas.types import PrimitiveName
 
 def match_task_by_primitive_name(primitive_name: PrimitiveName):
@@ -16,4 +18,6 @@ def match_task_by_primitive_name(primitive_name: PrimitiveName):
             return DdTask()
         case PrimitiveName.MD:
             return MdTask()
+        case PrimitiveName.ADC:
+            return AdcTask()
     assert_never(primitive_name)
