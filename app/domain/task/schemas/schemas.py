@@ -7,11 +7,22 @@ from app.domain.task.schemas.dd.task import DdTaskConfig, DdTaskResult
 from app.domain.task.schemas.md.task import MdTaskConfig, MdTaskResult
 from app.domain.task.schemas.nar.task import NarTaskConfig, NarTaskResult
 from app.domain.task.schemas.adc.task import AdcTaskConfig, AdcTaskResult
+from app.domain.task.schemas.ac.task import AcTaskConfig, AcTaskResult
 from app.schemas.schemas import BaseSchema
 
-OneOfTaskConfig = Union[FdTaskConfig, NarTaskConfig, DdTaskConfig, MdTaskConfig, AdcTaskConfig]
+OneOfTaskConfig = Union[FdTaskConfig, 
+                        NarTaskConfig, 
+                        DdTaskConfig, 
+                        MdTaskConfig, 
+                        AdcTaskConfig, 
+                        AcTaskConfig]
 
-OneOfTaskResult = Union[FdTaskResult, NarTaskResult, DdTaskResult, MdTaskResult, AdcTaskResult]
+OneOfTaskResult = Union[FdTaskResult, 
+                        NarTaskResult, 
+                        DdTaskResult, 
+                        MdTaskResult, 
+                        AdcTaskResult, 
+                        AcTaskResult]
 
 
 class TaskCreate(BaseSchema):

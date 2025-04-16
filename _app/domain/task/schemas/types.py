@@ -7,6 +7,7 @@ class PrimitiveName(StrEnum):
     MD = auto()
     NAR = auto()
     ADC = auto()
+    AC = auto()
 
 
 class TaskStatus(StrEnum):

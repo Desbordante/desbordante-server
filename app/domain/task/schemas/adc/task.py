@@ -1,7 +1,6 @@
 from typing import Literal, assert_never
 
 import pandas
-from desbordante.dc import DC
 from desbordante.dc.algorithms import FastADC
 
 from app.domain.task.schemas.base import BaseTask
