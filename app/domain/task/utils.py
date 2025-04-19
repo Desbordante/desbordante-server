@@ -1,6 +1,8 @@
 from typing import assert_never
 
 from app.domain.task.schemas.fd.task import FdTask
+from app.domain.task.schemas.afd.task import AfdTask
+from app.domain.task.schemas.afd_verification.task import AfdVerificationTask
 from app.domain.task.schemas.dd.task import DdTask
 from app.domain.task.schemas.md.task import MdTask
 from app.domain.task.schemas.nar.task import NarTask
@@ -13,6 +15,10 @@ def match_task_by_primitive_name(primitive_name: PrimitiveName):
     match primitive_name:
         case PrimitiveName.FD:
             return FdTask()
+        case PrimitiveName.AFD:
+            return AfdTask()
+        case PrimitiveName.AFD_VERIFICATION:
+            return AfdVerificationTask()
         case PrimitiveName.NAR:
             return NarTask()
         case PrimitiveName.DD:
