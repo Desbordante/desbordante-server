@@ -3,11 +3,15 @@ from enum import StrEnum, auto
 
 class PrimitiveName(StrEnum):
     FD = auto()
+    FD_VERIFICATION = auto()
+    AFD = auto()
+    AFD_VERIFICATION = auto()
     DD = auto()
     MD = auto()
     NAR = auto()
     ADC = auto()
     AC = auto()
+    
 
 
 class TaskStatus(StrEnum):
