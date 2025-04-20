@@ -52,6 +52,10 @@ class AfdTask(BaseTask[AfdTaskConfig, AfdTaskResult]):
             exclude_unset=True, exclude={"algo_name"}
         )
 
+        # no limit
+        if options['max_lhs'] == 0:
+            del options['max_lhs']
+
         algo = self.match_algo_by_name(algo_config["algo_name"])
         algo.load_data(table=table)
         algo.execute(**options)

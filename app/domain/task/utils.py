@@ -1,6 +1,7 @@
 from typing import assert_never
 
 from app.domain.task.schemas.fd.task import FdTask
+from app.domain.task.schemas.pfd.task import PfdTask
 from app.domain.task.schemas.afd.task import AfdTask
 from app.domain.task.schemas.afd_verification.task import AfdVerificationTask
 from app.domain.task.schemas.dd.task import DdTask
@@ -15,6 +16,8 @@ def match_task_by_primitive_name(primitive_name: PrimitiveName):
     match primitive_name:
         case PrimitiveName.FD:
             return FdTask()
+        case PrimitiveName.PFD:
+            return PfdTask()
         case PrimitiveName.AFD:
             return AfdTask()
         case PrimitiveName.AFD_VERIFICATION:

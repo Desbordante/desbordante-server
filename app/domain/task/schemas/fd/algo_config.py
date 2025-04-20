@@ -31,7 +31,7 @@ class AidConfig(BaseFdConfig):
 
 class DFDConfig(BaseFdConfig):
     algo_name: Literal[FdAlgoName.DFD]
-    threads: int = Field(0, ge=0, description=THREADS_DESC)
+    threads: int = Field(0, ge=0, le=8, description=THREADS_DESC)
     is_null_equal_null: bool = Field(False, description=NULL_EQUAL_DESC)
 
 
