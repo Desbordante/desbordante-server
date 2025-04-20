@@ -3,6 +3,7 @@ from uuid import UUID
 
 
 from _app.domain.task.schemas.fd.task import FdTaskConfig, FdTaskResult
+from _app.domain.task.schemas.pfd.task import PfdTaskConfig, PfdTaskResult
 from _app.domain.task.schemas.afd.task import AfdTaskConfig, AfdTaskResult
 from _app.domain.task.schemas.afd_verification.task import AfdVerificationTaskConfig, AfdVerificationTaskResult
 from _app.domain.task.schemas.dd.task import DdTaskConfig, DdTaskResult
@@ -14,6 +15,7 @@ from _app.domain.task.schemas.ac.task import AcTaskConfig, AcTaskResult
 from _app.schemas.schemas import BaseSchema
 
 OneOfTaskConfig = Union[FdTaskConfig, 
+                        PfdTaskConfig,
                         AfdTaskConfig,
                         AfdVerificationTaskConfig,
                         NarTaskConfig, 
@@ -24,6 +26,7 @@ OneOfTaskConfig = Union[FdTaskConfig,
                         ]
 
 OneOfTaskResult = Union[FdTaskResult, 
+                        PfdTaskResult,
                         AfdTaskResult,
                         AfdVerificationTaskResult,
                         NarTaskResult, 
