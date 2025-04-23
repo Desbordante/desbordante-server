@@ -21,7 +21,7 @@ from app.domain.task.schemas.types import PrimitiveName
 from app.schemas.schemas import BaseSchema
 
 
-class MdSideModel(BaseSchema):
+class MdSideItemModel(BaseSchema):
     metrics: str
     left_column: str
     right_column: str
@@ -29,8 +29,8 @@ class MdSideModel(BaseSchema):
 
 
 class MdModel(BaseSchema):
-    lhs: list[MdSideModel]
-    rhs: list[MdSideModel]
+    lhs: list[MdSideItemModel]
+    rhs: list[MdSideItemModel]
 
 
 class BaseMdTaskModel(BaseSchema):
@@ -70,14 +70,14 @@ class MdTask(BaseTask[MdTaskConfig, MdTaskResult]):
             return metrics_class
         assert_never(metrics)
 
-    def extract_side(self, side) -> list[MdSideModel]:
+    def extract_side(self, side) -> list[MdSideItemModel]:
         sides = []
         for s in side:
             boundary = s.decision_boundary
             metrics = s.column_match_description.column_match_name
             column1 = s.column_match_description.left_column_description.column_name
             column2 = s.column_match_description.right_column_description.column_name
-            sides.append(MdSideModel(metrics=metrics, 
+            sides.append(MdSideItemModel(metrics=metrics, 
                                      left_column=column1, 
                                      right_column=column2,
                                      boundary=boundary))

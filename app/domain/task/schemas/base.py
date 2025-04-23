@@ -43,3 +43,11 @@ class BaseTask[C: BaseTaskConfig, R: BaseTaskResult](ABC):
 
     @abstractmethod
     def execute(self, tables: list[pandas.DataFrame], task_config: C) -> R: ...
+
+
+class BaseFilter[R: BaseTaskResult](ABC):
+    @abstractmethod
+    def match_filter_by_option_name(self, algo_name) -> desbordante.Algorithm: ...
+
+    @abstractmethod
+    def filter(self, algo_name) -> R: ...
