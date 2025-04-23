@@ -1,7 +1,11 @@
-from typing import List
+from enum import Enum
+from typing import List, Optional, Tuple, Union
+from fastapi import Depends, Query
 from uuid import UUID
+import json
 
 from fastapi import APIRouter
+from pydantic import BaseModel
 
 from app.domain.auth.dependencies.auth import (
     AuthorizedUserDep,
@@ -10,10 +14,30 @@ from app.domain.auth.dependencies.auth import (
 from app.domain.file.dependencies import FileServiceDep
 from app.domain.task.dependencies import TaskServiceDep
 from app.domain.task.models import TaskPublic
+from app.domain.task.utils import match_filter_by_primitive_name
 from app.domain.task.schemas.schemas import TaskCreate
 from app.exceptions.exceptions import ForbiddenException
 
+from app.domain.task.schemas.dd.filter import DdFilterOptions
+from app.domain.task.schemas.md.filter import MdFilterOptions
+from app.domain.task.schemas.fd.filter import FdFilterOptions
+from app.domain.task.schemas.afd.filter import AfdFilterOptions
+from app.domain.task.schemas.pfd.filter import PfdFilterOptions
+from app.domain.task.schemas.nar.filter import NarFilterOptions
+
 router = APIRouter()
+
+class SortOrder(str, Enum):
+    ASCENDING = "asc"
+    DESCENDING = "desc"
+
+OneOfFilterOption = Union[NarFilterOptions, 
+                          DdFilterOptions, 
+                          MdFilterOptions,
+                          FdFilterOptions,
+                          PfdFilterOptions,
+                          AfdFilterOptions,]
+
 
 
 @router.post("", response_model=TaskPublic)
@@ -37,19 +61,34 @@ async def create_task(
     )
     return task
 
-
 @router.get("/{id}", response_model=TaskPublic)
 async def get_task(
     id: UUID,
     user: OptionallyAuthorizedUserDep,
     task_service: TaskServiceDep,
+
+    filter_options: List[OneOfFilterOption] = Query(None),
+    filter_params: str = Query(None, description="String in JSON format {filter_option: filter_params}"),
 ) -> TaskPublic:
     task = task_service.get_by_id(id)
-
+    print('pupupu', filter_options, filter_params)
+    
     user_id = user.id if user else None
 
     if task.initiator_id != user_id:
         raise ForbiddenException("Access denied")
+    
+    if filter_options and filter_params:
+        filter = json.loads(filter_params)  
+
+        task_result = task.result['result']
+        primitive_name = task.result['primitive_name']
+
+        filt = match_filter_by_primitive_name(primitive_name)
+        for f in filter_options:
+            task_result = filt.filter(task_result, f, filter[f])
+
+        task.result['result'] = task_result
 
     return task
 

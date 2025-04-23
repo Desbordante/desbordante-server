@@ -4,11 +4,12 @@ import pandas
 from desbordante.fd import FdAlgorithm
 from desbordante.pfd.algorithms import PFDTane
 
-from app.domain.task.schemas.base import BaseTask
-from app.domain.task.schemas.pfd.algo_config import OneOfPfdAlgoConfig
-from app.domain.task.schemas.pfd.algo_name import PfdAlgoName
-from app.domain.task.schemas.types import PrimitiveName
-from app.schemas.schemas import BaseSchema
+from _app.domain.task.schemas.base import BaseTask
+from _app.domain.task.schemas.types import PrimitiveName
+from _app.schemas.schemas import BaseSchema
+from .algo_config import OneOfPfdAlgoConfig
+from .algo_name import PfdAlgoName
+
 
 
 class PfdModel(BaseSchema):

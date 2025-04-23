@@ -5,20 +5,22 @@ from desbordante.nar import NarAlgorithm
 from desbordante.nar.algorithms import DES
 
 from _app.domain.task.schemas.base import BaseTask
-from _app.domain.task.schemas.nar.algo_config import OneOfNarAlgoConfig
-from _app.domain.task.schemas.nar.algo_name import NarAlgoName
 from _app.domain.task.schemas.types import PrimitiveName
 from _app.schemas.schemas import BaseSchema
 
+from .algo_config import OneOfNarAlgoConfig
+from .algo_name import NarAlgoName
 
-class NarSideModel(BaseSchema):
+
+
+class NarSideItemModel(BaseSchema):
     name: str
     values: str
 
 
 class NarModel(BaseSchema):
-    lhs: list[NarSideModel]
-    rhs: list[NarSideModel]
+    lhs: list[NarSideItemModel]
+    rhs: list[NarSideItemModel]
     confidence: float
     support: float
 
@@ -45,9 +47,9 @@ class NarTask(BaseTask[NarTaskConfig, NarTaskResult]):
             return algo_class()
         assert_never(algo_name)
 
-    def extract_side(self, side, columns) -> list[NarSideModel]:
+    def extract_side(self, side, columns) -> list[NarSideItemModel]:
         return [
-            NarSideModel(name=columns[column_index], values=str(value))
+            NarSideItemModel(name=columns[column_index], values=str(value))
             for column_index, value in side
         ]
 

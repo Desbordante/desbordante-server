@@ -11,14 +11,14 @@ from app.domain.task.schemas.types import PrimitiveName
 from app.schemas.schemas import BaseSchema
 
 
-class NarSideModel(BaseSchema):
+class NarSideItemModel(BaseSchema):
     name: str
     values: str
 
 
 class NarModel(BaseSchema):
-    lhs: list[NarSideModel]
-    rhs: list[NarSideModel]
+    lhs: list[NarSideItemModel]
+    rhs: list[NarSideItemModel]
     confidence: float
     support: float
 
@@ -45,9 +45,9 @@ class NarTask(BaseTask[NarTaskConfig, NarTaskResult]):
             return algo_class()
         assert_never(algo_name)
 
-    def extract_side(self, side, columns) -> list[NarSideModel]:
+    def extract_side(self, side, columns) -> list[NarSideItemModel]:
         return [
-            NarSideModel(name=columns[column_index], values=str(value))
+            NarSideItemModel(name=columns[column_index], values=str(value))
             for column_index, value in side
         ]
 

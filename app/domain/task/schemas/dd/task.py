@@ -11,14 +11,14 @@ from app.domain.task.schemas.types import PrimitiveName
 from app.schemas.schemas import BaseSchema
 
 
-class DdSideModel(BaseSchema):
+class DdSideItemModel(BaseSchema):
     name: str
     values: str
 
 
 class DdModel(BaseSchema):
-    lhs: list[DdSideModel]
-    rhs: list[DdSideModel]
+    lhs: list[DdSideItemModel]
+    rhs: list[DdSideItemModel]
 
 
 class BaseDdTaskModel(BaseSchema):
@@ -43,18 +43,12 @@ class DdTask(BaseTask[DdTaskConfig, DdTaskResult]):
             return algo_class()
         assert_never(algo_name)
 
-    # def extract_side(self, side, columns) -> list[DdSideModel]:
-    #     return [
-    #         DdSideModel(name=columns[column_index], values=str(value))
-    #         for column_index, value in side
-    #     ]
-        
-    def split_side(self, raw: list[str]) -> list[DdSideModel]:
+    def split_side(self, raw: list[str]) -> list[DdSideItemModel]:
         ans = []
         for s in raw:
             name, value = s.split(' [')
             value = '[' + value
-            ans.append({'name': name, 'values': value})
+            ans.append(DdSideItemModel(name=name, values=value))
         return ans
 
 
@@ -63,8 +57,6 @@ class DdTask(BaseTask[DdTaskConfig, DdTaskResult]):
         lhs_raw = lhs_rawraw.split(' ; ')
         lhs_ans = self.split_side(lhs_raw)
         rhs_ans = self.split_side([rhs_raw])
-        # print(111, lhs_ans)
-        # print(222, rhs_ans)
         return DdModel(lhs=lhs_ans, rhs=rhs_ans) 
         
 
@@ -73,18 +65,12 @@ class DdTask(BaseTask[DdTaskConfig, DdTaskResult]):
     ) -> DdTaskResult:
         table = tables[0]
         dif_table = tables[1]
-        # print(666, tables[1])
-        # columns = table.columns
         algo_config = task_config["config"]
         options = DdTaskConfig.model_validate(task_config).config.model_dump(
             exclude_unset=True, exclude={"algo_name"}
         )
-        # print(777, options)
         algo = self.match_algo_by_name(algo_config["algo_name"])
-        #algo = Split
         algo.load_data(table=table)
-        # algo.execute(**options)
-        # algo.execute(difference_table=dif_table)
         algo.execute(**options, difference_table=dif_table)
 
         return DdTaskResult(

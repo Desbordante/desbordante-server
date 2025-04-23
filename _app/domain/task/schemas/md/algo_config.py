@@ -2,26 +2,11 @@ from typing import Annotated, Literal, Union, Optional
 
 from pydantic import Field
 
-from app.schemas import BaseSchema
+from _app.schemas import BaseSchema
 
 from .algo_name import MdAlgoName
 
 from .column_matches import ColumnMatchMetrics
-
-#from desbordante.md.column_matches import *
-
-#  """
-#     Options:
-#     right_table: second table processed by the algorithm
-#     left_table: first table processed by the algorithm
-#     min_support: minimum support for a dependency's LHS
-#     column_matches: column matches to examine
-#     level_definition: MD lattice level definition to use
-#     [cardinality|lattice]
-#     prune_nondisjoint: don't search for dependencies where the LHS decision boundary at the same index as the RHS decision boundary limits the number of records matched
-#     max_cardinality: maximum number of MD matching classifiers
-#     threads: number of threads to use. If 0, then as many threads are used as the hardware can handle concurrently.
-# """
 
 MIN_SUPPORT = "Minimum support for a dependency's LHS"
 COLUMN_MATCHES = "Column matches to examine"

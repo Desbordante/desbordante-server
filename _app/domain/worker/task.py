@@ -26,7 +26,7 @@ def data_profiling_task(
 
     tables = [pd.read_csv(BytesIO(storage.download_file(path))) for path in paths]
 
-    #print('!!!', raw_config)
+    # print('!!!', tables, raw_config)
     return match_task_by_primitive_name(raw_config["primitive_name"]).execute(
         tables=tables, task_config=raw_config
     )

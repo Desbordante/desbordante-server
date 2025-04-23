@@ -13,8 +13,8 @@ NUM_COLUMNS = 'Use only first N columns of the table'
 
 class SplitConfig(BaseSchema):
     algo_name: Literal[DdAlgoName.Split]
-    num_rows: Optional[int] = None # = Field(..., ge=1, description=NUW_ROWS)
-    num_columns: Optional[int] = None # = Field(..., ge=1, description=NUM_COLUMNS)
+    num_rows: int = Field(0, ge=0, description=NUW_ROWS)
+    num_columns: int = Field(0, ge=0, description=NUM_COLUMNS)
 
 OneOfDdAlgoConfig = Annotated[
     Union[SplitConfig],

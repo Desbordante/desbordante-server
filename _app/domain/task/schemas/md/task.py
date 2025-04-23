@@ -13,15 +13,17 @@ from desbordante.md.column_matches import (
     LVNormNumberDistance
     )
 
-from app.domain.task.schemas.base import BaseTask
-from app.domain.task.schemas.md.algo_config import OneOfMdAlgoConfig
-from app.domain.task.schemas.md.algo_name import MdAlgoName
-from app.domain.task.schemas.md.column_matches import ColumnMatchMetrics
-from app.domain.task.schemas.types import PrimitiveName
-from app.schemas.schemas import BaseSchema
+from _app.domain.task.schemas.base import BaseTask
+from _app.domain.task.schemas.types import PrimitiveName
+from _app.schemas.schemas import BaseSchema
+
+from .algo_config import OneOfMdAlgoConfig
+from .algo_name import MdAlgoName
+from .column_matches import ColumnMatchMetrics
 
 
-class MdSideModel(BaseSchema):
+
+class MdSideItemModel(BaseSchema):
     metrics: str
     left_column: str
     right_column: str
@@ -29,8 +31,8 @@ class MdSideModel(BaseSchema):
 
 
 class MdModel(BaseSchema):
-    lhs: list[MdSideModel]
-    rhs: list[MdSideModel]
+    lhs: list[MdSideItemModel]
+    rhs: list[MdSideItemModel]
 
 
 class BaseMdTaskModel(BaseSchema):
@@ -70,15 +72,14 @@ class MdTask(BaseTask[MdTaskConfig, MdTaskResult]):
             return metrics_class
         assert_never(metrics)
 
-    def extract_side(self, side) -> list[MdSideModel]:
+    def extract_side(self, side) -> list[MdSideItemModel]:
         sides = []
         for s in side:
             boundary = s.decision_boundary
             metrics = s.column_match_description.column_match_name
             column1 = s.column_match_description.left_column_description.column_name
             column2 = s.column_match_description.right_column_description.column_name
-            print(8888, metrics, column1, column2, boundary)
-            sides.append(MdSideModel(metrics=metrics, 
+            sides.append(MdSideItemModel(metrics=metrics, 
                                      left_column=column1, 
                                      right_column=column2,
                                      boundary=boundary))
@@ -100,10 +101,8 @@ class MdTask(BaseTask[MdTaskConfig, MdTaskResult]):
         options = MdTaskConfig.model_validate(task_config).config.model_dump(
             exclude_unset=True, exclude={"algo_name", "column_matches"}
         )
-        print(777, options)
         cm_array = []
         for cm in column_matches:
-            print(55, cm)
             metrics_class = self.match_metrics_by_name(cm['metrics'])
             del cm['metrics']
             cm_array.append(metrics_class(**cm))
@@ -111,10 +110,11 @@ class MdTask(BaseTask[MdTaskConfig, MdTaskResult]):
 
         algo = self.match_algo_by_name(algo_config["algo_name"])
         
-        algo.load_data(left_table=left_table)
+        algo.load_data(left_table=left_table, right_table=right_table)
+        if options['max_cardinality'] == -1:
+            options['max_cardinality'] = 2**64 - 1
         algo.execute(**options, column_matches=cm_array)
-        #algo.load_data(left_table=left_table, right_table=right_table)
-        #algo.execute(**options, column_matches=cm_array, right_table=right_table)
+        
 
         return MdTaskResult(
             primitive_name=PrimitiveName.MD,

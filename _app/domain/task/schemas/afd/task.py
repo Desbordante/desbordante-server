@@ -7,11 +7,13 @@ from desbordante.fd.algorithms import (
     Tane,
 )
 
-from app.domain.task.schemas.base import BaseTask
-from app.domain.task.schemas.afd.algo_config import OneOfAfdAlgoConfig
-from app.domain.task.schemas.afd.algo_name import AfdAlgoName
-from app.domain.task.schemas.types import PrimitiveName
-from app.schemas.schemas import BaseSchema
+from _app.domain.task.schemas.base import BaseTask
+from _app.domain.task.schemas.types import PrimitiveName
+from _app.schemas.schemas import BaseSchema
+
+from .algo_config import OneOfAfdAlgoConfig
+from .algo_name import AfdAlgoName
+
 
 
 class AfdModel(BaseSchema):
