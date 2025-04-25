@@ -47,7 +47,15 @@ class BaseTask[C: BaseTaskConfig, R: BaseTaskResult](ABC):
 
 class BaseFilter[R: BaseTaskResult](ABC):
     @abstractmethod
-    def match_filter_by_option_name(self, algo_name) -> desbordante.Algorithm: ...
+    def match_filter_by_option_name(self, algo_name): ...
 
     @abstractmethod
     def filter(self, algo_name) -> R: ...
+
+
+class BaseSorter(ABC):
+    @abstractmethod
+    def match_sorter_by_option_name(self, algo_name): ...
+
+    @abstractmethod
+    def sort(self, algo_name): ...

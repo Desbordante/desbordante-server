@@ -14,8 +14,10 @@ from app.domain.auth.dependencies.auth import (
 from app.domain.file.dependencies import FileServiceDep
 from app.domain.task.dependencies import TaskServiceDep
 from app.domain.task.models import TaskPublic
-from app.domain.task.utils import match_filter_by_primitive_name
+from app.domain.task.utils import match_filter_by_primitive_name, \
+                                  match_sorter_by_primitive_name
 from app.domain.task.schemas.schemas import TaskCreate
+from app.domain.task.schemas.types import SortOrder
 from app.exceptions.exceptions import ForbiddenException
 
 from app.domain.task.schemas.dd.filter import DdFilterOptions
@@ -25,18 +27,29 @@ from app.domain.task.schemas.afd.filter import AfdFilterOptions
 from app.domain.task.schemas.pfd.filter import PfdFilterOptions
 from app.domain.task.schemas.nar.filter import NarFilterOptions
 
-router = APIRouter()
+from app.domain.task.schemas.dd.sort import DdFSortOptions
+# from app.domain.task.schemas.md.sort import MdFilterOptions
+from app.domain.task.schemas.fd.sort import FdFSortOptions
+from app.domain.task.schemas.afd.sort import AfdFSortOptions
+from app.domain.task.schemas.pfd.sort import PfdFSortOptions
+from app.domain.task.schemas.nar.sort import NarSortOptions
 
-class SortOrder(str, Enum):
-    ASCENDING = "asc"
-    DESCENDING = "desc"
+router = APIRouter()
 
 OneOfFilterOption = Union[NarFilterOptions, 
                           DdFilterOptions, 
                           MdFilterOptions,
                           FdFilterOptions,
                           PfdFilterOptions,
-                          AfdFilterOptions,]
+                          AfdFilterOptions,
+                          ]
+
+OneOfSortOption = Union[FdFSortOptions,
+                        PfdFSortOptions,
+                        AfdFSortOptions,
+                        DdFSortOptions,
+                        NarSortOptions,
+                        ]
 
 
 
@@ -68,28 +81,44 @@ async def get_task(
     task_service: TaskServiceDep,
 
     filter_options: List[OneOfFilterOption] = Query(None),
-    filter_params: str = Query(None, description="String in JSON format {filter_option: filter_params}"),
+    filter_params: str = Query(None, 
+                               description="String in JSON format {filter_option: filter_params}"),
+
+    sort_option: OneOfSortOption = Query(None),
+    sort_direction: SortOrder = Query(None),
 ) -> TaskPublic:
     task = task_service.get_by_id(id)
-    print('pupupu', filter_options, filter_params)
+    print('pupupu')
     
     user_id = user.id if user else None
 
     if task.initiator_id != user_id:
         raise ForbiddenException("Access denied")
     
+    task_result = task.result['result']
+    primitive_name = task.result['primitive_name']
+
+    
     if filter_options and filter_params:
+        print('filter', filter_options, filter_params)
         filter = json.loads(filter_params)  
-
-        task_result = task.result['result']
-        primitive_name = task.result['primitive_name']
-
+     
         filt = match_filter_by_primitive_name(primitive_name)
         for f in filter_options:
             task_result = filt.filter(task_result, f, filter[f])
+     
 
-        task.result['result'] = task_result
+    if sort_option and sort_direction:
+        print('sort', sort_option, sort_direction)
+        sorter = match_sorter_by_primitive_name(primitive_name)
+        print(888, task_result)
+        task_result = sorter.sort(task_result, 
+                                  sort_option, 
+                                  sort_direction)
 
+    print(task_result)
+
+    task.result['result'] = task_result
     return task
 
 
