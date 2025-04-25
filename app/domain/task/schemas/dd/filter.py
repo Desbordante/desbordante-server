@@ -9,9 +9,8 @@ class DdFilterOptions(StrEnum):
 
 def filter_by_attributes(raw_result: List[DdModel], 
                         attributes_names: List[str]) -> List[DdModel]:
-    task_result = raw_result
     return ([
-        model for model in task_result
+        model for model in raw_result
         if set(attributes_names).issubset(
             {sideItem['name'] for sideItem in model['lhs'] + model['rhs']})
     ])

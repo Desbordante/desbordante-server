@@ -13,6 +13,9 @@ class PrimitiveName(StrEnum):
     ADC = auto()
     AC = auto()
     
+class SortOrder(StrEnum):
+    ASC = auto()
+    DESC = auto()
 
 
 class TaskStatus(StrEnum):

@@ -2,17 +2,29 @@ from typing import assert_never
 
 from _app.domain.task.schemas.fd.task import FdTask
 from _app.domain.task.schemas.fd.filter import FdFilter
+from _app.domain.task.schemas.fd.sort import FdFSorter
+
 from _app.domain.task.schemas.pfd.task import PfdTask
 from _app.domain.task.schemas.pfd.filter import PfdFilter
+from _app.domain.task.schemas.pfd.sort import PfdFSorter
+
 from _app.domain.task.schemas.afd.task import AfdTask
 from _app.domain.task.schemas.afd.filter import AfdFilter
+from _app.domain.task.schemas.afd.sort import AfdFSorter
+
 from _app.domain.task.schemas.afd_verification.task import AfdVerificationTask
+
 from _app.domain.task.schemas.dd.task import DdTask
 from _app.domain.task.schemas.dd.filter import DdFilter
+from app.domain.task.schemas.dd.sort import DdFSorter
+
 from _app.domain.task.schemas.md.task import MdTask
 from _app.domain.task.schemas.md.filter import MdFilter
+
 from _app.domain.task.schemas.nar.task import NarTask
 from _app.domain.task.schemas.nar.filter import NarFilter
+from app.domain.task.schemas.nar.sort import NarSorter
+
 from _app.domain.task.schemas.adc.task import AdcTask
 from _app.domain.task.schemas.ac.task import AcTask
 
@@ -55,4 +67,20 @@ def match_filter_by_primitive_name(primitive_name: PrimitiveName):
             return AfdFilter()
         case PrimitiveName.NAR:
             return NarFilter()
+    assert_never(primitive_name)
+
+def match_sorter_by_primitive_name(primitive_name: PrimitiveName):
+    match primitive_name:
+        case PrimitiveName.FD:
+            return FdFSorter()
+        case PrimitiveName.PFD:
+            return PfdFSorter()      
+        case PrimitiveName.AFD:
+            return AfdFSorter()
+        case PrimitiveName.DD:
+            return DdFSorter()
+        # case PrimitiveName.MD:
+        #     return MdFilter()
+        case PrimitiveName.NAR:
+            return NarSorter()
     assert_never(primitive_name)
