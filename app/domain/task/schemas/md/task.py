@@ -1,7 +1,11 @@
 from typing import Literal, assert_never
 
 import pandas
-from desbordante.md import MdAlgorithm
+from desbordante.md import (
+    MdAlgorithm,
+    LhsSimilarityClassifierDesctription,
+    RhsSimilarityClassifierDesctription
+    )
 from desbordante.md.algorithms import HyMD
 from desbordante.md.column_matches import (
     Equality, 
@@ -43,6 +47,7 @@ class MdTaskConfig(BaseMdTaskModel):
 
 class MdTaskResult(BaseMdTaskModel):
     result: list[MdModel]
+    table_header: list[str]
 
 
 class MdTask(BaseTask[MdTaskConfig, MdTaskResult]):
@@ -70,7 +75,9 @@ class MdTask(BaseTask[MdTaskConfig, MdTaskResult]):
             return metrics_class
         assert_never(metrics)
 
-    def extract_side(self, side) -> list[MdSideItemModel]:
+    def extract_side(self, 
+                     side: list[LhsSimilarityClassifierDesctription 
+                                | RhsSimilarityClassifierDesctription]) -> list[MdSideItemModel]:
         sides = []
         for s in side:
             boundary = s.decision_boundary
@@ -88,8 +95,10 @@ class MdTask(BaseTask[MdTaskConfig, MdTaskResult]):
         self, tables: list[pandas.DataFrame], task_config: MdTaskConfig
     ) -> MdTaskResult:
         left_table = tables[0]
+        header=left_table.columns
         if len(tables) == 2:
             right_table = tables[1]
+            header += right_table.columns
         else:
             right_table = tables[0]
 
@@ -110,12 +119,13 @@ class MdTask(BaseTask[MdTaskConfig, MdTaskResult]):
         
         algo.load_data(left_table=left_table, right_table=right_table)
         if options['max_cardinality'] == -1:
-            options['max_cardinality'] = 2**64 - 1
+            del options['max_cardinality']
         algo.execute(**options, column_matches=cm_array)
         
 
         return MdTaskResult(
             primitive_name=PrimitiveName.MD,
+            table_header=header,
             result=[MdModel(lhs=self.extract_side(md.get_description().lhs),
                             rhs=self.extract_side([md.get_description().rhs])) for md in algo.get_mds()]
         )

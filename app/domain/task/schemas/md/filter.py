@@ -21,8 +21,6 @@ def filter_by_attributes(raw_result: List[MdModel],
         
         if attributes_set.issubset(all_columns):
             filtered_models.append(model)
-    
-    print(filtered_models)
 
     return (filtered_models)
 

@@ -12,7 +12,7 @@ def filter_by_attributes(raw_result: List[PfdModel],
     return ([
         model for model in raw_result
         if set(attributes_names).issubset(
-            {sideItem['name'] for sideItem in model['lhs'] + model['rhs']})
+            {sideItem for sideItem in model['lhs'] + model['rhs']})
     ])
 
 

@@ -37,6 +37,7 @@ class FdTaskConfig(BaseFdTaskModel):
 
 class FdTaskResult(BaseFdTaskModel):
     result: list[FdModel]
+    table_header: list[str]
 
 
 class FdTask(BaseTask[FdTaskConfig, FdTaskResult]):
@@ -78,6 +79,7 @@ class FdTask(BaseTask[FdTaskConfig, FdTaskResult]):
 
         return FdTaskResult(
             primitive_name=PrimitiveName.FD,
+            table_header=columns,
             result=[
                 FdModel(lhs=[columns[index] for index in fd.lhs_indices], rhs=[columns[fd.rhs_index]])
                 for fd in algo.get_fds()

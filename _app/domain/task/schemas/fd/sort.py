@@ -6,7 +6,7 @@ from _app.domain.task.schemas.types import SortOrder
 import json
 
 
-class FdFSortOptions(StrEnum):
+class FdSortOptions(StrEnum):
     LHS = auto()
     RHS = auto()
 
@@ -26,19 +26,19 @@ def sort_by_rhs(raw_result: List[FdModel],
 
 
 
-class FdFSorter(BaseSorter):
-    _filter_map = {
-        FdFSortOptions.LHS: sort_by_lhs,   
-        FdFSortOptions.RHS: sort_by_rhs,  }
+class FdSorter(BaseSorter):
+    _sorter_map = {
+        FdSortOptions.LHS: sort_by_lhs,   
+        FdSortOptions.RHS: sort_by_rhs,  }
 
     def match_sorter_by_option_name(self, option_name):
-        if filter_option := self._filter_map.get(option_name):
-            return filter_option
-        assert_never(filter_option)
+        if sorter_option := self._sorter_map.get(option_name):
+            return sorter_option
+        assert_never(sorter_option)
 
     def sort(self, 
                raw_result: List[FdModel],
-               sort_option: FdFSortOptions, 
+               sort_option: FdSortOptions, 
                sort_direction: SortOrder) -> List[FdModel]:
 
         is_reverse = sort_direction == SortOrder.DESC 
