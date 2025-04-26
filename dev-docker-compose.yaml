@@ -3,8 +3,8 @@ services:
     image: postgres:17.4-alpine
     ports:
       - '${POSTGRES_PORT}:5432'
-    volumes:
-      - ./volumes/postgres/:/var/lib/postgresql/data
+    # volumes:
+    #   - ./volumes/postgres/:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
@@ -14,8 +14,8 @@ services:
     image: rabbitmq:3.13.7-management-alpine
     ports:
       - "${RABBITMQ_PORT}:5672"
-    volumes:
-      - ./volumes/rabbitmq/:/var/lib/rabbitmq
+    # volumes:
+    #   - ./volumes/rabbitmq/:/var/lib/rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
@@ -25,8 +25,8 @@ services:
     ports:
       - '${MINIO_PORT}:9000'
       - '${MINIO_UI_PORT}:9001'
-    volumes:
-      - ./volumes/minio/:/bitnami/minio/data
+    # volumes:
+    #   - ./volumes/minio/:/bitnami/minio/data
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}

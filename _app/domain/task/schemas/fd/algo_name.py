@@ -12,6 +12,5 @@ class FdAlgoName(StrEnum):
     FastFDs = auto()
     FdMine = auto()
     HyFD = auto()
-    PFDTane = auto()
     Pyro = auto()
     Tane = auto()
