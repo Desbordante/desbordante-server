@@ -72,15 +72,6 @@ class HyFDConfig(BaseFdConfig):
     is_null_equal_null: bool = Field(False, description=NULL_EQUAL_DESC)
 
 
-# class PFDTaneConfig(BaseFdConfig):
-#     algo_name: Literal[FdAlgoName.PFDTane]
-#     error: float = Field(..., ge=0, le=1, description=ERROR_DESC)
-#     is_null_equal_null: bool = Field(False, description=NULL_EQUAL_DESC)
-#     pfd_error_measure: Literal["per_tuple", "per_value"] = Field(
-#         ..., description=PFD_ERROR_DESC
-#     )
-
-
 class PyroConfig(BaseFdConfig):
     algo_name: Literal[FdAlgoName.Pyro]
     threads: int = Field(0, ge=0, description=THREADS_DESC)
@@ -91,9 +82,6 @@ class PyroConfig(BaseFdConfig):
 class TaneConfig(BaseFdConfig):
     algo_name: Literal[FdAlgoName.Tane]
     is_null_equal_null: bool = Field(False, description=NULL_EQUAL_DESC)
-    # afd_error_measure: Literal["g1", "pdep", "tau", "mu_plus", "rho"] = Field(
-    #     ..., description=AFD_ERROR_DESC
-    # )
 
 
 OneOfFdAlgoConfig = Annotated[
@@ -107,7 +95,6 @@ OneOfFdAlgoConfig = Annotated[
         FastFDsConfig,
         FdMineConfig,
         HyFDConfig,
-        #PFDTaneConfig,
         PyroConfig,
         TaneConfig,
     ],
