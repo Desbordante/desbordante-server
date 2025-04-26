@@ -6,7 +6,9 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "alembic>=1.15.1",
+    "asyncpg>=0.30.0",
     "celery>=5.4.0",
+    "cryptography>=44.0.2",
     "desbordante>=2.3.2",
     "desbordante-stubs>=0.3.0",
     "fastapi[standard]>=0.115.8",
@@ -21,7 +23,6 @@ dependencies = [
     "pyjwt>=2.10.1",
     "python-multipart>=0.0.20",
     "sqlalchemy>=2.0.38",
-    "sqlmodel>=0.0.24",
 ]
 
 
