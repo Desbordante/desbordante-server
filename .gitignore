@@ -178,4 +178,5 @@ cython_debug/
 .vscode
 
 # Volumes
+volumes
 volumes/*

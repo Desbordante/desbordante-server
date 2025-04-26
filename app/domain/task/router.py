@@ -16,7 +16,7 @@ from app.exceptions.exceptions import ForbiddenException
 router = APIRouter()
 
 
-@router.post("/", response_model=TaskPublic)
+@router.post("", response_model=TaskPublic)
 async def create_task(
     user: OptionallyAuthorizedUserDep,
     form_data: TaskCreate,
@@ -54,7 +54,7 @@ async def get_task(
     return task
 
 
-@router.get("/", response_model=List[TaskPublic])
+@router.get("", response_model=List[TaskPublic])
 async def get_tasks(
     user: AuthorizedUserDep,
     task_service: TaskServiceDep,
