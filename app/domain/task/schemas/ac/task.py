@@ -17,12 +17,6 @@ class AcModel(BaseSchema):
     intervals: list[tuple[float, float]]
     outliers: list[int]
 
-
-# class AcModel(BaseSchema):
-#     operation: OperationType
-#     instances: list[AcItemModel]
-
-
 class BaseAcTaskModel(BaseSchema):
     primitive_name: Literal[PrimitiveName.AC]
 
@@ -32,8 +26,9 @@ class AcTaskConfig(BaseAcTaskModel):
 
 
 class AcTaskResult(BaseAcTaskModel):
-    #operation: OperationType
+    operation: OperationType
     result: list[AcModel]
+    table_header: list[str]
 
 
 class AcTask(BaseTask[AcTaskConfig, AcTaskResult]):
@@ -90,5 +85,7 @@ class AcTask(BaseTask[AcTaskConfig, AcTaskResult]):
 
         return AcTaskResult(
             primitive_name=PrimitiveName.AC,
+            operation=options['bin_operation'],
+            table_header=column_names,
             result=self.union_result(column_names, ac_ranges, ac_exceptions),
         )

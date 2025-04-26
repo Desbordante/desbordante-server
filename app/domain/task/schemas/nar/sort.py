@@ -27,14 +27,14 @@ def sort_by_rhs(raw_result: List[NarModel],
 
 
 class NarSorter(BaseSorter):
-    _filter_map = {
+    _sorter_map = {
         NarSortOptions.LHS: sort_by_lhs,   
         NarSortOptions.RHS: sort_by_rhs,  }
 
     def match_sorter_by_option_name(self, option_name):
-        if filter_option := self._filter_map.get(option_name):
-            return filter_option
-        assert_never(filter_option)
+        if sorter_option := self._sorter_map.get(option_name):
+            return sorter_option
+        assert_never(sorter_option)
 
     def sort(self, 
                raw_result: List[NarModel],

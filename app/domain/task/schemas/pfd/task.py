@@ -26,6 +26,7 @@ class PfdTaskConfig(BasePfdTaskModel):
 
 class PfdTaskResult(BasePfdTaskModel):
     result: list[PfdModel]
+    table_header: list[str]
 
 
 class PfdTask(BaseTask[PfdTaskConfig, PfdTaskResult]):
@@ -58,6 +59,7 @@ class PfdTask(BaseTask[PfdTaskConfig, PfdTaskResult]):
 
         return PfdTaskResult(
             primitive_name=PrimitiveName.PFD,
+            table_header=columns,
             result=[
                 PfdModel(lhs=[columns[index] for index in fd.lhs_indices], rhs=[columns[fd.rhs_index]])
                 for fd in algo.get_fds()

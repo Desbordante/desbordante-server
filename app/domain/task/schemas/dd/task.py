@@ -31,6 +31,7 @@ class DdTaskConfig(BaseDdTaskModel):
 
 class DdTaskResult(BaseDdTaskModel):
     result: list[DdModel]
+    table_header: list[str]
 
 
 class DdTask(BaseTask[DdTaskConfig, DdTaskResult]):
@@ -64,6 +65,7 @@ class DdTask(BaseTask[DdTaskConfig, DdTaskResult]):
         self, tables: list[pandas.DataFrame], task_config: DdTaskConfig
     ) -> DdTaskResult:
         table = tables[0]
+        table_header = table.columns
         dif_table = tables[1]
         algo_config = task_config["config"]
         options = DdTaskConfig.model_validate(task_config).config.model_dump(
@@ -75,5 +77,6 @@ class DdTask(BaseTask[DdTaskConfig, DdTaskResult]):
 
         return DdTaskResult(
             primitive_name=PrimitiveName.DD,
+            table_header=table_header,
             result=[self.split_result(str(dd)) for dd in algo.get_dds()],
         )

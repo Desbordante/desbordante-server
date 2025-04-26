@@ -26,13 +26,18 @@ from app.domain.task.schemas.fd.filter import FdFilterOptions
 from app.domain.task.schemas.afd.filter import AfdFilterOptions
 from app.domain.task.schemas.pfd.filter import PfdFilterOptions
 from app.domain.task.schemas.nar.filter import NarFilterOptions
+from app.domain.task.schemas.ac.filter import AcFilterOptions
+from app.domain.task.schemas.adc.filter import AdcFilterOptions
 
-from app.domain.task.schemas.dd.sort import DdFSortOptions
-# from app.domain.task.schemas.md.sort import MdFilterOptions
-from app.domain.task.schemas.fd.sort import FdFSortOptions
-from app.domain.task.schemas.afd.sort import AfdFSortOptions
-from app.domain.task.schemas.pfd.sort import PfdFSortOptions
+from app.domain.task.schemas.dd.sort import DdSortOptions
+from app.domain.task.schemas.md.sort import MdSortOptions
+from app.domain.task.schemas.fd.sort import FdSortOptions
+from app.domain.task.schemas.afd.sort import AfdSortOptions
+from app.domain.task.schemas.pfd.sort import PfdSortOptions
 from app.domain.task.schemas.nar.sort import NarSortOptions
+from app.domain.task.schemas.ac.sort import AcSortOptions
+from app.domain.task.schemas.adc.sort import AdcSortOptions
+
 
 router = APIRouter()
 
@@ -42,13 +47,18 @@ OneOfFilterOption = Union[NarFilterOptions,
                           FdFilterOptions,
                           PfdFilterOptions,
                           AfdFilterOptions,
+                          AdcFilterOptions,
+                          AcFilterOptions,
                           ]
 
-OneOfSortOption = Union[FdFSortOptions,
-                        PfdFSortOptions,
-                        AfdFSortOptions,
-                        DdFSortOptions,
+OneOfSortOption = Union[FdSortOptions,
+                        PfdSortOptions,
+                        AfdSortOptions,
+                        DdSortOptions,
                         NarSortOptions,
+                        MdSortOptions,
+                        AcSortOptions,
+                        AdcSortOptions,
                         ]
 
 
@@ -74,6 +84,7 @@ async def create_task(
     )
     return task
 
+
 @router.get("/{id}", response_model=TaskPublic)
 async def get_task(
     id: UUID,
@@ -88,8 +99,6 @@ async def get_task(
     sort_direction: SortOrder = Query(None),
 ) -> TaskPublic:
     task = task_service.get_by_id(id)
-    print('pupupu')
-    
     user_id = user.id if user else None
 
     if task.initiator_id != user_id:
@@ -111,12 +120,10 @@ async def get_task(
     if sort_option and sort_direction:
         print('sort', sort_option, sort_direction)
         sorter = match_sorter_by_primitive_name(primitive_name)
-        print(888, task_result)
         task_result = sorter.sort(task_result, 
                                   sort_option, 
                                   sort_direction)
 
-    print(task_result)
 
     task.result['result'] = task_result
     return task

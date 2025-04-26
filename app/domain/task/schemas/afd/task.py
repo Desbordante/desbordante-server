@@ -29,6 +29,7 @@ class AfdTaskConfig(BaseAfdTaskModel):
 
 class AfdTaskResult(BaseAfdTaskModel):
     result: list[AfdModel]
+    table_header: list[str]
 
 
 class AfdTask(BaseTask[AfdTaskConfig, AfdTaskResult]):
@@ -62,6 +63,7 @@ class AfdTask(BaseTask[AfdTaskConfig, AfdTaskResult]):
 
         return AfdTaskResult(
             primitive_name=PrimitiveName.AFD,
+            table_header=columns,
             result=[
                 AfdModel(lhs=[columns[index] for index in fd.lhs_indices], rhs=[columns[fd.rhs_index]])
                 for fd in algo.get_fds()
