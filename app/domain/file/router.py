@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/",
+    "",
     response_model=FilePublic,
     status_code=status.HTTP_201_CREATED,
     summary="Upload a file",
@@ -39,7 +39,7 @@ def upload_file(
 
 
 @router.get(
-    "/",
+    "",
     response_model=List[FilePublic],
     summary="List user files",
     description="Get a list of all files uploaded by the current user.",
