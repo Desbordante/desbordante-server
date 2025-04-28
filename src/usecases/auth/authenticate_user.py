@@ -25,9 +25,10 @@ class AuthenticateUserUseCase:
     async def __call__(self, *, data: AuthenticateUserSchema) -> UserModel:
         try:
             user = await self.user_crud.get_by(email=data.email)
-            if not self._verify_password(data.password, user.hashed_password):
-                raise IncorrectCredentialsException()
-
-            return user
         except ResourceNotFoundException:
             raise IncorrectCredentialsException()
+
+        if not self._verify_password(data.password, user.hashed_password):
+            raise IncorrectCredentialsException()
+
+        return user

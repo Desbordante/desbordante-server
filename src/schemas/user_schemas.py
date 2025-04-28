@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import ConfigDict
 
 from src.schemas.base_schemas import BaseSchema
@@ -13,3 +15,5 @@ class UserSchema(BaseSchema):
     country: str
     company: str
     occupation: str
+
+    created_at: datetime

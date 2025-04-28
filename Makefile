@@ -61,7 +61,7 @@ downgrade:
 	uv run alembic downgrade $(args)
 
 ## Run all tests in project
-tests:
+test:
 	uv run pytest -o log_cli=true --verbosity=2 --showlocals --log-cli-level=INFO --cov=src --cov-report term --ignore=volumes
 
 

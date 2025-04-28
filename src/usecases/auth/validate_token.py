@@ -1,10 +1,10 @@
 from datetime import datetime, timezone
 from typing import Type
 
-import jwt
+from jwt import PyJWTError
 
-from src.domain.auth.config import settings
 from src.domain.auth.exceptions import CredentialsException
+from src.domain.auth.utils import decode_token
 from src.schemas.auth_schemas import TokenPayloadSchema
 
 
@@ -16,15 +16,12 @@ class ValidateTokenUseCase:
             raise CredentialsException()
 
         try:
-            payload = jwt.decode(
-                token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
-            )
-            token_data = schema.model_validate(payload)
+            token_data = decode_token(schema=schema, token=token)
 
             if token_data.exp <= datetime.now(timezone.utc):
                 raise CredentialsException()
 
-        except (jwt.PyJWTError, ValueError):
+        except (PyJWTError, ValueError):
             raise CredentialsException()
 
         return token_data

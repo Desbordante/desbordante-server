@@ -1,62 +1,101 @@
 import logging
+from typing import Any, AsyncGenerator, Dict
 
-import pytest
+import pytest_asyncio
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import (
-    AsyncEngine,
+    AsyncConnection,
     AsyncSession,
-    async_sessionmaker,
+    AsyncTransaction,
     create_async_engine,
 )
-from sqlalchemy_utils import create_database, database_exists, drop_database
-from starlette.config import environ
+from sqlalchemy.pool import NullPool
 
+from src.crud.user_crud import UserCrud
 from src.db.config import settings
 from src.db.session import get_session
-from src.models.base_models import BaseModel
+from src.usecases.auth.create_tokens import CreateTokensUseCase
+from src.usecases.auth.register_user import RegisterUserUseCase
 
 logger = logging.getLogger(__name__)
 
-environ["POSTGRES_DB"] = "desbordante-test"
+engine = create_async_engine(settings.postgres_dsn.unicode_string(), poolclass=NullPool)
 
 
-@pytest.fixture(scope="session")
-def db_engine():
-    engine = create_async_engine(settings.postgres_dsn.unicode_string())
-    yield engine
-    engine.sync_engine.dispose()
+@pytest_asyncio.fixture(scope="function")
+async def connection():
+    async with engine.connect() as connection:
+        yield connection
 
 
-@pytest.fixture(scope="session")
-async def create_db(db_engine: AsyncEngine):
-    logger.info("Setup database: %s", settings.postgres_dsn.unicode_string())
-    if database_exists(settings.postgres_dsn.unicode_string()):
-        drop_database(settings.postgres_dsn.unicode_string())
-
-    create_database(settings.postgres_dsn.unicode_string())
-
-    async with db_engine.begin() as conn:
-        await conn.run_sync(BaseModel.metadata.create_all)
-    yield
-    async with db_engine.begin() as conn:
-        await conn.run_sync(BaseModel.metadata.drop_all)
-
-    logger.info("Drop database: %s", settings.postgres_dsn.unicode_string())
-    drop_database(settings.postgres_dsn.unicode_string())
+@pytest_asyncio.fixture(scope="function")
+async def transaction(
+    connection: AsyncConnection,
+) -> AsyncGenerator[AsyncTransaction, None]:
+    async with connection.begin() as transaction:
+        yield transaction
 
 
-@pytest.fixture(scope="session")
-async def session(db_engine: AsyncEngine, create_db: None):
-    async_session_factory = async_sessionmaker(db_engine, expire_on_commit=False)
-    async with async_session_factory() as session:
-        yield session
+@pytest_asyncio.fixture(scope="function")
+async def session(
+    connection: AsyncConnection, transaction: AsyncTransaction
+) -> AsyncGenerator[AsyncSession, None]:
+    async_session = AsyncSession(
+        bind=connection,
+        join_transaction_mode="create_savepoint",
+    )
+    async with async_session:
+        yield async_session
+
+    await transaction.rollback()
 
 
-@pytest.fixture(scope="session")
-def client(session: AsyncSession):
-    from fastapi.testclient import TestClient
-
+@pytest_asyncio.fixture(scope="function")
+async def client(session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     from src.main import app
 
     app.dependency_overrides[get_session] = lambda: session
+    yield AsyncClient(base_url="http://test", transport=ASGITransport(app=app))
+    del app.dependency_overrides[get_session]
 
-    return TestClient(app)
+
+@pytest_asyncio.fixture(scope="function")
+async def user_crud(session: AsyncSession) -> UserCrud:
+    return UserCrud(session=session)
+
+
+@pytest_asyncio.fixture(scope="function")
+async def register_user_use_case(user_crud: UserCrud) -> RegisterUserUseCase:
+    return RegisterUserUseCase(user_crud=user_crud)
+
+
+@pytest_asyncio.fixture(scope="function")
+async def create_tokens_use_case() -> CreateTokensUseCase:
+    return CreateTokensUseCase()
+
+
+@pytest_asyncio.fixture(scope="function")
+async def logged_in_user(
+    client: AsyncClient,
+) -> Dict[str, Any]:
+    """Create a logged-in user and return user data with tokens"""
+    # Register a user
+    response = await client.post(
+        "/auth/register",
+        data={
+            "email": "test_user@example.com",
+            "password": "StrongPassword123!",
+            "full_name": "Test User",
+            "country": "Test Country",
+            "company": "Test Company",
+            "occupation": "Test Occupation",
+        },
+    )
+    assert response.status_code == 201
+
+    # Save tokens and user data
+    access_token = response.json()["access_token"]
+    refresh_token = response.cookies.get("refresh_token")
+    user = response.json()["user"]
+
+    return {"user": user, "access_token": access_token, "refresh_token": refresh_token}
