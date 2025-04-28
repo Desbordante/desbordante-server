@@ -3,7 +3,6 @@ from typing import assert_never
 from app.domain.task.schemas.fd.task import FdTask
 from app.domain.task.schemas.fd.filter import FdFilter
 from app.domain.task.schemas.fd.sort import FdSorter
-
 from app.domain.task.schemas.pfd.task import PfdTask
 from app.domain.task.schemas.pfd.filter import PfdFilter
 from app.domain.task.schemas.pfd.sort import PfdSorter
@@ -23,6 +22,8 @@ from app.domain.task.schemas.dd.sort import DdSorter
 from app.domain.task.schemas.md.task import MdTask
 from app.domain.task.schemas.md.filter import MdFilter
 from app.domain.task.schemas.md.sort import MdSorter
+
+from app.domain.task.schemas.mfd_verification.task import MfdVerificationTask
 
 from app.domain.task.schemas.nar.task import NarTask
 from app.domain.task.schemas.nar.filter import NarFilter
@@ -56,6 +57,8 @@ def match_task_by_primitive_name(primitive_name: PrimitiveName):
             return DdTask()
         case PrimitiveName.MD:
             return MdTask()
+        case PrimitiveName.MFD_VERIFICATION:
+            return MfdVerificationTask()
         case PrimitiveName.ADC:
             return AdcTask()
         case PrimitiveName.AC:

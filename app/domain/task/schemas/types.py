@@ -9,6 +9,7 @@ class PrimitiveName(StrEnum):
     AFD_VERIFICATION = auto()
     DD = auto()
     MD = auto()
+    MFD_VERIFICATION = auto()
     NAR = auto()
     ADC = auto()
     AC = auto()
