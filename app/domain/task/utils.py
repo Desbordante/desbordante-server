@@ -13,6 +13,7 @@ from app.domain.task.schemas.afd.filter import AfdFilter
 from app.domain.task.schemas.afd.sort import AfdSorter
 
 from app.domain.task.schemas.afd_verification.task import AfdVerificationTask
+from app.domain.task.schemas.afd_verification.sort import AfdVerificationSorter
 
 from app.domain.task.schemas.dd.task import DdTask
 from app.domain.task.schemas.dd.filter import DdFilter
@@ -89,6 +90,8 @@ def match_sorter_by_primitive_name(primitive_name: PrimitiveName):
             return PfdSorter()      
         case PrimitiveName.AFD:
             return AfdSorter()
+        case PrimitiveName.AFD_VERIFICATION:
+            return AfdVerificationSorter()
         case PrimitiveName.DD:
             return DdSorter()
         case PrimitiveName.MD:

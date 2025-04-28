@@ -33,6 +33,7 @@ from app.domain.task.schemas.dd.sort import DdSortOptions
 from app.domain.task.schemas.md.sort import MdSortOptions
 from app.domain.task.schemas.fd.sort import FdSortOptions
 from app.domain.task.schemas.afd.sort import AfdSortOptions
+from app.domain.task.schemas.afd_verification.sort import AfdVerificationSortOptions
 from app.domain.task.schemas.pfd.sort import PfdSortOptions
 from app.domain.task.schemas.nar.sort import NarSortOptions
 from app.domain.task.schemas.ac.sort import AcSortOptions
@@ -59,6 +60,7 @@ OneOfSortOption = Union[FdSortOptions,
                         MdSortOptions,
                         AcSortOptions,
                         AdcSortOptions,
+                        AfdVerificationSortOptions,
                         ]
 
 
