@@ -5,8 +5,7 @@ from uuid import UUID
 from sqlalchemy import exc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from _app.exceptions.exceptions import ResourceNotFoundException
-from src.exceptions import ResourceAlreadyExistsException
+from src.exceptions import ResourceAlreadyExistsException, ResourceNotFoundException
 from src.models.base_models import BaseModel
 
 
