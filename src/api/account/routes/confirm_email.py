@@ -9,12 +9,12 @@ from src.schemas.user_schemas import UserSchema
 router = APIRouter()
 
 
-@router.get(
-    "/confirm",
+@router.put(
+    "/email/verify",
     response_model=UserSchema,
     status_code=status.HTTP_200_OK,
-    summary="Confirm email (Should be used only by email link)",
-    description="Confirm user's email by token. This endpoint should be used only by link from email",
+    summary="Confirm email",
+    description="Confirm user's email by token.",
     responses={
         status.HTTP_403_FORBIDDEN: {"model": ApiErrorSchema},
         status.HTTP_404_NOT_FOUND: {"model": ApiErrorSchema},

@@ -1,9 +1,8 @@
-import re
-
 from pydantic import EmailStr, Field, field_validator
 
+from src.domain.security.utils import validate_password_strength
 from src.schemas.base_schemas import BaseSchema
-from src.schemas.security_schemas import TokenPayloadSchema
+from src.schemas.security_schemas import TokenPayloadSchema, password_field
 from src.schemas.user_schemas import UserSchema
 
 
@@ -18,9 +17,8 @@ class RegisterUserSchema(BaseSchema):
         min_length=1, max_length=50, description="The full name of the user"
     )
 
-    password: str = Field(
-        min_length=8,
-        description="The password of the user. Must contain at least one uppercase letter, one lowercase letter, one digit, and one special character",
+    password: str = password_field(
+        "The password of the user. Must contain at least one uppercase letter, one lowercase letter, one digit, and one special character"
     )
 
     country: str = Field(
@@ -37,15 +35,7 @@ class RegisterUserSchema(BaseSchema):
 
     @field_validator("password")
     def validate_password(cls, value: str) -> str:
-        if not re.search(r"[A-Z]", value):
-            raise ValueError("Password must contain at least one uppercase letter")
-        if not re.search(r"[a-z]", value):
-            raise ValueError("Password must contain at least one lowercase letter")
-        if not re.search(r"[0-9]", value):
-            raise ValueError("Password must contain at least one digit")
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", value):
-            raise ValueError("Password must contain at least one special character")
-        return value
+        return validate_password_strength(value)
 
 
 class AuthenticateUserSchema(BaseSchema):

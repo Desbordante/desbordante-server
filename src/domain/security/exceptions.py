@@ -1,6 +1,11 @@
-from src.exceptions import ValidationException
+from src.exceptions import ForbiddenException, ValidationException
 
 
-class TokenException(ValidationException):
-    def __init__(self, message: str = "Invalid token"):
-        super().__init__(message)
+class InvalidTokenException(ValidationException):
+    def __init__(self):
+        super().__init__("Invalid token")
+
+
+class ExpiredTokenException(ForbiddenException):
+    def __init__(self):
+        super().__init__("Token has expired")
