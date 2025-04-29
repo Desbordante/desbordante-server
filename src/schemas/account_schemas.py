@@ -2,24 +2,14 @@ from pydantic import ValidationInfo, field_validator
 
 from src.domain.security.utils import validate_password_strength
 from src.schemas.base_schemas import BaseSchema, OptionalSchema
-from src.schemas.security_schemas import TokenPayloadSchema, password_field
+from src.schemas.security_schemas import password_field
 from src.schemas.user_schemas import UserInfoSchema
-
-
-class EmailTokenPayloadSchema(TokenPayloadSchema):
-    email: str
-
-
-class ConfirmationTokenPayloadSchema(EmailTokenPayloadSchema):
-    type: str = "confirmation"
 
 
 class ChangePasswordSchema(BaseSchema):
     current_password: str
 
-    new_password: str = password_field(
-        "The new password of the user. Must contain at least one uppercase letter, one lowercase letter, one digit, and one special character"
-    )
+    new_password: str = password_field()
 
     @field_validator("new_password")
     def validate_password(cls, value: str) -> str:
