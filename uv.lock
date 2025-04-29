@@ -178,6 +178,18 @@ wheels = [
 ]
 
 [[package]]
+name = "celery-types"
+version = "0.23.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e9/d1/0823e71c281e4ad0044e278cf1577d1a68e05f2809424bf94e1614925c5d/celery_types-0.23.0.tar.gz", hash = "sha256:402ed0555aea3cd5e1e6248f4632e4f18eec8edb2435173f9e6dc08449fa101e", size = 31479 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/6f/8b/92bb54dd74d145221c3854aa245c84f4dc04cc9366147496182cec8e88e3/celery_types-0.23.0-py3-none-any.whl", hash = "sha256:0cc495b8d7729891b7e070d0ec8d4906d2373209656a6e8b8276fe1ed306af9a", size = 50189 },
+]
+
+[[package]]
 name = "certifi"
 version = "2025.1.31"
 source = { registry = "https://pypi.org/simple" }
@@ -340,16 +352,6 @@ wheels = [
 ]
 
 [[package]]
-name = "desbordante"
-version = "2.3.2"
-source = { registry = "https://pypi.org/simple" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/74/3e/44c1a87636d5d6757df295552f301a79819f73d77ada1dc5672187034858/desbordante-2.3.2-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:971cfb68b14baf071e66d9dcc1803f7b70a139d09ade93c5388fe7266ba5ca2b", size = 2750652 },
-    { url = "https://files.pythonhosted.org/packages/be/66/8398d8803dac4904e0c3c6d876d1a44e9b1eb7dd888ff434a941c2485e35/desbordante-2.3.2-cp313-cp313-macosx_11_0_x86_64.whl", hash = "sha256:bf1ac08eba0eb1b1dbe35977a166456c58a19f6d80291c6bd545bf8ca0641f3b", size = 3265007 },
-    { url = "https://files.pythonhosted.org/packages/a7/7c/ed3c4d9ff296a9e2b711c73ac85a14ed8046a7d02b35cd1266ef99805e35/desbordante-2.3.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:203e332b9352cfde4be67c5738dbd46fd16b50b42aa21d8ce96fcc1e9b9568de", size = 4011261 },
-]
-
-[[package]]
 name = "desbordante-server"
 version = "0.1.0"
 source = { virtual = "." }
@@ -358,8 +360,6 @@ dependencies = [
     { name = "asyncpg" },
     { name = "celery" },
     { name = "cryptography" },
-    { name = "desbordante" },
-    { name = "desbordante-stubs" },
     { name = "fastapi", extra = ["standard"] },
     { name = "flower" },
     { name = "greenlet" },
@@ -377,6 +377,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "celery-types" },
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
@@ -392,8 +393,6 @@ requires-dist = [
     { name = "asyncpg", specifier = ">=0.30.0" },
     { name = "celery", specifier = ">=5.4.0" },
     { name = "cryptography", specifier = ">=44.0.2" },
-    { name = "desbordante", specifier = ">=2.3.2" },
-    { name = "desbordante-stubs", specifier = ">=0.3.0" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.8" },
     { name = "flower", specifier = ">=2.0.1" },
     { name = "greenlet", specifier = ">=3.1.1" },
@@ -411,6 +410,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "celery-types", specifier = ">=0.23.0" },
     { name = "pre-commit", specifier = ">=4.1.0" },
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "pytest-asyncio", specifier = ">=0.26.0" },
@@ -418,18 +418,6 @@ dev = [
     { name = "ruff", specifier = ">=0.9.6" },
     { name = "types-sqlalchemy-utils", specifier = ">=1.1.0" },
     { name = "watchdog", specifier = ">=6.0.0" },
-]
-
-[[package]]
-name = "desbordante-stubs"
-version = "0.3.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "desbordante" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/11/55/19c55f246327de94369adb179de0d00265ceac1b63cbb18de219f854c5fc/desbordante_stubs-0.3.0.tar.gz", hash = "sha256:e390824b7e97436b6aea31533fb91682f6a87d543da830c8063f7dbc59345e75", size = 11426 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/1a/5a/6bafd458b3e50202902be683838ae98ea314dcc764d0ef4d7a540d0bff83/desbordante_stubs-0.3.0-py3-none-any.whl", hash = "sha256:ecb05d15985ab76dd197c56cb9063c2d45f309e0a13d26ff70eeff943d6ba524", size = 27864 },
 ]
 
 [[package]]

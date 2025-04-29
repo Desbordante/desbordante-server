@@ -40,7 +40,7 @@ services:
 
 ## Run celery worker
 worker:
-	uv run celery -A app.domain.worker worker --loglevel=info
+	uv run celery -A src.worker worker --loglevel=info
 
 ## Run app and services in dev mode
 dev:

@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import Mapped, mapped_column
 
 from src.db.annotations import int_pk, str_non_nullable, str_uniq
 from src.models.base_models import BaseModel
@@ -14,3 +14,6 @@ class UserModel(BaseModel):
     country: Mapped[str_non_nullable]
     company: Mapped[str_non_nullable]
     occupation: Mapped[str_non_nullable]
+
+    is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
+    is_verified: Mapped[bool] = mapped_column(default=False, nullable=False)

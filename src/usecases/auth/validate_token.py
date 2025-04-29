@@ -1,15 +1,13 @@
-from datetime import datetime, timezone
 from typing import Type
 
-from jwt import PyJWTError
-
 from src.domain.auth.exceptions import CredentialsException
-from src.domain.auth.utils import decode_token
-from src.schemas.auth_schemas import TokenPayloadSchema
+from src.domain.security.exceptions import TokenException
+from src.domain.security.utils import decode_token
+from src.schemas.auth_schemas import AuthTokenPayloadSchema
 
 
 class ValidateTokenUseCase:
-    def __call__[T: TokenPayloadSchema](
+    def __call__[T: AuthTokenPayloadSchema](
         self, *, schema: Type[T], token: str | None
     ) -> T:
         if not token:
@@ -18,10 +16,7 @@ class ValidateTokenUseCase:
         try:
             token_data = decode_token(schema=schema, token=token)
 
-            if token_data.exp <= datetime.now(timezone.utc):
-                raise CredentialsException()
-
-        except (PyJWTError, ValueError):
+        except TokenException:
             raise CredentialsException()
 
         return token_data

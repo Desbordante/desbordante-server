@@ -1,9 +1,9 @@
 import re
-from datetime import datetime
 
 from pydantic import EmailStr, Field, field_validator
 
 from src.schemas.base_schemas import BaseSchema
+from src.schemas.security_schemas import TokenPayloadSchema
 from src.schemas.user_schemas import UserSchema
 
 
@@ -56,20 +56,13 @@ class AuthenticateUserSchema(BaseSchema):
     )
 
 
-class TokenPairSchema(BaseSchema):
-    token: str
-    expires: datetime
-
-
-class TokenPayloadSchema(BaseSchema):
+class AuthTokenPayloadSchema(TokenPayloadSchema):
     id: int
-    exp: datetime
-    type: str
 
 
-class AccessTokenPayloadSchema(TokenPayloadSchema):
+class AccessTokenPayloadSchema(AuthTokenPayloadSchema):
     type: str = "access"
 
 
-class RefreshTokenPayloadSchema(TokenPayloadSchema):
+class RefreshTokenPayloadSchema(AuthTokenPayloadSchema):
     type: str = "refresh"

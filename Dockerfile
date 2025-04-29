@@ -41,7 +41,7 @@ COPY ./pyproject.toml ./uv.lock ./alembic.ini /app/
 
 COPY ./migrations /app/migrations
 
-COPY ./app /app/app
+COPY ./src /app/src
 
 # Sync the project
 # Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
