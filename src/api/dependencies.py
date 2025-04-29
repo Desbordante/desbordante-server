@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.api.constants import ACCESS_TOKEN_KEY
 from src.crud.user_crud import UserCrud
 from src.db.session import get_session
+from src.exceptions import ForbiddenException
 from src.models.user_models import UserModel
 from src.schemas.auth_schemas import AccessTokenPayloadSchema
 from src.usecases.auth.validate_token import ValidateTokenUseCase
@@ -93,3 +94,18 @@ async def get_optionally_authorized_user(
     if access_token_payload:
         return await get_user_by_id(id=access_token_payload.id)
     return None
+
+
+class VerificationDep:
+    def __init__(self, should_be_verified: bool = True):
+        self.should_be_verified = should_be_verified
+
+    def __call__(self, user: AuthorizedUserDep) -> UserModel:
+        if user.is_verified == self.should_be_verified:
+            return user
+        raise ForbiddenException(
+            f"User is {'already' if user.is_verified else 'not'} verified"
+        )
+
+
+VerifiedUserDep = Annotated[UserModel, Depends(VerificationDep)]

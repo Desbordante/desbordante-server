@@ -6,7 +6,7 @@ import pytest
 from fastapi import status
 from httpx import AsyncClient
 
-from src.domain.auth.utils import create_token, decode_token
+from src.domain.security.utils import create_token, decode_token
 from src.schemas.auth_schemas import RefreshTokenPayloadSchema
 
 pytestmark = pytest.mark.asyncio

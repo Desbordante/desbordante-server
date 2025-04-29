@@ -1,7 +1,7 @@
 from fastapi import Response
 
 from src.api.constants import ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY
-from src.schemas.auth_schemas import TokenPairSchema
+from src.schemas.security_schemas import TokenPairSchema
 
 
 def set_auth_cookies(

@@ -13,6 +13,9 @@ class BaseFindProps[T: int | UUID](TypedDict, total=False):
     id: T
 
 
+class BaseUpdateProps(TypedDict, total=False): ...
+
+
 class BaseCrud[
     ModelType: BaseModel,
     IdType: int | UUID = UUID,
@@ -40,3 +43,12 @@ class BaseCrud[
             return result.scalars().one()
         except exc.NoResultFound:
             raise ResourceNotFoundException(f"{self.model.__name__} not found")
+
+    async def update(
+        self, *, entity: ModelType, **kwargs: Unpack[BaseUpdateProps]
+    ) -> ModelType:
+        for key, value in kwargs.items():
+            setattr(entity, key, value)
+        await self._session.commit()
+        await self._session.refresh(entity)
+        return entity

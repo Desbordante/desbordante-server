@@ -2,11 +2,13 @@ from datetime import timedelta
 from typing import Tuple
 
 from src.domain.auth.config import settings
-from src.domain.auth.utils import create_token
+from src.domain.security.utils import create_token
 from src.models.user_models import UserModel
 from src.schemas.auth_schemas import (
     AccessTokenPayloadSchema,
     RefreshTokenPayloadSchema,
+)
+from src.schemas.security_schemas import (
     TokenPairSchema,
 )
 

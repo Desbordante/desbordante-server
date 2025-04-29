@@ -9,8 +9,6 @@ dependencies = [
     "asyncpg>=0.30.0",
     "celery>=5.4.0",
     "cryptography>=44.0.2",
-    "desbordante>=2.3.2",
-    "desbordante-stubs>=0.3.0",
     "fastapi[standard]>=0.115.8",
     "flower>=2.0.1",
     "greenlet>=3.1.1",
@@ -29,6 +27,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "celery-types>=0.23.0",
     "pre-commit>=4.1.0",
     "pytest>=8.3.5",
     "pytest-asyncio>=0.26.0",

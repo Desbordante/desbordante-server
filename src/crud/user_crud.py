@@ -11,9 +11,18 @@ class UserFindProps(TypedDict, total=False):
     id: int
 
 
+class UserUpdateProps(TypedDict, total=False):
+    is_verified: bool
+
+
 class UserCrud(BaseCrud[UserModel, int]):
     def __init__(self, session: AsyncSession):
         super().__init__(model=UserModel, session=session)
 
     async def get_by(self, **kwargs: Unpack[UserFindProps]) -> UserModel:
         return await super().get_by(**kwargs)
+
+    async def update(
+        self, *, entity: UserModel, **kwargs: Unpack[UserUpdateProps]
+    ) -> UserModel:
+        return await super().update(entity=entity, **kwargs)

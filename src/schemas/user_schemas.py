@@ -17,3 +17,5 @@ class UserSchema(BaseSchema):
     occupation: str
 
     created_at: datetime
+
+    is_verified: bool
