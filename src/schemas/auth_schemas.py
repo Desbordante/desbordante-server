@@ -14,9 +14,7 @@ class AuthResponseSchema(BaseSchema):
 class RegisterUserSchema(UserInfoSchema):
     email: EmailStr = Field(max_length=255, description="The email address of the user")
 
-    password: str = password_field(
-        "The password of the user. Must contain at least one uppercase letter, one lowercase letter, one digit, and one special character"
-    )
+    password: str = password_field()
 
     @field_validator("password")
     def validate_password(cls, value: str) -> str:
@@ -29,6 +27,14 @@ class AuthenticateUserSchema(BaseSchema):
         min_length=8,
         description="The password of the user.",
     )
+
+
+class ResetPasswordSchema(BaseSchema):
+    new_password: str = password_field()
+
+    @field_validator("new_password")
+    def validate_password(cls, value: str) -> str:
+        return validate_password_strength(value)
 
 
 class AuthTokenPayloadSchema(TokenPayloadSchema):

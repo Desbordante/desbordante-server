@@ -12,6 +12,6 @@ router = APIRouter()
 
 router.include_router(get_info_router)
 router.include_router(update_info_router)
+router.include_router(change_password_router)
 router.include_router(send_verification_email_router)
 router.include_router(confirm_email_router)
-router.include_router(change_password_router)

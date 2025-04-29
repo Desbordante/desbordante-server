@@ -3,7 +3,7 @@ from typing import Protocol
 from src.domain.security.utils import decode_token
 from src.exceptions import ForbiddenException
 from src.models.user_models import UserModel
-from src.schemas.account_schemas import ConfirmationTokenPayloadSchema
+from src.schemas.email_schemas import ConfirmationTokenPayloadSchema
 
 
 class UserCrud(Protocol):
