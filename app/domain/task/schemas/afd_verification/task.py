@@ -23,6 +23,7 @@ class AfdVerificationModel(BaseSchema):
     num_error_rows: int
     clusters: list[AfdClusterModel]
     table_header: list[str]
+    lhs_rhs_indices: list[int]
 
 
 class BaseAfdVerificationTaskModel(BaseSchema):
@@ -63,6 +64,7 @@ class AfdVerificationTask(BaseTask[AfdVerificationTaskConfig, AfdVerificationTas
         options = AfdVerificationTaskConfig.model_validate(task_config).config.model_dump(
             exclude_unset=True, exclude={"algo_name"}
         )
+        #print(777, options)
 
         algo = self.match_algo_by_name(algo_config["algo_name"])
         algo.load_data(table=table)
@@ -75,5 +77,6 @@ class AfdVerificationTask(BaseTask[AfdVerificationTaskConfig, AfdVerificationTas
                                         num_error_rows=algo.get_num_error_rows(),
                                         clusters=[self.extract_cluster(highlight, table) 
                                                   for highlight in algo.get_highlights()],
-                                        table_header=columns),
+                                        table_header=columns,
+                                        lhs_rhs_indices=options['lhs_indices'] + options['rhs_indices'])
         )

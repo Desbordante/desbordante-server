@@ -9,13 +9,17 @@ class AcFilterOptions(StrEnum):
 
 def filter_by_attributes(raw_result: List[AcModel], 
                         attributes_names: List[str]) -> List[AcModel]:
+    # return ([
+    #    model for model in raw_result
+    #     if any(attr in {model['left_column'], model['right_column']} 
+    #            for attr in attributes_names)
+    # ])
+
     return ([
-       model for model in raw_result
-        if any(attr in {model['left_column'], model['right_column']} 
-               for attr in attributes_names)
+        model for model in raw_result
+        if set(attributes_names).issubset(
+            {model['left_column']}.union({model['right_column']}))
     ])
-
-
 
 class AcFilter(BaseFilter):
     _filter_map = {

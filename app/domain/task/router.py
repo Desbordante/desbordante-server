@@ -24,6 +24,7 @@ from app.domain.task.schemas.dd.filter import DdFilterOptions
 from app.domain.task.schemas.md.filter import MdFilterOptions
 from app.domain.task.schemas.fd.filter import FdFilterOptions
 from app.domain.task.schemas.afd.filter import AfdFilterOptions
+from app.domain.task.schemas.afd_verification.filter import AfdVerificationFilterOptions
 from app.domain.task.schemas.pfd.filter import PfdFilterOptions
 from app.domain.task.schemas.nar.filter import NarFilterOptions
 from app.domain.task.schemas.ac.filter import AcFilterOptions
@@ -50,6 +51,7 @@ OneOfFilterOption = Union[NarFilterOptions,
                           AfdFilterOptions,
                           AdcFilterOptions,
                           AcFilterOptions,
+                          AfdVerificationFilterOptions,
                           ]
 
 OneOfSortOption = Union[FdSortOptions,
@@ -105,10 +107,11 @@ async def get_task(
 
     if task.initiator_id != user_id:
         raise ForbiddenException("Access denied")
-    
+
+    if task.result is None:
+        return task
     task_result = task.result['result']
     primitive_name = task.result['primitive_name']
-
     
     if filter_options and filter_params:
         print('filter', filter_options, filter_params)
@@ -118,7 +121,6 @@ async def get_task(
         for f in filter_options:
             task_result = filt.filter(task_result, f, filter[f])
      
-
     if sort_option and sort_direction:
         print('sort', sort_option, sort_direction)
         sorter = match_sorter_by_primitive_name(primitive_name)
