@@ -1,9 +1,8 @@
 from enum import StrEnum, auto
-from typing import List, assert_never
-from .task import AfdClusterModel
+from typing import assert_never
+from .task import AfdVerificationModel
 from app.domain.task.schemas.base import BaseSorter
 from app.domain.task.schemas.types import SortOrder
-import json
 
 
 class AfdVerificationSortOptions(StrEnum):
@@ -11,22 +10,22 @@ class AfdVerificationSortOptions(StrEnum):
     FREQUENTNESS = auto()
     SIZE = auto()
 
-def sort_by_frequentness(raw_result: List[AfdClusterModel], 
-                         is_reverse: bool) -> List[AfdClusterModel]:
-    raw_result.sort(key=lambda x: x.most_frequent_rhs_value_proportion,
+def sort_by_frequentness(raw_result: AfdVerificationModel, 
+                         is_reverse: bool) -> AfdVerificationModel:
+    raw_result['clusters'].sort(key=lambda x: x['most_frequent_rhs_value_proportion'],
                     reverse=is_reverse)
     return raw_result
 
-def sort_by_size(raw_result: List[AfdClusterModel], 
-                is_reverse: bool) -> List[AfdClusterModel]:
-    raw_result.sort(key=lambda x: len(x.rows),
+def sort_by_size(raw_result: AfdVerificationModel, 
+                is_reverse: bool) -> AfdVerificationModel:
+    raw_result['clusters'].sort(key=lambda x: len(x['rows']),
                            reverse=is_reverse)
     return raw_result
 
 
-def sort_by_rhs(raw_result: List[AfdClusterModel], 
-                is_reverse: bool) -> List[AfdClusterModel]:
-    raw_result.sort(key=lambda x: x.num_distinct_rhs_values,
+def sort_by_rhs(raw_result: AfdVerificationModel, 
+                is_reverse: bool) -> AfdVerificationModel:
+    raw_result['clusters'].sort(key=lambda x: x['num_distinct_rhs_values'],
                     reverse=is_reverse)
     return raw_result
 
@@ -45,9 +44,9 @@ class AfdVerificationSorter(BaseSorter):
         assert_never(sorter_option)
 
     def sort(self, 
-               raw_result: List[AfdClusterModel],
+               raw_result: AfdVerificationModel,
                sort_option: AfdVerificationSortOptions, 
-               sort_direction: SortOrder) -> List[AfdClusterModel]:
+               sort_direction: SortOrder) -> AfdVerificationModel:
 
         is_reverse = sort_direction == SortOrder.DESC 
         sorter = self.match_sorter_by_option_name(sort_option)
