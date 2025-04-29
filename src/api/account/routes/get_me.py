@@ -10,14 +10,14 @@ router = APIRouter()
 
 
 @router.get(
-    "/me",
+    "/",
     response_model=UserSchema,
     status_code=status.HTTP_200_OK,
-    summary="Get current user",
+    summary="Get current user's account info",
     description="Returns information about the currently authenticated user",
     responses={
         status.HTTP_401_UNAUTHORIZED: {"model": ApiErrorSchema},
     },
 )
-async def get_current_user(user: AuthorizedUserDep) -> Any:
+async def get_me(user: AuthorizedUserDep) -> Any:
     return user

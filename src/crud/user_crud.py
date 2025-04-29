@@ -13,6 +13,7 @@ class UserFindProps(TypedDict, total=False):
 
 class UserUpdateProps(TypedDict, total=False):
     is_verified: bool
+    hashed_password: str
 
 
 class UserCrud(BaseCrud[UserModel, int]):

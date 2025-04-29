@@ -1,10 +1,12 @@
+import re
 from datetime import datetime, timedelta, timezone
 from typing import Any, Type
 
 import jwt
 
 from src.domain.security.config import settings
-from src.domain.security.exceptions import TokenException
+from src.domain.security.constants import pwd_context
+from src.domain.security.exceptions import ExpiredTokenException, InvalidTokenException
 from src.schemas.security_schemas import TokenPairSchema, TokenPayloadSchema
 
 
@@ -32,12 +34,44 @@ def decode_token[T: TokenPayloadSchema](*, schema: Type[T], token: str) -> T:
         token_data = schema.model_validate(payload)
 
         if token_data.exp <= datetime.now(timezone.utc):
-            raise TokenException("Token has expired")
+            raise ExpiredTokenException()
 
     except jwt.ExpiredSignatureError:
-        raise TokenException("Token has expired")
+        raise ExpiredTokenException()
 
     except (jwt.PyJWTError, ValueError):
-        raise TokenException()
+        raise InvalidTokenException()
 
     return token_data
+
+
+def validate_password_strength(password: str) -> str:
+    """
+    Validates password strength requirements.
+
+    Args:
+        password: The password to validate
+
+    Returns:
+        The validated password
+
+    Raises:
+        ValueError: If password doesn't meet strength requirements
+    """
+    if not re.search(r"[A-Z]", password):
+        raise ValueError("Password must contain at least one uppercase letter")
+    if not re.search(r"[a-z]", password):
+        raise ValueError("Password must contain at least one lowercase letter")
+    if not re.search(r"[0-9]", password):
+        raise ValueError("Password must contain at least one digit")
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        raise ValueError("Password must contain at least one special character")
+    return password
+
+
+def get_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)

@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from src.domain.auth.constants import pwd_context
+from src.domain.security.utils import get_password_hash
 from src.exceptions import ResourceAlreadyExistsException
 from src.models.user_models import UserModel
 from src.schemas.auth_schemas import RegisterUserSchema
@@ -18,11 +18,8 @@ class RegisterUserUseCase:
     ):
         self.user_crud = user_crud
 
-    def _get_password_hash(self, password: str) -> str:
-        return pwd_context.hash(password)
-
     async def __call__(self, *, data: RegisterUserSchema) -> UserModel:
-        hashed_password = self._get_password_hash(data.password)
+        hashed_password = get_password_hash(data.password)
 
         user_model = UserModel(
             email=data.email,
