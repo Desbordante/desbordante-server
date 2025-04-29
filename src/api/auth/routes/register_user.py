@@ -4,6 +4,7 @@ from fastapi import APIRouter, Form, Response, status
 
 from src.api.auth.dependencies import CreateTokensUseCaseDep, RegisterUserUseCaseDep
 from src.api.auth.utils import set_auth_cookies
+from src.api.dependencies import SendConfirmationEmailUseCaseDep
 from src.schemas.auth_schemas import AuthResponseSchema, RegisterUserSchema
 from src.schemas.base_schemas import ApiErrorSchema
 from src.schemas.user_schemas import UserSchema
@@ -26,10 +27,13 @@ async def register_user(
     form_data: Annotated[RegisterUserSchema, Form()],
     register_user: RegisterUserUseCaseDep,
     create_tokens: CreateTokensUseCaseDep,
+    send_confirmation_email: SendConfirmationEmailUseCaseDep,
 ) -> AuthResponseSchema:
     user = await register_user(data=form_data)
     access_token_pair, refresh_token_pair = create_tokens(user=user)
     set_auth_cookies(response, access_token_pair, refresh_token_pair)
+
+    await send_confirmation_email(to_email=user.email)
 
     return AuthResponseSchema(
         access_token=access_token_pair.token,

@@ -1,11 +1,14 @@
 import pytest
 from fastapi import status
 from httpx import AsyncClient
+from pytest_mock import MockType
 
 pytestmark = pytest.mark.asyncio
 
 
-async def test_register_success(client: AsyncClient):
+async def test_register_success(
+    client: AsyncClient, mock_send_confirmation_email: MockType
+):
     """Test successful user registration"""
     response = await client.post(
         "/auth/register",
@@ -27,6 +30,10 @@ async def test_register_success(client: AsyncClient):
     # Check that cookies are set
     assert "access_token" in response.cookies
     assert "refresh_token" in response.cookies
+
+    mock_send_confirmation_email.assert_called_once_with(
+        to_email=response.json()["user"]["email"]
+    )
 
 
 async def test_register_email_already_exists(client: AsyncClient):

@@ -10,6 +10,7 @@ from src.db.session import get_session
 from src.exceptions import ForbiddenException
 from src.models.user_models import UserModel
 from src.schemas.auth_schemas import AccessTokenPayloadSchema
+from src.usecases.account.send_confirmation_email import SendConfirmationEmailUseCase
 from src.usecases.auth.validate_token import ValidateTokenUseCase
 from src.usecases.user.get_user_by_id import GetUserByIdUseCase
 
@@ -109,3 +110,12 @@ class VerificationDep:
 
 
 VerifiedUserDep = Annotated[UserModel, Depends(VerificationDep)]
+
+
+async def get_send_confirmation_email_use_case() -> SendConfirmationEmailUseCase:
+    return SendConfirmationEmailUseCase()
+
+
+SendConfirmationEmailUseCaseDep = Annotated[
+    SendConfirmationEmailUseCase, Depends(get_send_confirmation_email_use_case)
+]
