@@ -121,3 +121,44 @@ class DatasetSchema(BaseSchema):
     file: FileSchema
 
     created_at: datetime
+
+
+class DatasetSortField(StrEnum):
+    """Fields that can be used for sorting datasets"""
+
+    NAME = "name"
+    SIZE = "size"
+    CREATED_AT = "created_at"
+
+
+class SortDirection(StrEnum):
+    """Sort direction options"""
+
+    ASC = "asc"
+    DESC = "desc"
+
+
+class DatasetOrderingSchema(BaseSchema):
+    """Schema for ordering datasets"""
+
+    field: DatasetSortField
+    direction: SortDirection = SortDirection.ASC
+
+
+class DatasetFilterSchema(BaseSchema):
+    """Schema for filtering datasets"""
+
+    min_size: int | None = None
+    max_size: int | None = None
+    created_after: datetime | None = None
+    created_before: datetime | None = None
+    search: str | None = None
+
+
+class DatasetQueryParamsSchema(BaseSchema):
+    """Combined schema for all dataset query parameters"""
+
+    filters: DatasetFilterSchema = Field(default_factory=DatasetFilterSchema)
+    ordering: DatasetOrderingSchema | None = None
+    limit: int = 100
+    offset: int = 0
