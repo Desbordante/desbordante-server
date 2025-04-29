@@ -1,8 +1,9 @@
 from pydantic import ValidationInfo, field_validator
 
 from src.domain.security.utils import validate_password_strength
-from src.schemas.base_schemas import BaseSchema
+from src.schemas.base_schemas import BaseSchema, OptionalSchema
 from src.schemas.security_schemas import TokenPayloadSchema, password_field
+from src.schemas.user_schemas import UserInfoSchema
 
 
 class EmailTokenPayloadSchema(TokenPayloadSchema):
@@ -29,3 +30,7 @@ class ChangePasswordSchema(BaseSchema):
         if "current_password" in info.data and value == info.data["current_password"]:
             raise ValueError("New password cannot be the same as the current password")
         return value
+
+
+class UpdateUserInfoSchema(UserInfoSchema, OptionalSchema):
+    pass
