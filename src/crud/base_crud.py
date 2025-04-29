@@ -2,7 +2,7 @@ from abc import ABC
 from typing import TypedDict, Unpack
 from uuid import UUID
 
-from sqlalchemy import exc, select
+from sqlalchemy import Select, exc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.exceptions import ResourceAlreadyExistsException, ResourceNotFoundException
@@ -43,6 +43,19 @@ class BaseCrud[
             return result.scalars().one()
         except exc.NoResultFound:
             raise ResourceNotFoundException(f"{self.model.__name__} not found")
+
+    async def get_many(
+        self,
+        *,
+        limit: int = 100,
+        offset: int = 0,
+        query: Select[tuple[ModelType]] | None = None,
+        **kwargs: Unpack[BaseFindProps[IdType]],
+    ) -> list[ModelType]:
+        if query is None:
+            query = select(self.model).filter_by(**kwargs).limit(limit).offset(offset)
+        result = await self._session.execute(query)
+        return list(result.scalars().all())
 
     async def update(
         self, *, entity: ModelType, **kwargs: Unpack[BaseUpdateProps]
