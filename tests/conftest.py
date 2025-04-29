@@ -1,8 +1,10 @@
 import logging
 from typing import Any, AsyncGenerator, Dict
 
+import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
+from pytest_mock import MockerFixture, MockType
 from sqlalchemy.ext.asyncio import (
     AsyncConnection,
     AsyncSession,
@@ -72,6 +74,40 @@ async def register_user_use_case(user_crud: UserCrud) -> RegisterUserUseCase:
 @pytest_asyncio.fixture(scope="function")
 async def create_tokens_use_case() -> CreateTokensUseCase:
     return CreateTokensUseCase()
+
+
+@pytest.fixture(scope="session")
+def celery_config():
+    return {
+        "broker_url": "memory://",
+        "result_backend": "rpc://",
+        "task_always_eager": True,  # Tasks will be executed locally instead of being sent to the queue
+        "task_eager_propagates": True,  # Propagate exceptions in eager mode
+    }
+
+
+@pytest.fixture(scope="session")
+def celery_includes():
+    return ["src.domain.account.tasks"]
+
+
+@pytest.fixture(autouse=True)
+def mock_smtp(mocker: MockerFixture) -> MockType:
+    """
+    Mock for SMTP, automatically applied to all tests in this module.
+    Uses pytest-mock's mocker fixture for cleaner mocking.
+    """
+    smtp_mock = mocker.patch("src.domain.account.tasks.smtplib.SMTP_SSL")
+    mock_smtp_instance = mocker.MagicMock(
+        name="src.domain.account.tasks.smtplib.SMTP_SSL"
+    )
+    smtp_mock.return_value.__enter__.return_value = mock_smtp_instance
+    return mock_smtp_instance
+
+
+@pytest.fixture(autouse=True)
+def mock_send_confirmation_email(mocker: MockerFixture):
+    return mocker.patch("src.domain.account.tasks.send_confirmation_email.delay")
 
 
 @pytest_asyncio.fixture(scope="function")

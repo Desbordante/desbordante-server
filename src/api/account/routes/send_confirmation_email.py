@@ -1,6 +1,9 @@
 from fastapi import APIRouter, status
 
-from src.api.account.dependencies import SendConfirmationEmailUseCaseDep
+from src.api.account.dependencies import (
+    NotVerifiedUserDep,
+)
+from src.api.dependencies import SendConfirmationEmailUseCaseDep
 from src.schemas.base_schemas import ApiErrorSchema
 
 router = APIRouter()
@@ -18,8 +21,9 @@ router = APIRouter()
     },
 )
 async def send_confirmation_email(
+    user: NotVerifiedUserDep,
     send_confirmation_email: SendConfirmationEmailUseCaseDep,
 ) -> None:
-    await send_confirmation_email()
+    await send_confirmation_email(to_email=user.email)
 
     return None
