@@ -15,7 +15,7 @@ router = APIRouter()
 
 
 @router.put(
-    "/password-reset",
+    "/password-reset/",
     response_model=AuthResponseSchema,
     status_code=status.HTTP_200_OK,
     summary="Reset password",

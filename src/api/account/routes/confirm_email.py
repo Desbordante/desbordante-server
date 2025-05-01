@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.put(
-    "/email/verify",
+    "/email/verify/",
     response_model=UserSchema,
     status_code=status.HTTP_200_OK,
     summary="Confirm email",

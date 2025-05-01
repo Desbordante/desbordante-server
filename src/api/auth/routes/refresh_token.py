@@ -14,7 +14,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/refresh",
+    "/refresh/",
     response_model=AuthResponseSchema,
     status_code=status.HTTP_200_OK,
     summary="Refresh access token",
