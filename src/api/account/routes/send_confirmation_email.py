@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/email/verify",
+    "/email/verify/",
     response_model=None,
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Send confirmation email",

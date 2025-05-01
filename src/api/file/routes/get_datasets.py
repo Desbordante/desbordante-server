@@ -59,7 +59,7 @@ def parse_filter_params(
 
 
 @router.get(
-    "/datasets",
+    "/datasets/",
     response_model=list[DatasetSchema],
     status_code=status.HTTP_200_OK,
     summary="Get datasets",

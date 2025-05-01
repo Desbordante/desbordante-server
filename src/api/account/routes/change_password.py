@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.put(
-    "/password",
+    "/password/",
     response_model=UserSchema,
     status_code=status.HTTP_200_OK,
     summary="Change password",

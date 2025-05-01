@@ -28,7 +28,7 @@ class UploadFileAdapter:
 
 
 @router.post(
-    "/datasets",
+    "/datasets/",
     response_model=DatasetSchema,
     status_code=status.HTTP_201_CREATED,
     summary="Upload dataset",

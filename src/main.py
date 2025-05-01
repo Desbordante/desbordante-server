@@ -11,7 +11,9 @@ from src.logging import configure_logging
 configure_logging()
 logger = logging.getLogger(__name__)
 
-app = FastAPI(generate_unique_id_function=lambda route: route.name)
+app = FastAPI(
+    generate_unique_id_function=lambda route: route.name, redirect_slashes=False
+)
 
 app.add_middleware(
     CORSMiddleware,
