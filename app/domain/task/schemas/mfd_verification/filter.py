@@ -1,16 +1,16 @@
 from enum import StrEnum, auto
 from typing import List, assert_never
-from .task import FdModel
 from app.domain.task.schemas.base import BaseFilter
+from app.domain.task.schemas.mfd_verification.task import MfdVerificationModel
 
 
-class FdFilterOptions(StrEnum):
+class MfdVerificationFilterOptions(StrEnum):
     ATTRIBUTE_NAME = auto()
 
 
 def filter_by_attributes(
-    raw_result: List[FdModel], attributes_names: List[str]
-) -> List[FdModel]:
+    raw_result: MfdVerificationModel, attributes_names: List[str]
+) -> MfdVerificationModel:
     return [
         model
         for model in raw_result
@@ -20,9 +20,9 @@ def filter_by_attributes(
     ]
 
 
-class FdFilter(BaseFilter):
+class MfdVerificationFilter(BaseFilter):
     _filter_map = {
-        FdFilterOptions.ATTRIBUTE_NAME: filter_by_attributes,
+        MfdVerificationFilterOptions.ATTRIBUTE_NAME: filter_by_attributes,
     }
 
     def match_filter_by_option_name(self, option_name):
@@ -32,10 +32,10 @@ class FdFilter(BaseFilter):
 
     def filter(
         self,
-        raw_result: List[FdModel],
-        filter_option: FdFilterOptions,
+        raw_result: MfdVerificationModel,
+        filter_option: MfdVerificationFilterOptions,
         filter_params: List[str],
-    ) -> List[FdModel]:
+    ) -> MfdVerificationModel:
         filter = self.match_filter_by_option_name(filter_option)
         filtering_result = filter(raw_result, filter_params)
         return filtering_result

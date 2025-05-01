@@ -1,32 +1,26 @@
 from enum import StrEnum, auto
-from typing import List, assert_never
-from .task import FdModel
+from typing import assert_never
+from .task import HoldsMfdVerificationTaskResult, MfdVerificationModel
 from app.domain.task.schemas.base import BaseSorter
 from app.domain.task.schemas.types import SortOrder
-import json
 
 
-class FdSortOptions(StrEnum):
-    LHS = auto()
-    RHS = auto()
+class MfdVerificationSortOptions(StrEnum):
+    POINT_INDEX = auto()
+    FURTHEST_POINT_INDEX = auto()
+    MAXIMUM_DISTANCE = auto()
 
 
-def sort_by_lhs(raw_result: List[FdModel], is_reverse: bool) -> List[FdModel]:
-    raw_result.sort(key=json.dumps, reverse=is_reverse)
-    return raw_result
+def sort_by_max_distance(
+    raw_result: MfdVerificationModel, is_reverse: bool
+) -> MfdVerificationModel:
+    # raw_result.sort(key=json.dumps, reverse=is_reverse)
+    return HoldsMfdVerificationTaskResult(mfd_holds=True)
 
 
-def sort_by_rhs(raw_result: List[FdModel], is_reverse: bool) -> List[FdModel]:
-    raw_result.sort(
-        key=lambda x: json.dumps({"rhs": x["rhs"], "lhs": x["lhs"]}), reverse=is_reverse
-    )
-    return raw_result
-
-
-class FdSorter(BaseSorter):
+class MfdVerificationSorter(BaseSorter):
     _sorter_map = {
-        FdSortOptions.LHS: sort_by_lhs,
-        FdSortOptions.RHS: sort_by_rhs,
+        MfdVerificationSortOptions.MAXIMUM_DISTANCE: sort_by_max_distance,
     }
 
     def match_sorter_by_option_name(self, option_name):
@@ -36,11 +30,12 @@ class FdSorter(BaseSorter):
 
     def sort(
         self,
-        raw_result: List[FdModel],
-        sort_option: FdSortOptions,
+        raw_result: MfdVerificationModel,
+        sort_option: MfdVerificationSortOptions,
         sort_direction: SortOrder,
-    ) -> List[FdModel]:
+    ) -> MfdVerificationModel:
         is_reverse = sort_direction == SortOrder.DESC
         sorter = self.match_sorter_by_option_name(sort_option)
+        print(raw_result)
         sorted_result = sorter(raw_result, is_reverse=is_reverse)
         return sorted_result

@@ -34,11 +34,13 @@ class HighlightsCluster(BaseSchema):
     cluster_index: int
     cluster_name: list[str]
     max_distance: float
+    highlights_count: int
     highlights: list[Highlight]
 
 
 class NotHoldsMfdVerificationTaskResult(BaseSchema):
     mfd_holds: Literal[False]
+    cluster_count: int
     highlights_clusters: list[HighlightsCluster]
 
 
@@ -46,8 +48,13 @@ class MfdVerificationTaskConfig(BaseMfdVerificationTaskModel):
     config: OneOfMfdVerificationAlgoConfig
 
 
+type MfdVerificationModel = Union[
+    HoldsMfdVerificationTaskResult, NotHoldsMfdVerificationTaskResult
+]
+
+
 class MfdVerificationTaskResult(BaseMfdVerificationTaskModel):
-    result: Union[HoldsMfdVerificationTaskResult, NotHoldsMfdVerificationTaskResult]
+    result: MfdVerificationModel
 
 
 class MfdVerificationTask(
@@ -129,12 +136,14 @@ class MfdVerificationTask(
                         cluster_index=cluster_index,
                         cluster_name=cluster_name,
                         max_distance=max_distance,
+                        highlights_count=len(highlights),
                         highlights=highlights,
                     )
                 )
 
             result = NotHoldsMfdVerificationTaskResult(
                 mfd_holds=False,
+                cluster_count=len(hidhlights_clusters),
                 highlights_clusters=hidhlights_clusters,
             )
 
