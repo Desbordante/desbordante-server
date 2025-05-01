@@ -12,7 +12,8 @@ class PrimitiveName(StrEnum):
     NAR = auto()
     ADC = auto()
     AC = auto()
-    
+
+
 class SortOrder(StrEnum):
     ASC = auto()
     DESC = auto()

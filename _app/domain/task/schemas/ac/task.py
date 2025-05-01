@@ -4,11 +4,11 @@ import pandas
 from desbordante.ac import ACRanges, ACException
 from desbordante.ac.algorithms import AcAlgorithm
 
-from app.domain.task.schemas.base import BaseTask
-from app.domain.task.schemas.ac.algo_config import OneOfAcAlgoConfig, OperationType
-from app.domain.task.schemas.ac.algo_name import AcAlgoName
-from app.domain.task.schemas.types import PrimitiveName
-from app.schemas.schemas import BaseSchema
+from _app.domain.task.schemas.base import BaseTask
+from _app.domain.task.schemas.types import PrimitiveName
+from _app.schemas.schemas import BaseSchema
+from .algo_config import OneOfAcAlgoConfig, OperationType
+from .algo_name import AcAlgoName
 
 
 class AcModel(BaseSchema):
@@ -16,11 +16,6 @@ class AcModel(BaseSchema):
     right_column: str
     intervals: list[tuple[float, float]]
     outliers: list[int]
-
-
-# class AcModel(BaseSchema):
-#     operation: OperationType
-#     instances: list[AcItemModel]
 
 
 class BaseAcTaskModel(BaseSchema):
@@ -32,8 +27,9 @@ class AcTaskConfig(BaseAcTaskModel):
 
 
 class AcTaskResult(BaseAcTaskModel):
-    #operation: OperationType
+    operation: OperationType
     result: list[AcModel]
+    table_header: list[str]
 
 
 class AcTask(BaseTask[AcTaskConfig, AcTaskResult]):
@@ -46,21 +42,26 @@ class AcTask(BaseTask[AcTaskConfig, AcTaskResult]):
             return algo_class()
         assert_never(algo_name)
 
-    def union_result(self, column_names: list[str], 
-                     ranges: list[ACRanges], 
-                     exceptions: list[ACException]) -> list[AcModel]:
+    def union_result(
+        self,
+        column_names: list[str],
+        ranges: list[ACRanges],
+        exceptions: list[ACException],
+    ) -> list[AcModel]:
         result = []
         new_exceptions = self.extract_exceptions(exceptions)
         for range in ranges:
             columns = range.column_indices
-            result.append(AcModel(
-                left_column=column_names[columns[0]],
-                right_column=column_names[columns[1]],
-                intervals=range.ranges,
-                outliers=new_exceptions.setdefault(columns, [])
-            ))
+            result.append(
+                AcModel(
+                    left_column=column_names[columns[0]],
+                    right_column=column_names[columns[1]],
+                    intervals=range.ranges,
+                    outliers=new_exceptions.setdefault(columns, []),
+                )
+            )
         return result
-    
+
     def extract_exceptions(self, exceptions: list[ACException]):
         columns_dict = dict()
         for ex in exceptions:
@@ -90,5 +91,7 @@ class AcTask(BaseTask[AcTaskConfig, AcTaskResult]):
 
         return AcTaskResult(
             primitive_name=PrimitiveName.AC,
+            operation=options["bin_operation"],
+            table_header=column_names,
             result=self.union_result(column_names, ac_ranges, ac_exceptions),
         )

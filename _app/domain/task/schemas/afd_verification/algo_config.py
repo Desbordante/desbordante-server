@@ -2,7 +2,7 @@ from typing import Annotated, Literal, Union
 
 from pydantic import Field
 
-from app.schemas import BaseSchema
+from _app.schemas import BaseSchema
 
 from .algo_name import AfdVerificationAlgoName
 
@@ -16,11 +16,9 @@ class FDVerifierConfig(BaseSchema):
     lhs_indices: list[int] = Field(..., description=LHS_INDICES)
     rhs_indices: list[int] = Field(..., description=RHS_INDICES)
     is_null_equal_null: bool = Field(False, description=NULL_EQUAL_DESC)
-    
+
 
 OneOfAfdVerificationAlgoConfig = Annotated[
-    Union[
-        FDVerifierConfig,
-    ],
+    Union[FDVerifierConfig,],
     Field(discriminator="algo_name"),
 ]

@@ -1,20 +1,19 @@
 from typing import Literal, assert_never
 
 import pandas
-from desbordante.dc import DC
 from desbordante.dc.algorithms import FastADC
 
-from app.domain.task.schemas.base import BaseTask
-from app.domain.task.schemas.adc.algo_config import OneOfAdcAlgoConfig
-from app.domain.task.schemas.adc.algo_name import AdcAlgoName
-from app.domain.task.schemas.types import PrimitiveName
-from app.schemas.schemas import BaseSchema
+from _app.domain.task.schemas.base import BaseTask
+from _app.domain.task.schemas.types import PrimitiveName
+from _app.schemas.schemas import BaseSchema
+from .algo_config import OneOfAdcAlgoConfig
+from .algo_name import AdcAlgoName
 
 
 class AdcItemModel(BaseSchema):
     left_item: str
     right_item: str
-    sign: Literal['==', '!=', '<=', '>=', '>', '<']
+    sign: Literal["==", "!=", "<=", ">=", ">", "<"]
 
 
 class AdcModel(BaseSchema):
@@ -31,6 +30,7 @@ class AdcTaskConfig(BaseAdcTaskModel):
 
 class AdcTaskResult(BaseAdcTaskModel):
     result: list[AdcModel]
+    table_header: list[str]
 
 
 class AdcTask(BaseTask[AdcTaskConfig, AdcTaskResult]):
@@ -45,20 +45,22 @@ class AdcTask(BaseTask[AdcTaskConfig, AdcTaskResult]):
 
     def split_result(self, row: str) -> list[AdcItemModel]:
         row_len = len(row)
-        row = row[2:row_len-1]
-        conjuncts = row.split('∧')
+        row = row[2 : row_len - 1]
+        conjuncts = row.split("∧")
         result = []
         for con in conjuncts:
             left_item, sign, right_item = con.split()
-            result.append(AdcItemModel(left_item=left_item, 
-                                       sign=sign, 
-                                       right_item=right_item))
+            result.append(
+                AdcItemModel(left_item=left_item, sign=sign, right_item=right_item)
+            )
         return result
 
     def execute(
         self, tables: list[pandas.DataFrame], task_config: AdcTaskConfig
     ) -> AdcTaskResult:
         table = tables[0]
+        column_names = table.columns
+
         algo_config = task_config["config"]
         options = AdcTaskConfig.model_validate(task_config).config.model_dump(
             exclude_unset=True, exclude={"algo_name"}
@@ -70,8 +72,8 @@ class AdcTask(BaseTask[AdcTaskConfig, AdcTaskResult]):
 
         return AdcTaskResult(
             primitive_name=PrimitiveName.ADC,
+            table_header=column_names,
             result=[
-                AdcModel(cojuncts=self.split_result(str(dc)))
-                for dc in algo.get_dcs()
+                AdcModel(cojuncts=self.split_result(str(dc))) for dc in algo.get_dcs()
             ],
         )

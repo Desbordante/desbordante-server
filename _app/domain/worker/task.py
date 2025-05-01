@@ -22,6 +22,7 @@ def data_profiling_task(
     raw_config: OneOfTaskConfig,
 ) -> OneOfTaskResult:
     config = OneOfTaskConfig.model_validate(raw_config)
+    print(config)
     storage = get_storage_client()
 
     tables = [pd.read_csv(BytesIO(storage.download_file(path))) for path in paths]

@@ -31,7 +31,7 @@ format:
 
 ## Run application server in watch mode
 app:
-	uv run uvicorn --port 8000 src.main:app --reload
+	uv run uvicorn --port 8000 --host 0.0.0.0 src.main:app --reload
 
 ## Run development-only docker containers
 services:

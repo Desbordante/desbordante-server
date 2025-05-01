@@ -38,6 +38,7 @@ from _app.domain.task.schemas.ac.sort import AcSorter
 
 from _app.domain.task.schemas.types import PrimitiveName
 
+
 def match_task_by_primitive_name(primitive_name: PrimitiveName):
     match primitive_name:
         case PrimitiveName.FD:
@@ -83,12 +84,13 @@ def match_filter_by_primitive_name(primitive_name: PrimitiveName):
             return AcFilter()
     assert_never(primitive_name)
 
+
 def match_sorter_by_primitive_name(primitive_name: PrimitiveName):
     match primitive_name:
         case PrimitiveName.FD:
             return FdSorter()
         case PrimitiveName.PFD:
-            return PfdSorter()      
+            return PfdSorter()
         case PrimitiveName.AFD:
             return AfdSorter()
         case PrimitiveName.AFD_VERIFICATION:

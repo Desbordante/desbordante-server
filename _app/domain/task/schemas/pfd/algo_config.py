@@ -2,7 +2,7 @@ from typing import Annotated, Literal, Union
 
 from pydantic import Field
 
-from app.schemas import BaseSchema
+from _app.schemas import BaseSchema
 
 from .algo_name import PfdAlgoName
 
@@ -10,6 +10,7 @@ MAX_LHS_DESC = "Maximum considered LHS size"
 NULL_EQUAL_DESC = "Whether two NULL values should be considered equal"
 ERROR_DESC = "Error threshold value for Approximate FD algorithms"
 PFD_ERROR_DESC = "PFD error measure to use"
+
 
 class PFDTaneConfig(BaseSchema):
     algo_name: Literal[PfdAlgoName.PFDTane]
@@ -22,8 +23,6 @@ class PFDTaneConfig(BaseSchema):
 
 
 OneOfPfdAlgoConfig = Annotated[
-    Union[
-        PFDTaneConfig,
-    ],
+    Union[PFDTaneConfig,],
     Field(discriminator="algo_name"),
 ]

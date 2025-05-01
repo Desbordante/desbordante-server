@@ -1,4 +1,4 @@
-from typing import Annotated, Literal, Union, Optional
+from typing import Annotated, Literal, Union
 
 from pydantic import Field
 
@@ -20,39 +20,50 @@ class BaseColumnMatch(BaseSchema):
     left_column: str
     right_column: str
 
+
 class FullColumnMatch(BaseColumnMatch):
     minimum_similarity: float = 0.7
     bound_number_limit: int = 0
 
+
 class EqualityConfig(BaseColumnMatch):
     metrics: Literal[ColumnMatchMetrics.Equality]
+
 
 class JaccardConfig(FullColumnMatch):
     metrics: Literal[ColumnMatchMetrics.Jaccard]
 
+
 class LevenshteinConfig(FullColumnMatch):
     metrics: Literal[ColumnMatchMetrics.Levenshtein]
+
 
 class MongeElkanConfig(FullColumnMatch):
     metrics: Literal[ColumnMatchMetrics.MongeElkan]
 
+
 class LcsConfig(FullColumnMatch):
     metrics: Literal[ColumnMatchMetrics.Lcs]
+
 
 class LVNormNumberDistanceConfig(FullColumnMatch):
     metrics: Literal[ColumnMatchMetrics.LVNormNumberDistance]
 
+
 class LVNormDateDistanceConfig(FullColumnMatch):
     metrics: Literal[ColumnMatchMetrics.LVNormDateDistance]
 
+
 OneOfColumnMatchesConfig = Annotated[
-    Union[LcsConfig, 
-          LevenshteinConfig, 
-          MongeElkanConfig, 
-          EqualityConfig, 
-          LVNormDateDistanceConfig, 
-          LVNormNumberDistanceConfig, 
-          JaccardConfig],
+    Union[
+        LcsConfig,
+        LevenshteinConfig,
+        MongeElkanConfig,
+        EqualityConfig,
+        LVNormDateDistanceConfig,
+        LVNormNumberDistanceConfig,
+        JaccardConfig,
+    ],
     Field(discriminator="metrics", description=COLUMN_MATCHES),
 ]
 
@@ -61,7 +72,9 @@ class HyMDConfig(BaseSchema):
     algo_name: Literal[MdAlgoName.HyMD]
     min_support: int = Field(1, ge=1, description=MIN_SUPPORT)
     column_matches: list[OneOfColumnMatchesConfig]
-    level_definition: Literal['cardinality', 'lattice'] = Field('cardinality', description=LEVEL_DEFINITION)
+    level_definition: Literal["cardinality", "lattice"] = Field(
+        "cardinality", description=LEVEL_DEFINITION
+    )
     prune_nondisjoint: bool = Field(True, description=PRUNE_NONDISJOINT)
     max_cardinality: int = Field(-1, description=MAX_CARDINALITY)
     threads: int = Field(0, ge=0, le=65536, description=THREADS)

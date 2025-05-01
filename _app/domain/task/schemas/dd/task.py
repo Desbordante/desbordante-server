@@ -1,16 +1,13 @@
 from typing import Literal, assert_never
 
 import pandas
-from desbordante.dd import DD
 from desbordante.dd.algorithms import Split
 
 from _app.domain.task.schemas.base import BaseTask
 from _app.domain.task.schemas.types import PrimitiveName
 from _app.schemas.schemas import BaseSchema
-
 from .algo_config import OneOfDdAlgoConfig
 from .algo_name import DdAlgoName
-
 
 
 class DdSideItemModel(BaseSchema):
@@ -33,6 +30,7 @@ class DdTaskConfig(BaseDdTaskModel):
 
 class DdTaskResult(BaseDdTaskModel):
     result: list[DdModel]
+    table_header: list[str]
 
 
 class DdTask(BaseTask[DdTaskConfig, DdTaskResult]):
@@ -48,24 +46,23 @@ class DdTask(BaseTask[DdTaskConfig, DdTaskResult]):
     def split_side(self, raw: list[str]) -> list[DdSideItemModel]:
         ans = []
         for s in raw:
-            name, value = s.split(' [')
-            value = '[' + value
+            name, value = s.split(" [")
+            value = "[" + value
             ans.append(DdSideItemModel(name=name, values=value))
         return ans
 
-
     def split_result(self, row: str) -> DdModel:
-        lhs_rawraw, rhs_raw = row.split(' -> ')
-        lhs_raw = lhs_rawraw.split(' ; ')
+        lhs_rawraw, rhs_raw = row.split(" -> ")
+        lhs_raw = lhs_rawraw.split(" ; ")
         lhs_ans = self.split_side(lhs_raw)
         rhs_ans = self.split_side([rhs_raw])
-        return DdModel(lhs=lhs_ans, rhs=rhs_ans) 
-        
+        return DdModel(lhs=lhs_ans, rhs=rhs_ans)
 
     def execute(
         self, tables: list[pandas.DataFrame], task_config: DdTaskConfig
     ) -> DdTaskResult:
         table = tables[0]
+        table_header = table.columns
         dif_table = tables[1]
         algo_config = task_config["config"]
         options = DdTaskConfig.model_validate(task_config).config.model_dump(
@@ -77,5 +74,6 @@ class DdTask(BaseTask[DdTaskConfig, DdTaskResult]):
 
         return DdTaskResult(
             primitive_name=PrimitiveName.DD,
+            table_header=table_header,
             result=[self.split_result(str(dd)) for dd in algo.get_dds()],
         )

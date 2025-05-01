@@ -2,7 +2,7 @@ from typing import Annotated, Literal, Union
 
 from pydantic import Field
 
-from app.schemas import BaseSchema
+from _app.schemas import BaseSchema
 
 from .algo_name import AfdAlgoName
 
@@ -22,23 +22,24 @@ class BaseAfdConfig(BaseSchema):
     error: float = Field(0, ge=0, le=1, description=ERROR_DESC)
     is_null_equal_null: bool = Field(False, description=NULL_EQUAL_DESC)
 
-class PyroConfig(BaseAfdConfig):
+
+class AFDPyroConfig(BaseAfdConfig):
     algo_name: Literal[AfdAlgoName.Pyro]
     threads: int = Field(0, ge=0, description=THREADS_DESC)
     seed: int = Field(0, description=SEED_DESC)
 
 
-class TaneConfig(BaseAfdConfig):
+class AFDTaneConfig(BaseAfdConfig):
     algo_name: Literal[AfdAlgoName.Tane]
     afd_error_measure: Literal["g1", "pdep", "tau", "mu_plus", "rho"] = Field(
-        ..., description=AFD_ERROR_DESC
+        "g1", description=AFD_ERROR_DESC
     )
 
 
 OneOfAfdAlgoConfig = Annotated[
     Union[
-        PyroConfig,
-        TaneConfig,
+        AFDPyroConfig,
+        AFDTaneConfig,
     ],
     Field(discriminator="algo_name"),
 ]

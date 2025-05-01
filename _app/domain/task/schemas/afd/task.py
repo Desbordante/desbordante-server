@@ -10,10 +10,8 @@ from desbordante.fd.algorithms import (
 from _app.domain.task.schemas.base import BaseTask
 from _app.domain.task.schemas.types import PrimitiveName
 from _app.schemas.schemas import BaseSchema
-
 from .algo_config import OneOfAfdAlgoConfig
 from .algo_name import AfdAlgoName
-
 
 
 class AfdModel(BaseSchema):
@@ -31,6 +29,7 @@ class AfdTaskConfig(BaseAfdTaskModel):
 
 class AfdTaskResult(BaseAfdTaskModel):
     result: list[AfdModel]
+    table_header: list[str]
 
 
 class AfdTask(BaseTask[AfdTaskConfig, AfdTaskResult]):
@@ -54,14 +53,22 @@ class AfdTask(BaseTask[AfdTaskConfig, AfdTaskResult]):
             exclude_unset=True, exclude={"algo_name"}
         )
 
+        # no limit
+        if options["max_lhs"] == 0:
+            del options["max_lhs"]
+
         algo = self.match_algo_by_name(algo_config["algo_name"])
         algo.load_data(table=table)
         algo.execute(**options)
 
         return AfdTaskResult(
             primitive_name=PrimitiveName.AFD,
+            table_header=columns,
             result=[
-                AfdModel(lhs=[columns[index] for index in fd.lhs_indices], rhs=[columns[fd.rhs_index]])
+                AfdModel(
+                    lhs=[columns[index] for index in fd.lhs_indices],
+                    rhs=[columns[fd.rhs_index]],
+                )
                 for fd in algo.get_fds()
             ],
         )

@@ -7,10 +7,8 @@ from desbordante.nar.algorithms import DES
 from _app.domain.task.schemas.base import BaseTask
 from _app.domain.task.schemas.types import PrimitiveName
 from _app.schemas.schemas import BaseSchema
-
 from .algo_config import OneOfNarAlgoConfig
 from .algo_name import NarAlgoName
-
 
 
 class NarSideItemModel(BaseSchema):
@@ -35,6 +33,7 @@ class NarTaskConfig(BaseNarTaskModel):
 
 class NarTaskResult(BaseNarTaskModel):
     result: list[NarModel]
+    table_header: list[str]
 
 
 class NarTask(BaseTask[NarTaskConfig, NarTaskResult]):
@@ -69,6 +68,7 @@ class NarTask(BaseTask[NarTaskConfig, NarTaskResult]):
 
         return NarTaskResult(
             primitive_name=PrimitiveName.NAR,
+            table_header=columns,
             result=[
                 NarModel(
                     confidence=nar.confidence,
