@@ -17,8 +17,8 @@ THREADS = "Number of threads to use. If 0, then as many threads are used as the 
 
 
 class BaseColumnMatch(BaseSchema):
-    left_column: str
-    right_column: str
+    left_column: int
+    right_column: int
 
 class FullColumnMatch(BaseColumnMatch):
     minimum_similarity: float = 0.7
@@ -46,12 +46,12 @@ class LVNormDateDistanceConfig(FullColumnMatch):
     metrics: Literal[ColumnMatchMetrics.LVNormDateDistance]
 
 OneOfColumnMatchesConfig = Annotated[
-    Union[LcsConfig, 
-          LevenshteinConfig, 
-          MongeElkanConfig, 
-          EqualityConfig, 
-          LVNormDateDistanceConfig, 
-          LVNormNumberDistanceConfig, 
+    Union[LcsConfig,
+          LevenshteinConfig,
+          MongeElkanConfig,
+          EqualityConfig,
+          LVNormDateDistanceConfig,
+          LVNormNumberDistanceConfig,
           JaccardConfig],
     Field(discriminator="metrics", description=COLUMN_MATCHES),
 ]

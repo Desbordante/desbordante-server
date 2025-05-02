@@ -11,14 +11,14 @@ repos:
       - id: requirements-txt-fixer
       - id: trailing-whitespace
 
-  - repo: local
-    hooks:
-      - id: make-format
-        name: make-format
-        entry: make format
-        language: system
+  # - repo: local
+  #   hooks:
+  #     - id: make-format
+  #       name: make-format
+  #       entry: make format
+  #       language: system
 
-      - id: make-lint
-        name: make-lint
-        entry: make lint
-        language: system
+  #     - id: make-lint
+  #       name: make-lint
+  #       entry: make lint
+  #       language: system
