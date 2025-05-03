@@ -32,6 +32,7 @@ class File(BaseUUIDModel, FileBase, table=True):
 class FilePublic(FileBase):
     id: UUID
 
+
 class FileFull(FilePublic):
     num_columns: int
     num_rows: int

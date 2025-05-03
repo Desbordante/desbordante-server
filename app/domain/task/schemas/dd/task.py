@@ -1,7 +1,6 @@
 from typing import Literal, assert_never
 
 import pandas
-from desbordante.dd import DD
 from desbordante.dd.algorithms import Split
 
 from app.domain.task.schemas.base import BaseTask
@@ -47,19 +46,17 @@ class DdTask(BaseTask[DdTaskConfig, DdTaskResult]):
     def split_side(self, raw: list[str]) -> list[DdSideItemModel]:
         ans = []
         for s in raw:
-            name, value = s.split(' [')
-            value = '[' + value
+            name, value = s.split(" [")
+            value = "[" + value
             ans.append(DdSideItemModel(name=name, values=value))
         return ans
 
-
     def split_result(self, row: str) -> DdModel:
-        lhs_rawraw, rhs_raw = row.split(' -> ')
-        lhs_raw = lhs_rawraw.split(' ; ')
+        lhs_rawraw, rhs_raw = row.split(" -> ")
+        lhs_raw = lhs_rawraw.split(" ; ")
         lhs_ans = self.split_side(lhs_raw)
         rhs_ans = self.split_side([rhs_raw])
-        return DdModel(lhs=lhs_ans, rhs=rhs_ans) 
-        
+        return DdModel(lhs=lhs_ans, rhs=rhs_ans)
 
     def execute(
         self, tables: list[pandas.DataFrame], task_config: DdTaskConfig

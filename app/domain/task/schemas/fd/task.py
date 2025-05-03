@@ -70,8 +70,8 @@ class FdTask(BaseTask[FdTaskConfig, FdTaskResult]):
         )
 
         # no limit
-        if options['max_lhs'] == 0:
-            del options['max_lhs']
+        if options["max_lhs"] == 0:
+            del options["max_lhs"]
 
         algo = self.match_algo_by_name(algo_config["algo_name"])
         algo.load_data(table=table)
@@ -81,7 +81,10 @@ class FdTask(BaseTask[FdTaskConfig, FdTaskResult]):
             primitive_name=PrimitiveName.FD,
             table_header=columns,
             result=[
-                FdModel(lhs=[columns[index] for index in fd.lhs_indices], rhs=[columns[fd.rhs_index]])
+                FdModel(
+                    lhs=[columns[index] for index in fd.lhs_indices],
+                    rhs=[columns[fd.rhs_index]],
+                )
                 for fd in algo.get_fds()
             ],
         )

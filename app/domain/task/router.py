@@ -1,11 +1,9 @@
-from enum import Enum
 from typing import List, Union
 from fastapi import Query
 from uuid import UUID
 import json
 
 from fastapi import APIRouter
-from pydantic import BaseModel
 
 from app.domain.auth.dependencies.auth import (
     AuthorizedUserDep,
@@ -14,8 +12,10 @@ from app.domain.auth.dependencies.auth import (
 from app.domain.file.dependencies import FileServiceDep
 from app.domain.task.dependencies import TaskServiceDep
 from app.domain.task.models import TaskPublic
-from app.domain.task.utils import match_filter_by_primitive_name, \
-                                  match_sorter_by_primitive_name
+from app.domain.task.utils import (
+    match_filter_by_primitive_name,
+    match_sorter_by_primitive_name,
+)
 from app.domain.task.schemas.schemas import TaskCreate
 from app.domain.task.schemas.types import SortOrder
 from app.exceptions.exceptions import ForbiddenException
@@ -43,28 +43,29 @@ from app.domain.task.schemas.adc.sort import AdcSortOptions
 
 router = APIRouter()
 
-OneOfFilterOption = Union[NarFilterOptions, 
-                          DdFilterOptions, 
-                          MdFilterOptions,
-                          FdFilterOptions,
-                          PfdFilterOptions,
-                          AfdFilterOptions,
-                          AdcFilterOptions,
-                          AcFilterOptions,
-                          AfdVerificationFilterOptions,
-                          ]
+OneOfFilterOption = Union[
+    NarFilterOptions,
+    DdFilterOptions,
+    MdFilterOptions,
+    FdFilterOptions,
+    PfdFilterOptions,
+    AfdFilterOptions,
+    AdcFilterOptions,
+    AcFilterOptions,
+    AfdVerificationFilterOptions,
+]
 
-OneOfSortOption = Union[FdSortOptions,
-                        PfdSortOptions,
-                        AfdSortOptions,
-                        DdSortOptions,
-                        NarSortOptions,
-                        MdSortOptions,
-                        AcSortOptions,
-                        AdcSortOptions,
-                        AfdVerificationSortOptions,
-                        ]
-
+OneOfSortOption = Union[
+    FdSortOptions,
+    PfdSortOptions,
+    AfdSortOptions,
+    DdSortOptions,
+    NarSortOptions,
+    MdSortOptions,
+    AcSortOptions,
+    AdcSortOptions,
+    AfdVerificationSortOptions,
+]
 
 
 @router.post("", response_model=TaskPublic)
@@ -94,11 +95,10 @@ async def get_task(
     id: UUID,
     user: OptionallyAuthorizedUserDep,
     task_service: TaskServiceDep,
-
     filter_options: List[OneOfFilterOption] = Query(None),
-    filter_params: str = Query(None, 
-                               description="String in JSON format {filter_option: filter_params}"),
-
+    filter_params: str = Query(
+        None, description="String in JSON format {filter_option: filter_params}"
+    ),
     sort_option: OneOfSortOption = Query(None),
     sort_direction: SortOrder = Query(None),
 ) -> TaskPublic:
@@ -110,26 +110,23 @@ async def get_task(
 
     if task.result is None:
         return task
-    task_result = task.result['result']
-    primitive_name = task.result['primitive_name']
-    
+    task_result = task.result["result"]
+    primitive_name = task.result["primitive_name"]
+
     if filter_options and filter_params:
-        print('filter', filter_options, filter_params)
-        filter = json.loads(filter_params)  
-     
+        print("filter", filter_options, filter_params)
+        filter = json.loads(filter_params)
+
         filt = match_filter_by_primitive_name(primitive_name)
         for f in filter_options:
             task_result = filt.filter(task_result, f, filter[f])
-     
+
     if sort_option and sort_direction:
-        print('sort', sort_option, sort_direction)
+        print("sort", sort_option, sort_direction)
         sorter = match_sorter_by_primitive_name(primitive_name)
-        task_result = sorter.sort(task_result, 
-                                  sort_option, 
-                                  sort_direction)
+        task_result = sorter.sort(task_result, sort_option, sort_direction)
 
-
-    task.result['result'] = task_result
+    task.result["result"] = task_result
     return task
 
 

@@ -50,8 +50,8 @@ class PfdTask(BaseTask[PfdTaskConfig, PfdTaskResult]):
         )
 
         # no limit
-        if options['max_lhs'] == 0:
-            del options['max_lhs']
+        if options["max_lhs"] == 0:
+            del options["max_lhs"]
 
         algo = self.match_algo_by_name(algo_config["algo_name"])
         algo.load_data(table=table)
@@ -61,7 +61,10 @@ class PfdTask(BaseTask[PfdTaskConfig, PfdTaskResult]):
             primitive_name=PrimitiveName.PFD,
             table_header=columns,
             result=[
-                PfdModel(lhs=[columns[index] for index in fd.lhs_indices], rhs=[columns[fd.rhs_index]])
+                PfdModel(
+                    lhs=[columns[index] for index in fd.lhs_indices],
+                    rhs=[columns[fd.rhs_index]],
+                )
                 for fd in algo.get_fds()
             ],
         )

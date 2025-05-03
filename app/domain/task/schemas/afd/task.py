@@ -54,8 +54,8 @@ class AfdTask(BaseTask[AfdTaskConfig, AfdTaskResult]):
         )
 
         # no limit
-        if options['max_lhs'] == 0:
-            del options['max_lhs']
+        if options["max_lhs"] == 0:
+            del options["max_lhs"]
 
         algo = self.match_algo_by_name(algo_config["algo_name"])
         algo.load_data(table=table)
@@ -65,7 +65,10 @@ class AfdTask(BaseTask[AfdTaskConfig, AfdTaskResult]):
             primitive_name=PrimitiveName.AFD,
             table_header=columns,
             result=[
-                AfdModel(lhs=[columns[index] for index in fd.lhs_indices], rhs=[columns[fd.rhs_index]])
+                AfdModel(
+                    lhs=[columns[index] for index in fd.lhs_indices],
+                    rhs=[columns[fd.rhs_index]],
+                )
                 for fd in algo.get_fds()
             ],
         )

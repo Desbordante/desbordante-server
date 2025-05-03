@@ -22,6 +22,7 @@ class BaseAfdConfig(BaseSchema):
     error: float = Field(0, ge=0, le=1, description=ERROR_DESC)
     is_null_equal_null: bool = Field(False, description=NULL_EQUAL_DESC)
 
+
 class AFDPyroConfig(BaseAfdConfig):
     algo_name: Literal[AfdAlgoName.Pyro]
     threads: int = Field(0, ge=0, description=THREADS_DESC)

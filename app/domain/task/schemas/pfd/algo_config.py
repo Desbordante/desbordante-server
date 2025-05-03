@@ -11,6 +11,7 @@ NULL_EQUAL_DESC = "Whether two NULL values should be considered equal"
 ERROR_DESC = "Error threshold value for Approximate FD algorithms"
 PFD_ERROR_DESC = "PFD error measure to use"
 
+
 class PFDTaneConfig(BaseSchema):
     algo_name: Literal[PfdAlgoName.PFDTane]
     max_lhs: int = Field(0, ge=0, description=MAX_LHS_DESC)
@@ -22,8 +23,6 @@ class PFDTaneConfig(BaseSchema):
 
 
 OneOfPfdAlgoConfig = Annotated[
-    Union[
-        PFDTaneConfig,
-    ],
+    Union[PFDTaneConfig,],
     Field(discriminator="algo_name"),
 ]

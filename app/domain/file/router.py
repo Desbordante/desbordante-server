@@ -46,7 +46,7 @@ def upload_file(
     description="Get a list of all files uploaded by the current user.",
 )
 def get_file_by_id(
-    #user: OptionallyAuthorizedUserDep,
+    # user: OptionallyAuthorizedUserDep,
     file_service: FileServiceDep,
     ids: List[UUID] = Query([]),
 ) -> List[FileFull]:
@@ -67,10 +67,10 @@ def get_file_by_id(
     for file in files:
         table = pd.read_csv(BytesIO(storage.download_file(file.path)))
         extra_info = {
-            'num_columns': len(table.columns),
-            'num_rows': len(table),
-            'with_header': True,
-            'header': table.columns,
+            "num_columns": len(table.columns),
+            "num_rows": len(table),
+            "with_header": True,
+            "header": table.columns,
         }
         full_files.append(FileFull(**file.model_dump(), **extra_info))
 

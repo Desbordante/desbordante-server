@@ -6,6 +6,6 @@ class ColumnMatchMetrics(StrEnum):
     Levenshtein = auto()
     MongeElkan = auto()
     Equality = auto()
-    LVNormDateDistance = auto() 
-    LVNormNumberDistance = auto() 
+    LVNormDateDistance = auto()
+    LVNormNumberDistance = auto()
     Jaccard = auto()

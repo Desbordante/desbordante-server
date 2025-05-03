@@ -13,7 +13,7 @@ from app.schemas.schemas import BaseSchema
 class AdcItemModel(BaseSchema):
     left_item: str
     right_item: str
-    sign: Literal['==', '!=', '<=', '>=', '>', '<']
+    sign: Literal["==", "!=", "<=", ">=", ">", "<"]
 
 
 class AdcModel(BaseSchema):
@@ -45,14 +45,14 @@ class AdcTask(BaseTask[AdcTaskConfig, AdcTaskResult]):
 
     def split_result(self, row: str) -> list[AdcItemModel]:
         row_len = len(row)
-        row = row[2:row_len-1]
-        conjuncts = row.split('∧')
+        row = row[2 : row_len - 1]
+        conjuncts = row.split("∧")
         result = []
         for con in conjuncts:
             left_item, sign, right_item = con.split()
-            result.append(AdcItemModel(left_item=left_item, 
-                                       sign=sign, 
-                                       right_item=right_item))
+            result.append(
+                AdcItemModel(left_item=left_item, sign=sign, right_item=right_item)
+            )
         return result
 
     def execute(
@@ -74,7 +74,6 @@ class AdcTask(BaseTask[AdcTaskConfig, AdcTaskResult]):
             primitive_name=PrimitiveName.ADC,
             table_header=column_names,
             result=[
-                AdcModel(cojuncts=self.split_result(str(dc)))
-                for dc in algo.get_dcs()
+                AdcModel(cojuncts=self.split_result(str(dc))) for dc in algo.get_dcs()
             ],
         )

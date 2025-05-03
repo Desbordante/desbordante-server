@@ -85,12 +85,13 @@ def match_filter_by_primitive_name(primitive_name: PrimitiveName):
             return AcFilter()
     assert_never(primitive_name)
 
+
 def match_sorter_by_primitive_name(primitive_name: PrimitiveName):
     match primitive_name:
         case PrimitiveName.FD:
             return FdSorter()
         case PrimitiveName.PFD:
-            return PfdSorter()      
+            return PfdSorter()
         case PrimitiveName.AFD:
             return AfdSorter()
         case PrimitiveName.AFD_VERIFICATION:

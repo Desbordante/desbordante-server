@@ -17,6 +17,7 @@ class AcModel(BaseSchema):
     intervals: list[tuple[float, float]]
     outliers: list[int]
 
+
 class BaseAcTaskModel(BaseSchema):
     primitive_name: Literal[PrimitiveName.AC]
 
@@ -41,21 +42,26 @@ class AcTask(BaseTask[AcTaskConfig, AcTaskResult]):
             return algo_class()
         assert_never(algo_name)
 
-    def union_result(self, column_names: list[str], 
-                     ranges: list[ACRanges], 
-                     exceptions: list[ACException]) -> list[AcModel]:
+    def union_result(
+        self,
+        column_names: list[str],
+        ranges: list[ACRanges],
+        exceptions: list[ACException],
+    ) -> list[AcModel]:
         result = []
         new_exceptions = self.extract_exceptions(exceptions)
         for range in ranges:
             columns = range.column_indices
-            result.append(AcModel(
-                left_column=column_names[columns[0]],
-                right_column=column_names[columns[1]],
-                intervals=range.ranges,
-                outliers=new_exceptions.setdefault(columns, [])
-            ))
+            result.append(
+                AcModel(
+                    left_column=column_names[columns[0]],
+                    right_column=column_names[columns[1]],
+                    intervals=range.ranges,
+                    outliers=new_exceptions.setdefault(columns, []),
+                )
+            )
         return result
-    
+
     def extract_exceptions(self, exceptions: list[ACException]):
         columns_dict = dict()
         for ex in exceptions:
@@ -85,7 +91,7 @@ class AcTask(BaseTask[AcTaskConfig, AcTaskResult]):
 
         return AcTaskResult(
             primitive_name=PrimitiveName.AC,
-            operation=options['bin_operation'],
+            operation=options["bin_operation"],
             table_header=column_names,
             result=self.union_result(column_names, ac_ranges, ac_exceptions),
         )
