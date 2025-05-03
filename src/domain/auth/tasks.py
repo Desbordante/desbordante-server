@@ -1,13 +1,12 @@
 from datetime import timedelta
 
-from celery import shared_task
-
 from src.domain.auth.config import settings
 from src.domain.email.utils import send_email
 from src.schemas.email_schemas import ResetPasswordTokenPayloadSchema
+from src.worker.worker import worker
 
 
-@shared_task
+@worker.task(name="tasks.send_reset_email")
 def send_reset_email(to_email: str) -> None:
     send_email(
         to_email=to_email,
