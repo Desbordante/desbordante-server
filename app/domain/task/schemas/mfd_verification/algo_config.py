@@ -2,7 +2,10 @@ from typing import Annotated, Literal, Union
 
 from pydantic import Field
 
-from app.domain.task.schemas.mfd_verification.metrics import MFDVerificationMetricAlgorith, MFDVerificationMetrics
+from app.domain.task.schemas.mfd_verification.metrics import (
+    MFDVerificationMetricAlgorithm,
+    MFDVerificationMetrics,
+)
 from app.schemas import BaseSchema
 
 from .algo_name import MfdVerificationAlgoName
@@ -32,14 +35,14 @@ class BaseMfdVerificationConfig(BaseSchema):
 
 class MFDVerificationEuclideanConfig(BaseMfdVerificationConfig):
     metric: Literal[MFDVerificationMetrics.Euclidean] = Field(..., description=METRIC)
-    metric_algorithm: Literal[
-        MFDVerificationMetricAlgorith.Brute, MFDVerificationMetricAlgorith.Approx, MFDVerificationMetricAlgorith.Calipers
-    ] = Field(..., description=METRIC_ALGORITHM)
+    metric_algorithm: MFDVerificationMetricAlgorithm = Field(
+        ..., description=METRIC_ALGORITHM
+    )
 
 
 class MFDVerificationCosineConfig(BaseMfdVerificationConfig):
     metric: Literal[MFDVerificationMetrics.Cosine] = Field(..., description=METRIC)
-    metric_algorithm: Literal[MFDVerificationMetricAlgorith.Brute, MFDVerificationMetricAlgorith.Approx] = Field(
+    metric_algorithm: MFDVerificationMetricAlgorithm = Field(
         ..., description=METRIC_ALGORITHM
     )
     q: float = Field(1, ge=0, description=Q)
@@ -47,7 +50,7 @@ class MFDVerificationCosineConfig(BaseMfdVerificationConfig):
 
 class MFDVerificationLevenshteinConfig(BaseMfdVerificationConfig):
     metric: Literal[MFDVerificationMetrics.Levenshtein] = Field(..., description=METRIC)
-    metric_algorithm: Literal[MFDVerificationMetricAlgorith.Brute, MFDVerificationMetricAlgorith.Approx] = Field(
+    metric_algorithm: MFDVerificationMetricAlgorithm = Field(
         ..., description=METRIC_ALGORITHM
     )
 

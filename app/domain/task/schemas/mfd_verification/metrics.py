@@ -7,7 +7,7 @@ class MFDVerificationMetrics(StrEnum):
     Levenshtein = auto()
 
 
-class MFDVerificationMetricAlgorith(StrEnum):
+class MFDVerificationMetricAlgorithm(StrEnum):
     Brute = auto()
     Approx = auto()
     Calipers = auto()
