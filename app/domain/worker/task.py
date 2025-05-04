@@ -21,7 +21,6 @@ def data_profiling_task(
     paths: list[str],
     raw_config: OneOfTaskConfig,
 ) -> OneOfTaskResult:
-    print(paths)
     tables = [pd.read_csv(BytesIO(storage.download_file(path))) for path in paths]
 
     # print('!!!', tables, raw_config)
