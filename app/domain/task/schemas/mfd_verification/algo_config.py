@@ -2,7 +2,7 @@ from typing import Annotated, Literal, Union
 
 from pydantic import Field
 
-from app.domain.task.schemas.mfd_verification.metrics import MetricAlgorith, Metrics
+from app.domain.task.schemas.mfd_verification.metrics import MFDVerificationMetricAlgorith, MFDVerificationMetrics
 from app.schemas import BaseSchema
 
 from .algo_name import MfdVerificationAlgoName
@@ -30,33 +30,33 @@ class BaseMfdVerificationConfig(BaseSchema):
     is_null_equal_null: bool = Field(False, description=NULL_EQUAL_DESC)
 
 
-class EuclideanConfig(BaseMfdVerificationConfig):
-    metric: Literal[Metrics.Euclidean] = Field(..., description=METRIC)
+class MFDVerificationEuclideanConfig(BaseMfdVerificationConfig):
+    metric: Literal[MFDVerificationMetrics.Euclidean] = Field(..., description=METRIC)
     metric_algorithm: Literal[
-        MetricAlgorith.Brute, MetricAlgorith.Approx, MetricAlgorith.Calipers
+        MFDVerificationMetricAlgorith.Brute, MFDVerificationMetricAlgorith.Approx, MFDVerificationMetricAlgorith.Calipers
     ] = Field(..., description=METRIC_ALGORITHM)
 
 
-class CosineConfig(BaseMfdVerificationConfig):
-    metric: Literal[Metrics.Cosine] = Field(..., description=METRIC)
-    metric_algorithm: Literal[MetricAlgorith.Brute, MetricAlgorith.Approx] = Field(
+class MFDVerificationCosineConfig(BaseMfdVerificationConfig):
+    metric: Literal[MFDVerificationMetrics.Cosine] = Field(..., description=METRIC)
+    metric_algorithm: Literal[MFDVerificationMetricAlgorith.Brute, MFDVerificationMetricAlgorith.Approx] = Field(
         ..., description=METRIC_ALGORITHM
     )
     q: float = Field(1, ge=0, description=Q)
 
 
-class LevenshteinConfig(BaseMfdVerificationConfig):
-    metric: Literal[Metrics.Levenshtein] = Field(..., description=METRIC)
-    metric_algorithm: Literal[MetricAlgorith.Brute, MetricAlgorith.Approx] = Field(
+class MFDVerificationLevenshteinConfig(BaseMfdVerificationConfig):
+    metric: Literal[MFDVerificationMetrics.Levenshtein] = Field(..., description=METRIC)
+    metric_algorithm: Literal[MFDVerificationMetricAlgorith.Brute, MFDVerificationMetricAlgorith.Approx] = Field(
         ..., description=METRIC_ALGORITHM
     )
 
 
 OneOfMfdVerificationAlgoConfig = Annotated[
     Union[
-        EuclideanConfig,
-        CosineConfig,
-        LevenshteinConfig,
+        MFDVerificationEuclideanConfig,
+        MFDVerificationCosineConfig,
+        MFDVerificationLevenshteinConfig,
     ],
     Field(discriminator="metric"),
 ]
