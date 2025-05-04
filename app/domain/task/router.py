@@ -21,6 +21,7 @@ from app.domain.task.schemas.types import SortOrder
 from app.exceptions.exceptions import ForbiddenException
 
 from app.domain.task.schemas.dd.filter import DdFilterOptions
+from app.domain.task.schemas.mfd_verification.filter import MfdVerificationFilterOptions
 from app.domain.task.schemas.md.filter import MdFilterOptions
 from app.domain.task.schemas.fd.filter import FdFilterOptions
 from app.domain.task.schemas.afd.filter import AfdFilterOptions
@@ -31,6 +32,7 @@ from app.domain.task.schemas.ac.filter import AcFilterOptions
 from app.domain.task.schemas.adc.filter import AdcFilterOptions
 
 from app.domain.task.schemas.dd.sort import DdSortOptions
+from app.domain.task.schemas.mfd_verification.sort import MfdVerificationSortOptions
 from app.domain.task.schemas.md.sort import MdSortOptions
 from app.domain.task.schemas.fd.sort import FdSortOptions
 from app.domain.task.schemas.afd.sort import AfdSortOptions
@@ -47,6 +49,7 @@ OneOfFilterOption = Union[
     NarFilterOptions,
     DdFilterOptions,
     MdFilterOptions,
+    MfdVerificationFilterOptions,
     FdFilterOptions,
     PfdFilterOptions,
     AfdFilterOptions,
@@ -62,6 +65,7 @@ OneOfSortOption = Union[
     DdSortOptions,
     NarSortOptions,
     MdSortOptions,
+    MfdVerificationSortOptions,
     AcSortOptions,
     AdcSortOptions,
     AfdVerificationSortOptions,
@@ -106,6 +110,8 @@ async def get_task(
     user_id = user.id if user else None
 
     if task.initiator_id != user_id:
+        print("task.initiator_id", task.initiator_id)
+        print("user_id", user_id)
         raise ForbiddenException("Access denied")
 
     if task.result is None:
