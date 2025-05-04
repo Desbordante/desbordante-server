@@ -1,13 +1,13 @@
 from enum import StrEnum, auto
 
 
-class Metrics(StrEnum):
+class MFDVerificationMetrics(StrEnum):
     Euclidean = auto()
     Cosine = auto()
     Levenshtein = auto()
 
 
-class MetricAlgorith(StrEnum):
+class MFDVerificationMetricAlgorith(StrEnum):
     Brute = auto()
     Approx = auto()
     Calipers = auto()
