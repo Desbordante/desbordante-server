@@ -59,10 +59,8 @@ def get_file_by_id(
     from io import BytesIO
     from app.domain.storage import storage
 
-    print(999, ids)
-
     files = [file_service.get_file_by_id(id) for id in ids]
-    print("!!!!!!!!!!!!")
+
     full_files = []
     for file in files:
         table = pd.read_csv(BytesIO(storage.download_file(file.path)))
