@@ -74,7 +74,6 @@ class AfdVerificationTask(
         options = AfdVerificationTaskConfig.model_validate(
             task_config
         ).config.model_dump(exclude_unset=True, exclude={"algo_name"})
-        # print(777, options)
 
         algo = self.match_algo_by_name(algo_config["algo_name"])
         algo.load_data(table=table)

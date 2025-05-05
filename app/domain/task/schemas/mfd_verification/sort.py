@@ -19,6 +19,7 @@ class MfdVerificationSortOptions(StrEnum):
 
 
 def sort_highlights_clusters_but_save_indices_order(
+    cluster_count: int,
     highlights_clusters: list[HighlightsCluster],
     is_reverse: bool,
     sort_fun: Callable[[Highlight], Union[int, float]],
@@ -26,25 +27,25 @@ def sort_highlights_clusters_but_save_indices_order(
     new_highlights_clusters: list[HighlightsCluster] = []
     for cluster in highlights_clusters:
         sorted_highlights = sorted(
-            deepcopy(cluster["highlights"]),
+            deepcopy(cluster.highlights),
             key=lambda highlight: (
                 sort_fun(highlight),
-                highlight["highlight_index"] * (-1 if is_reverse else 1),
+                highlight.highlight_index * (-1 if is_reverse else 1),
             ),
             reverse=is_reverse,
         )
         new_highlights_clusters.append(
             HighlightsCluster(
-                cluster_index=cluster["cluster_index"],
-                cluster_name=cluster["cluster_name"],
-                max_distance=cluster["max_distance"],
+                cluster_index=cluster.cluster_index,
+                cluster_name=cluster.cluster_name,
+                max_distance=cluster.max_distance,
                 highlights_count=len(sorted_highlights),
                 highlights=sorted_highlights,
             )
         )
     return NotHoldsMfdVerificationTaskResult(
         mfd_holds=False,
-        cluster_count=len(new_highlights_clusters),
+        cluster_count=cluster_count,
         highlights_clusters=new_highlights_clusters,
     )
 
@@ -53,9 +54,10 @@ def sort_by_point_index(
     raw_result: NotHoldsMfdVerificationTaskResult, is_reverse: bool
 ) -> NotHoldsMfdVerificationTaskResult:
     return sort_highlights_clusters_but_save_indices_order(
-        cast(list[HighlightsCluster], raw_result["highlights_clusters"]),
+        raw_result.cluster_count,
+        cast(list[HighlightsCluster], raw_result.highlights_clusters),
         is_reverse,
-        lambda highlight: highlight["data_index"],
+        lambda highlight: highlight.data_index,
     )
 
 
@@ -63,9 +65,10 @@ def sort_by_furthest_point_index(
     raw_result: NotHoldsMfdVerificationTaskResult, is_reverse: bool
 ) -> NotHoldsMfdVerificationTaskResult:
     return sort_highlights_clusters_but_save_indices_order(
-        cast(list[HighlightsCluster], raw_result["highlights_clusters"]),
+        raw_result.cluster_count,
+        cast(list[HighlightsCluster], raw_result.highlights_clusters),
         is_reverse,
-        lambda highlight: highlight["furthest_data_index"],
+        lambda highlight: highlight.furthest_data_index,
     )
 
 
@@ -73,9 +76,10 @@ def sort_by_max_distance(
     raw_result: NotHoldsMfdVerificationTaskResult, is_reverse: bool
 ) -> NotHoldsMfdVerificationTaskResult:
     return sort_highlights_clusters_but_save_indices_order(
-        cast(list[HighlightsCluster], raw_result["highlights_clusters"]),
+        raw_result.cluster_count,
+        cast(list[HighlightsCluster], raw_result.highlights_clusters),
         is_reverse,
-        lambda highlight: highlight["max_distance"],
+        lambda highlight: highlight.max_distance,
     )
 
 
@@ -97,7 +101,7 @@ class MfdVerificationSorter(BaseSorter):
         sort_option: MfdVerificationSortOptions,
         sort_direction: SortOrder,
     ) -> MfdVerificationModel:
-        if raw_result["mfd_holds"]:
+        if raw_result.mfd_holds:
             return cast(
                 HoldsMfdVerificationTaskResult,
                 raw_result,

@@ -110,8 +110,6 @@ async def get_task(
     user_id = user.id if user else None
 
     if task.initiator_id != user_id:
-        print("task.initiator_id", task.initiator_id)
-        print("user_id", user_id)
         raise ForbiddenException("Access denied")
 
     if task.result is None:
@@ -120,7 +118,6 @@ async def get_task(
     primitive_name = task.result["primitive_name"]
 
     if filter_options and filter_params:
-        print("filter", filter_options, filter_params)
         filter = json.loads(filter_params)
 
         filt = match_filter_by_primitive_name(primitive_name)
@@ -128,7 +125,6 @@ async def get_task(
             task_result = filt.filter(task_result, f, filter[f])
 
     if sort_option and sort_direction:
-        print("sort", sort_option, sort_direction)
         sorter = match_sorter_by_primitive_name(primitive_name)
         task_result = sorter.sort(task_result, sort_option, sort_direction)
 
