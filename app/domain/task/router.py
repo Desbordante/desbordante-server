@@ -112,7 +112,7 @@ async def get_task(
 ) -> TaskPublic:
     task = task_service.get_by_id(id)
     user_id = user.id if user else None
-    
+
     if task.initiator_id != user_id:
         raise ForbiddenException("Access denied")
 
@@ -129,8 +129,6 @@ async def get_task(
         for f in filter_options:
             task_result = filt.filter(task_result, f, filter[f])
 
-        task.result["count_results"] = len(task_result)
-
     if sort_option and sort_direction:
         sorter = match_sorter_by_primitive_name(primitive_name)
         task_result = sorter.sort(task_result, sort_option, sort_direction)
@@ -139,6 +137,8 @@ async def get_task(
         task_result = task_result[
             pagination_offset : pagination_offset + pagination_limit
         ]
+
+        task.result["count_results"] = len(task_result)
 
     task.result["result"] = task_result
     return task
