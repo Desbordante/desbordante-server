@@ -27,6 +27,7 @@ class ARTaskConfig(BaseARTaskModel):
 
 class ARTaskResult(BaseARTaskModel):
     result: list[ARModel]
+    count_results: int
 
 
 class ARTask(BaseTask[ARTaskConfig, ARTaskResult]):
@@ -52,9 +53,7 @@ class ARTask(BaseTask[ARTaskConfig, ARTaskResult]):
         algo.load_data(table=table, input_format=algo_config["input_format"])
         algo.execute(**options)
 
-        return ARTaskResult(
-            primitive_name=PrimitiveName.AR,
-            result=[
+        task_results = [
                 ARModel(
                     left=ar.left,
                     right=ar.right,
@@ -62,5 +61,10 @@ class ARTask(BaseTask[ARTaskConfig, ARTaskResult]):
                     confidence=ar.confidence,
                 )
                 for ar in algo.get_ars()
-            ],
+            ]
+
+        return ARTaskResult(
+            primitive_name=PrimitiveName.AR,
+            result=task_results,
+            count_results=len(task_results),
         )
