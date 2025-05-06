@@ -2,7 +2,10 @@ from typing import Annotated, Literal, Union
 
 from pydantic import Field
 
-from app.domain.task.schemas.mfd_verification.metrics import MFDVerificationMetricAlgorithm, MFDVerificationMetrics
+from app.domain.task.schemas.mfd_verification.metrics import (
+    MFDVerificationMetricAlgorithm,
+    MFDVerificationMetrics,
+)
 from app.schemas import BaseSchema
 
 from .algo_name import MfdVerificationAlgoName

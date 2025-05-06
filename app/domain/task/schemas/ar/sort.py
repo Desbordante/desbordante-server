@@ -1,6 +1,5 @@
 from enum import StrEnum, auto
 from typing import assert_never, cast
-from copy import deepcopy
 from .task import (
     ARModel,
 )
@@ -19,7 +18,7 @@ def sort_by_confidence(
     raw_result: list[ARModel], is_reverse: bool
 ) -> list[ARModel]:
     raw_result.sort(
-        key=lambda x: x.confidence, reverse=is_reverse
+        key=lambda x: x["confidence"], reverse=is_reverse
     )
     return raw_result
 
@@ -28,7 +27,7 @@ def sort_by_lhs(
     raw_result: list[ARModel], is_reverse: bool
 ) -> list[ARModel]:
     raw_result.sort(
-        key=lambda x: x["lhs"], reverse=is_reverse
+        key=lambda x: x["left"], reverse=is_reverse
     )
     return raw_result
 
@@ -37,7 +36,7 @@ def sort_by_rhs(
     raw_result: list[ARModel], is_reverse: bool
 ) -> list[ARModel]:
     raw_result.sort(
-        key=lambda x: x["rhs"], reverse=is_reverse
+        key=lambda x: x["right"], reverse=is_reverse
     )
     return raw_result
 

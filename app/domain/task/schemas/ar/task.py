@@ -1,7 +1,7 @@
 from typing import Literal, assert_never
 
 import pandas
-from desbordante.ar import ArAlgorithm
+from desbordante.ar.algorithms import Apriori
 
 from app.domain.task.schemas.ar.algo_config import OneOfARAlgoConfig
 from app.domain.task.schemas.ar.algo_name import ARAlgoName
@@ -17,23 +17,24 @@ class ARModel(BaseSchema):
     confidence: float
 
 
-class ARTaskConfig(BaseSchema):
+class BaseARTaskModel(BaseSchema):
     primitive_name: Literal[PrimitiveName.AR]
+
+
+class ARTaskConfig(BaseARTaskModel):
     config: OneOfARAlgoConfig
 
 
-class ARTaskResult(BaseSchema):
+class ARTaskResult(BaseARTaskModel):
     result: list[ARModel]
 
 
-class ARTask(
-    BaseTask[ARTaskConfig, ARTaskResult]
-):
+class ARTask(BaseTask[ARTaskConfig, ARTaskResult]):
     _algo_map = {
-        ARAlgoName.AssosiatioRulesApriori: ArAlgorithm,
+        ARAlgoName.AssosiatioRulesApriori: Apriori,
     }
 
-    def match_algo_by_name(self, algo_name: ARAlgoName) -> ArAlgorithm:
+    def match_algo_by_name(self, algo_name: ARAlgoName) -> Apriori:
         if algo_class := self._algo_map.get(algo_name):
             return algo_class()
         assert_never(algo_name)
@@ -42,15 +43,24 @@ class ARTask(
         self, tables: list[pandas.DataFrame], task_config: ARTaskConfig
     ) -> ARTaskResult:
         table = tables[0]
-        options = ARTaskConfig.model_validate(
-            task_config
-        ).config.model_dump(exclude_unset=True, exclude={"algo_name"})
+        algo_config = task_config["config"]
+        options = ARTaskConfig.model_validate(task_config).config.model_dump(
+            exclude_unset=True, exclude={"algo_name", "input_format"}
+        )
 
-        algo = ArAlgorithm()
-        algo.load_data(table=table)
+        algo = Apriori()
+        algo.load_data(table=table, input_format=algo_config["input_format"])
         algo.execute(**options)
 
         return ARTaskResult(
             primitive_name=PrimitiveName.AR,
-            result=algo.get_ars(),
+            result=[
+                ARModel(
+                    left=ar.left,
+                    right=ar.right,
+                    support=ar.support,
+                    confidence=ar.confidence,
+                )
+                for ar in algo.get_ars()
+            ],
         )
