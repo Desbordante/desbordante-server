@@ -13,31 +13,18 @@ class ARSortOptions(StrEnum):
     RHS_NAME = auto()
 
 
-
-def sort_by_confidence(
-    raw_result: list[ARModel], is_reverse: bool
-) -> list[ARModel]:
-    raw_result.sort(
-        key=lambda x: x["confidence"], reverse=is_reverse
-    )
+def sort_by_confidence(raw_result: list[ARModel], is_reverse: bool) -> list[ARModel]:
+    raw_result.sort(key=lambda x: x["confidence"], reverse=is_reverse)
     return raw_result
 
 
-def sort_by_lhs(
-    raw_result: list[ARModel], is_reverse: bool
-) -> list[ARModel]:
-    raw_result.sort(
-        key=lambda x: x["left"], reverse=is_reverse
-    )
+def sort_by_lhs(raw_result: list[ARModel], is_reverse: bool) -> list[ARModel]:
+    raw_result.sort(key=lambda x: x["left"], reverse=is_reverse)
     return raw_result
 
 
-def sort_by_rhs(
-    raw_result: list[ARModel], is_reverse: bool
-) -> list[ARModel]:
-    raw_result.sort(
-        key=lambda x: x["right"], reverse=is_reverse
-    )
+def sort_by_rhs(raw_result: list[ARModel], is_reverse: bool) -> list[ARModel]:
+    raw_result.sort(key=lambda x: x["right"], reverse=is_reverse)
     return raw_result
 
 
@@ -61,7 +48,5 @@ class ARSorter(BaseSorter):
     ) -> list[ARModel]:
         is_reverse = sort_direction == SortOrder.DESC
         sorter = self.match_sorter_by_option_name(sort_option)
-        sorted_result = sorter(
-            cast(list[ARModel], raw_result), is_reverse=is_reverse
-        )
+        sorted_result = sorter(cast(list[ARModel], raw_result), is_reverse=is_reverse)
         return sorted_result
