@@ -70,7 +70,7 @@ OneOfColumnMatchesConfig = Annotated[
 
 class HyMDConfig(BaseSchema):
     algo_name: Literal[MdAlgoName.HyMD]
-    min_support: int = Field(1, ge=1, description=MIN_SUPPORT)
+    min_support: int = Field(0, ge=0, description=MIN_SUPPORT)
     column_matches: list[OneOfColumnMatchesConfig]
     level_definition: Literal["cardinality", "lattice"] = Field(
         "cardinality", description=LEVEL_DEFINITION

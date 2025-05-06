@@ -27,6 +27,7 @@ class PfdTaskConfig(BasePfdTaskModel):
 class PfdTaskResult(BasePfdTaskModel):
     result: list[PfdModel]
     table_header: list[str]
+    count_results: int
 
 
 class PfdTask(BaseTask[PfdTaskConfig, PfdTaskResult]):
@@ -57,14 +58,17 @@ class PfdTask(BaseTask[PfdTaskConfig, PfdTaskResult]):
         algo.load_data(table=table)
         algo.execute(**options)
 
+        task_results = [
+            PfdModel(
+                lhs=[columns[index] for index in fd.lhs_indices],
+                rhs=[columns[fd.rhs_index]],
+            )
+            for fd in algo.get_fds()
+        ]
+
         return PfdTaskResult(
             primitive_name=PrimitiveName.PFD,
             table_header=columns,
-            result=[
-                PfdModel(
-                    lhs=[columns[index] for index in fd.lhs_indices],
-                    rhs=[columns[fd.rhs_index]],
-                )
-                for fd in algo.get_fds()
-            ],
+            result=task_results,
+            count_results=len(task_results),
         )

@@ -33,6 +33,7 @@ class NarSorter(BaseSorter):
     _sorter_map = {
         NarSortOptions.LHS: sort_by_lhs,
         NarSortOptions.RHS: sort_by_rhs,
+        NarSortOptions.CONFIDENCE: sort_by_confidence,
     }
 
     def match_sorter_by_option_name(self, option_name):

@@ -48,6 +48,7 @@ class MdTaskConfig(BaseMdTaskModel):
 class MdTaskResult(BaseMdTaskModel):
     result: list[MdModel]
     table_header: list[str]
+    count_results: int
 
 
 class MdTask(BaseTask[MdTaskConfig, MdTaskResult]):
@@ -127,14 +128,17 @@ class MdTask(BaseTask[MdTaskConfig, MdTaskResult]):
             del options["max_cardinality"]
         algo.execute(**options, column_matches=cm_array)
 
+        task_results = [
+            MdModel(
+                lhs=self.extract_side(md.get_description().lhs),
+                rhs=self.extract_side([md.get_description().rhs]),
+            )
+            for md in algo.get_mds()
+        ]
+
         return MdTaskResult(
             primitive_name=PrimitiveName.MD,
             table_header=header,
-            result=[
-                MdModel(
-                    lhs=self.extract_side(md.get_description().lhs),
-                    rhs=self.extract_side([md.get_description().rhs]),
-                )
-                for md in algo.get_mds()
-            ],
+            result=task_results,
+            count_results=len(task_results),
         )

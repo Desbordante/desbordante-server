@@ -30,6 +30,7 @@ class AfdTaskConfig(BaseAfdTaskModel):
 class AfdTaskResult(BaseAfdTaskModel):
     result: list[AfdModel]
     table_header: list[str]
+    count_results: int
 
 
 class AfdTask(BaseTask[AfdTaskConfig, AfdTaskResult]):
@@ -61,14 +62,17 @@ class AfdTask(BaseTask[AfdTaskConfig, AfdTaskResult]):
         algo.load_data(table=table)
         algo.execute(**options)
 
+        task_results = [
+            AfdModel(
+                lhs=[columns[index] for index in fd.lhs_indices],
+                rhs=[columns[fd.rhs_index]],
+            )
+            for fd in algo.get_fds()
+        ]
+
         return AfdTaskResult(
             primitive_name=PrimitiveName.AFD,
             table_header=columns,
-            result=[
-                AfdModel(
-                    lhs=[columns[index] for index in fd.lhs_indices],
-                    rhs=[columns[fd.rhs_index]],
-                )
-                for fd in algo.get_fds()
-            ],
+            result=task_results,
+            count_results=len(task_results),
         )

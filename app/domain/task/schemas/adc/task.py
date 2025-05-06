@@ -31,6 +31,7 @@ class AdcTaskConfig(BaseAdcTaskModel):
 class AdcTaskResult(BaseAdcTaskModel):
     result: list[AdcModel]
     table_header: list[str]
+    count_results: int
 
 
 class AdcTask(BaseTask[AdcTaskConfig, AdcTaskResult]):
@@ -70,10 +71,12 @@ class AdcTask(BaseTask[AdcTaskConfig, AdcTaskResult]):
         algo.load_data(table=table)
         algo.execute(**options)
 
+        task_results = [
+            AdcModel(cojuncts=self.split_result(str(dc))) for dc in algo.get_dcs()
+        ]
         return AdcTaskResult(
             primitive_name=PrimitiveName.ADC,
             table_header=column_names,
-            result=[
-                AdcModel(cojuncts=self.split_result(str(dc))) for dc in algo.get_dcs()
-            ],
+            result=task_results,
+            count_results=len(task_results),
         )

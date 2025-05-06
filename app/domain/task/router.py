@@ -103,10 +103,12 @@ async def get_task(
     task_service: TaskServiceDep,
     filter_options: List[OneOfFilterOption] = Query(None),
     filter_params: str = Query(
-        None, description="String in JSON format {filter_option: filter_params}"
+        None, description="String in JSON format {filter_option: filter_param}"
     ),
     sort_option: OneOfSortOption = Query(None),
     sort_direction: SortOrder = Query(None),
+    pagination_offset: int = Query(0),
+    pagination_limit: int = Query(0),
 ) -> TaskPublic:
     task = task_service.get_by_id(id)
     user_id = user.id if user else None
@@ -116,6 +118,7 @@ async def get_task(
 
     if task.result is None:
         return task
+
     task_result = task.result["result"]
     primitive_name = task.result["primitive_name"]
 
@@ -129,6 +132,13 @@ async def get_task(
     if sort_option and sort_direction:
         sorter = match_sorter_by_primitive_name(primitive_name)
         task_result = sorter.sort(task_result, sort_option, sort_direction)
+
+    if pagination_limit > 0:
+        task_result = task_result[
+            pagination_offset : pagination_offset + pagination_limit
+        ]
+
+        task.result["count_results"] = len(task_result)
 
     task.result["result"] = task_result
     return task
