@@ -108,7 +108,7 @@ async def get_task(
     sort_option: OneOfSortOption = Query(None),
     sort_direction: SortOrder = Query(None),
     pagination_offset: int = Query(0),
-    pagination_limit: int = Query(-1),
+    pagination_limit: int = Query(0),
 ) -> TaskPublic:
     task = task_service.get_by_id(id)
     user_id = user.id if user else None
@@ -135,10 +135,10 @@ async def get_task(
         sorter = match_sorter_by_primitive_name(primitive_name)
         task_result = sorter.sort(task_result, sort_option, sort_direction)
 
-    t = [i for i in range(len(task_result))]
-    print(len(t), t[pagination_offset : pagination_offset + pagination_limit])
-    task_result = task_result[pagination_offset : pagination_offset + pagination_limit]
-    print(999, task_result)
+    if pagination_limit > 0:
+        task_result = task_result[
+            pagination_offset : pagination_offset + pagination_limit
+        ]
 
     task.result["result"] = task_result
     return task
