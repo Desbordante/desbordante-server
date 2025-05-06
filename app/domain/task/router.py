@@ -103,19 +103,22 @@ async def get_task(
     task_service: TaskServiceDep,
     filter_options: List[OneOfFilterOption] = Query(None),
     filter_params: str = Query(
-        None, description="String in JSON format {filter_option: filter_params}"
+        None, description="String in JSON format {filter_option: filter_param}"
     ),
     sort_option: OneOfSortOption = Query(None),
     sort_direction: SortOrder = Query(None),
+    pagination_offset: int = Query(0),
+    pagination_limit: int = Query(-1),
 ) -> TaskPublic:
     task = task_service.get_by_id(id)
     user_id = user.id if user else None
-
+    
     if task.initiator_id != user_id:
         raise ForbiddenException("Access denied")
 
     if task.result is None:
         return task
+
     task_result = task.result["result"]
     primitive_name = task.result["primitive_name"]
 
@@ -126,9 +129,16 @@ async def get_task(
         for f in filter_options:
             task_result = filt.filter(task_result, f, filter[f])
 
+        task.result["count_results"] = len(task_result)
+
     if sort_option and sort_direction:
         sorter = match_sorter_by_primitive_name(primitive_name)
         task_result = sorter.sort(task_result, sort_option, sort_direction)
+
+    t = [i for i in range(len(task_result))]
+    print(len(t), t[pagination_offset : pagination_offset + pagination_limit])
+    task_result = task_result[pagination_offset : pagination_offset + pagination_limit]
+    print(999, task_result)
 
     task.result["result"] = task_result
     return task

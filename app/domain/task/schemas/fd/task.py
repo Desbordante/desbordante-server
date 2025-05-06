@@ -38,6 +38,7 @@ class FdTaskConfig(BaseFdTaskModel):
 class FdTaskResult(BaseFdTaskModel):
     result: list[FdModel]
     table_header: list[str]
+    count_results: int
 
 
 class FdTask(BaseTask[FdTaskConfig, FdTaskResult]):
@@ -77,14 +78,17 @@ class FdTask(BaseTask[FdTaskConfig, FdTaskResult]):
         algo.load_data(table=table)
         algo.execute(**options)
 
+        task_result = [
+            FdModel(
+                lhs=[columns[index] for index in fd.lhs_indices],
+                rhs=[columns[fd.rhs_index]],
+            )
+            for fd in algo.get_fds()
+        ]
+
         return FdTaskResult(
             primitive_name=PrimitiveName.FD,
             table_header=columns,
-            result=[
-                FdModel(
-                    lhs=[columns[index] for index in fd.lhs_indices],
-                    rhs=[columns[fd.rhs_index]],
-                )
-                for fd in algo.get_fds()
-            ],
+            result=task_result,
+            count_results=len(task_result),
         )

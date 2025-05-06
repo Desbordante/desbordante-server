@@ -30,6 +30,7 @@ class AcTaskResult(BaseAcTaskModel):
     operation: OperationType
     result: list[AcModel]
     table_header: list[str]
+    count_results: int
 
 
 class AcTask(BaseTask[AcTaskConfig, AcTaskResult]):
@@ -89,9 +90,12 @@ class AcTask(BaseTask[AcTaskConfig, AcTaskResult]):
         ac_ranges = algo.get_ac_ranges()
         ac_exceptions = algo.get_ac_exceptions()
 
+        task_results = self.union_result(column_names, ac_ranges, ac_exceptions)
+
         return AcTaskResult(
             primitive_name=PrimitiveName.AC,
             operation=options["bin_operation"],
             table_header=column_names,
-            result=self.union_result(column_names, ac_ranges, ac_exceptions),
+            result=task_results,
+            count_results=len(task_results),
         )

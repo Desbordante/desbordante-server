@@ -34,6 +34,7 @@ class NarTaskConfig(BaseNarTaskModel):
 class NarTaskResult(BaseNarTaskModel):
     result: list[NarModel]
     table_header: list[str]
+    count_results: int
 
 
 class NarTask(BaseTask[NarTaskConfig, NarTaskResult]):
@@ -66,16 +67,19 @@ class NarTask(BaseTask[NarTaskConfig, NarTaskResult]):
         algo.load_data(table=table)
         algo.execute(**options)
 
+        task_result = [
+            NarModel(
+                confidence=nar.confidence,
+                support=nar.support,
+                lhs=self.extract_side(nar.ante.items(), columns),
+                rhs=self.extract_side(nar.cons.items(), columns),
+            )
+            for nar in algo.get_nars()
+        ]
+
         return NarTaskResult(
             primitive_name=PrimitiveName.NAR,
             table_header=columns,
-            result=[
-                NarModel(
-                    confidence=nar.confidence,
-                    support=nar.support,
-                    lhs=self.extract_side(nar.ante.items(), columns),
-                    rhs=self.extract_side(nar.cons.items(), columns),
-                )
-                for nar in algo.get_nars()
-            ],
+            result=task_result,
+            count_results=len(task_result),
         )

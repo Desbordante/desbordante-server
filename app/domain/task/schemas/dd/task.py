@@ -31,6 +31,7 @@ class DdTaskConfig(BaseDdTaskModel):
 class DdTaskResult(BaseDdTaskModel):
     result: list[DdModel]
     table_header: list[str]
+    count_results: int
 
 
 class DdTask(BaseTask[DdTaskConfig, DdTaskResult]):
@@ -72,8 +73,10 @@ class DdTask(BaseTask[DdTaskConfig, DdTaskResult]):
         algo.load_data(table=table)
         algo.execute(**options, difference_table=dif_table)
 
+        task_results = [self.split_result(str(dd)) for dd in algo.get_dds()]
         return DdTaskResult(
             primitive_name=PrimitiveName.DD,
             table_header=table_header,
-            result=[self.split_result(str(dd)) for dd in algo.get_dds()],
+            result=task_results,
+            count_results=len(task_results),
         )
