@@ -41,6 +41,7 @@ from app.domain.task.schemas.pfd.sort import PfdSortOptions
 from app.domain.task.schemas.nar.sort import NarSortOptions
 from app.domain.task.schemas.ac.sort import AcSortOptions
 from app.domain.task.schemas.adc.sort import AdcSortOptions
+from app.domain.task.schemas.ar.sort import ARSortOptions
 
 
 router = APIRouter()
@@ -69,6 +70,7 @@ OneOfSortOption = Union[
     AcSortOptions,
     AdcSortOptions,
     AfdVerificationSortOptions,
+    ARSortOptions,
 ]
 
 

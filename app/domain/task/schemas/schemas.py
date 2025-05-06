@@ -9,6 +9,10 @@ from app.domain.task.schemas.afd_verification.task import (
     AfdVerificationTaskConfig,
     AfdVerificationTaskResult,
 )
+from app.domain.task.schemas.ar.task import (
+    ARTaskConfig,
+    ARTaskResult,
+)
 from app.domain.task.schemas.dd.task import DdTaskConfig, DdTaskResult
 from app.domain.task.schemas.md.task import MdTaskConfig, MdTaskResult
 from app.domain.task.schemas.mfd_verification.task import (
@@ -25,6 +29,7 @@ OneOfTaskConfig = Union[
     PfdTaskConfig,
     AfdTaskConfig,
     AfdVerificationTaskConfig,
+    ARTaskConfig,
     NarTaskConfig,
     DdTaskConfig,
     MdTaskConfig,
@@ -38,6 +43,7 @@ OneOfTaskResult = Union[
     PfdTaskResult,
     AfdTaskResult,
     AfdVerificationTaskResult,
+    ARTaskResult,
     NarTaskResult,
     DdTaskResult,
     MdTaskResult,

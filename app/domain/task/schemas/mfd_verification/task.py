@@ -77,8 +77,6 @@ class MfdVerificationTask(
             task_config
         ).config.model_dump(exclude_unset=True, exclude={"algo_name"})
 
-        # add verification for options
-
         algo = MetricVerifier()
         algo.load_data(table=table)
         algo.execute(**options)
