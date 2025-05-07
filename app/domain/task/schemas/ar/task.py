@@ -54,14 +54,14 @@ class ARTask(BaseTask[ARTaskConfig, ARTaskResult]):
         algo.execute(**options)
 
         task_results = [
-                ARModel(
-                    left=ar.left,
-                    right=ar.right,
-                    support=ar.support,
-                    confidence=ar.confidence,
-                )
-                for ar in algo.get_ars()
-            ]
+            ARModel(
+                left=ar.left,
+                right=ar.right,
+                support=ar.support,
+                confidence=ar.confidence,
+            )
+            for ar in algo.get_ars()
+        ]
 
         return ARTaskResult(
             primitive_name=PrimitiveName.AR,
