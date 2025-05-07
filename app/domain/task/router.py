@@ -134,11 +134,10 @@ async def get_task(
         task_result = sorter.sort(task_result, sort_option, sort_direction)
 
     if pagination_limit > 0:
+        task.result["count_results"] = len(task_result)
         task_result = task_result[
             pagination_offset : pagination_offset + pagination_limit
         ]
-
-        task.result["count_results"] = len(task_result)
 
     task.result["result"] = task_result
     return task
