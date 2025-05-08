@@ -39,7 +39,7 @@ class LevenshteinConfig(FullColumnMatch):
 
 
 class MongeElkanConfig(FullColumnMatch):
-    metrics: Literal[ColumnMatchMetrics.MongeElkan]
+    metrics: Literal[ColumnMatchMetrics.Monge_Elkan]
 
 
 class LcsConfig(FullColumnMatch):
@@ -47,11 +47,11 @@ class LcsConfig(FullColumnMatch):
 
 
 class LVNormNumberDistanceConfig(FullColumnMatch):
-    metrics: Literal[ColumnMatchMetrics.LVNormNumberDistance]
+    metrics: Literal[ColumnMatchMetrics.Number_Difference]
 
 
 class LVNormDateDistanceConfig(FullColumnMatch):
-    metrics: Literal[ColumnMatchMetrics.LVNormDateDistance]
+    metrics: Literal[ColumnMatchMetrics.Date_Difference]
 
 
 OneOfColumnMatchesConfig = Annotated[

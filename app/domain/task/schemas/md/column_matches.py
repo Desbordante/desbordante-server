@@ -4,8 +4,8 @@ from enum import StrEnum, auto
 class ColumnMatchMetrics(StrEnum):
     Lcs = auto()
     Levenshtein = auto()
-    MongeElkan = auto()
+    Monge_Elkan = auto()
     Equality = auto()
-    LVNormDateDistance = auto()
-    LVNormNumberDistance = auto()
+    Date_Difference = auto()
+    Number_Difference = auto()
     Jaccard = auto()

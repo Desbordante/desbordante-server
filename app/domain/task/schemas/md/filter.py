@@ -8,6 +8,7 @@ from app.domain.task.schemas.base import BaseFilter
 class MdFilterOptions(StrEnum):
     ATTRIBUTE_NAME = auto()
     METRICS = auto()
+    SHOW_ZEROES = auto()
 
 
 def filter_by_attributes(
@@ -17,7 +18,7 @@ def filter_by_attributes(
     filtered_models = []
     for model in raw_result:
         all_columns = set()
-        for sideItem in model["lhs"] + model["rhs"]:
+        for sideItem in model["rhs"]:
             all_columns.add(sideItem["left_column"])
             all_columns.add(sideItem["right_column"])
 
@@ -33,9 +34,20 @@ def filter_by_metrics(
     return [
         model
         for model in raw_result
-        if set(metrics).issubset(
-            {sideItem["metrics"] for sideItem in model["lhs"] + model["rhs"]}
-        )
+        if set(metrics).issubset({sideItem["metrics"] for sideItem in model["rhs"]})
+    ]
+
+
+def show_zeroes(raw_result: List[MdModel], is_show: bool) -> List[MdModel]:
+    if is_show:
+        return raw_result
+
+    return [
+        MdModel(
+            lhs=[side for side in model["lhs"] if side["boundary"] > 0],
+            rhs=model["rhs"],
+        ).model_dump()
+        for model in raw_result
     ]
 
 
@@ -43,6 +55,7 @@ class MdFilter(BaseFilter):
     _filter_map = {
         MdFilterOptions.ATTRIBUTE_NAME: filter_by_attributes,
         MdFilterOptions.METRICS: filter_by_metrics,
+        MdFilterOptions.SHOW_ZEROES: show_zeroes,
     }
 
     def match_filter_by_option_name(self, option_name):

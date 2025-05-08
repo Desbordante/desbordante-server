@@ -59,10 +59,10 @@ class MdTask(BaseTask[MdTaskConfig, MdTaskResult]):
     _metrics_map = {
         ColumnMatchMetrics.Equality: Equality,
         ColumnMatchMetrics.Jaccard: Jaccard,
-        ColumnMatchMetrics.LVNormNumberDistance: LVNormNumberDistance,
-        ColumnMatchMetrics.LVNormDateDistance: LVNormDateDistance,
+        ColumnMatchMetrics.Number_Difference: LVNormNumberDistance,
+        ColumnMatchMetrics.Date_Difference: LVNormDateDistance,
         ColumnMatchMetrics.Lcs: Lcs,
-        ColumnMatchMetrics.MongeElkan: MongeElkan,
+        ColumnMatchMetrics.Monge_Elkan: MongeElkan,
         ColumnMatchMetrics.Levenshtein: Levenshtein,
     }
 
