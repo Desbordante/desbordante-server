@@ -1,9 +1,7 @@
 import asyncio
-import os
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from typing import Any, Callable, Optional, TypeVar
-from uuid import uuid4
 
 from minio import Minio
 
@@ -58,22 +56,28 @@ class AsyncMinioClient:
         self,
         *,
         file: File,
-        owner_id: int,
+        path: str,
     ) -> str:
         """Upload file to MinIO storage asynchronously."""
-        _, file_extension = os.path.splitext(file.name)
-        file_id = f"{owner_id}/{file.type}/{uuid4()}{file_extension}"
 
         await self._run_in_executor(
             self.client.put_object,
             bucket_name=self.bucket,
-            object_name=file_id,
+            object_name=path,
             data=file.data,
             length=file.size,
             content_type=file.content_type,
         )
 
-        return file_id
+        return path
+
+    async def delete_file(self, *, path: str) -> None:
+        """Delete file from MinIO storage asynchronously."""
+        await self._run_in_executor(
+            self.client.remove_object,
+            bucket_name=self.bucket,
+            object_name=path,
+        )
 
 
 storage = AsyncMinioClient(
