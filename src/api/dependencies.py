@@ -6,7 +6,7 @@ from pydantic import Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.constants import ACCESS_TOKEN_KEY
-from src.crud.dataset_crud import DatasetCrud
+from src.crud.file_crud import FileCrud
 from src.crud.user_crud import UserCrud
 from src.db.session import get_session
 from src.exceptions import ForbiddenException
@@ -30,11 +30,11 @@ async def get_user_crud(session: SessionDep) -> UserCrud:
 UserCrudDep = Annotated[UserCrud, Depends(get_user_crud)]
 
 
-async def get_dataset_crud(session: SessionDep) -> DatasetCrud:
-    return DatasetCrud(session=session)
+async def get_file_crud(session: SessionDep) -> FileCrud:
+    return FileCrud(session=session)
 
 
-DatasetCrudDep = Annotated[DatasetCrud, Depends(get_dataset_crud)]
+FileCrudDep = Annotated[FileCrud, Depends(get_file_crud)]
 
 
 async def get_validate_token_use_case() -> ValidateTokenUseCase:
