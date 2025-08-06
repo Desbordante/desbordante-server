@@ -13,8 +13,6 @@ class Settings(BaseSettings):
     RABBITMQ_HOST: str
     RABBITMQ_PORT: int = 5672
 
-    CLEANUP_TEMPORARY_FILES_SECONDS_INTERVAL: int = 10
-
     @cached_property
     def rabbitmq_dsn(self) -> AmqpDsn:
         return AmqpDsn.build(

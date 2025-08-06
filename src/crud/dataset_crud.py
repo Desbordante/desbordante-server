@@ -5,33 +5,31 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.crud.base_crud import BaseCrud
-from src.models.file_models import FileModel
-from src.schemas.file_schemas import FileStatus
+from src.models.dataset_models import DatasetModel
 
 
-class FileFindProps(TypedDict, total=False):
+class DatasetFindProps(TypedDict, total=False):
     id: UUID
 
 
-class FileUpdateProps(TypedDict, total=False):
+class DatasetUpdateProps(TypedDict, total=False):
     pass
 
 
-class FileCrud(BaseCrud[FileModel, UUID]):
+class DatasetCrud(BaseCrud[DatasetModel, UUID]):
     def __init__(self, session: AsyncSession):
-        super().__init__(model=FileModel, session=session)
+        super().__init__(model=DatasetModel, session=session)
 
-    async def get_by(self, **kwargs: Unpack[FileFindProps]) -> FileModel:
+    async def get_by(self, **kwargs: Unpack[DatasetFindProps]) -> DatasetModel:
         return await super().get_by(**kwargs)
 
     async def update(
-        self, *, entity: FileModel, **kwargs: Unpack[FileUpdateProps]
-    ) -> FileModel:
+        self, *, entity: DatasetModel, **kwargs: Unpack[DatasetUpdateProps]
+    ) -> DatasetModel:
         return await super().update(entity=entity, **kwargs)
 
-    async def get_temporary_files_size(self, *, owner_id: int) -> int:
+    async def get_user_datasets_size(self, *, owner_id: int) -> int:
         query = select(func.sum(self.model.size)).where(
-            self.model.status == FileStatus.Temporary,
             self.model.owner_id == owner_id,
         )
         result = await self._session.execute(query)

@@ -8,9 +8,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from src.db.config import settings
 from src.models.base_models import BaseModel
-from src.models.file_models import (
-    FileModel,  # type: ignore # noqa
-)
+from src.models.dataset_models import DatasetModel  # type: ignore # noqa
 from src.models.user_models import UserModel  # type: ignore # noqa
 
 # this is the Alembic Config object, which provides

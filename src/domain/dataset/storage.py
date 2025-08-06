@@ -5,7 +5,7 @@ from typing import Any, Callable, Optional, TypeVar
 
 from minio import Minio
 
-from src.schemas.file_schemas import File
+from src.schemas.dataset_schemas import File
 
 from .config import settings
 

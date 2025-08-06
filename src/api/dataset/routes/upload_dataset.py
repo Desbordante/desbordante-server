@@ -1,10 +1,10 @@
 from typing import Any
 
-from fastapi import APIRouter, File, UploadFile, status
+from fastapi import APIRouter, File, Form, UploadFile, status
 
-from src.api.file.dependencies import UploadFileUseCaseDep
+from src.api.dataset.dependencies import UploadDatasetUseCaseDep
 from src.schemas.base_schemas import ApiErrorSchema
-from src.schemas.file_schemas import FileSchema
+from src.schemas.dataset_schemas import DatasetSchema, OneOfUploadDatasetParams
 
 router = APIRouter()
 
@@ -19,19 +19,20 @@ class UploadFileAdapter:
 
 @router.post(
     "/",
-    response_model=FileSchema,
+    response_model=DatasetSchema,
     status_code=status.HTTP_201_CREATED,
-    summary="Upload file",
-    description="Upload file to server",
+    summary="Upload dataset",
+    description="Upload dataset to server",
     responses={
         status.HTTP_401_UNAUTHORIZED: {"model": ApiErrorSchema},
         status.HTTP_429_TOO_MANY_REQUESTS: {"model": ApiErrorSchema},
     },
 )
-async def upload_file(
-    upload_file: UploadFileUseCaseDep,
+async def upload_dataset(
+    upload_dataset: UploadDatasetUseCaseDep,
     file: UploadFile = File(...),
+    params: OneOfUploadDatasetParams = Form(...),
 ) -> Any:
     adapted_file = UploadFileAdapter(upload_file=file)
 
-    return await upload_file(file=adapted_file)
+    return await upload_dataset(file=adapted_file, params=params)

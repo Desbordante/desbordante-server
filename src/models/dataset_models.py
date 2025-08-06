@@ -1,24 +1,31 @@
-# from typing import TYPE_CHECKING
-# from uuid import UUID
+from typing import TYPE_CHECKING
 
-# from sqlalchemy import JSONB, ForeignKey
-# from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import JSON, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-# from src.db.annotations import uuid_pk
-# from src.models.base_models import BaseModel
-# from src.schemas.dataset_schemas import DatasetType, OneOfDatasetParams
+from src.db.annotations import str_non_nullable, uuid_pk
+from src.models.base_models import BaseModel
+from src.schemas.dataset_schemas import (
+    DatasetStatus,
+    DatasetType,
+    OneOfDatasetInfo,
+    OneOfDatasetParams,
+)
 
-# if TYPE_CHECKING:
-#     from src.models.file_models import FileModel
+if TYPE_CHECKING:
+    from src.models.user_models import UserModel
 
 
-# class DatasetModel(BaseModel):
-#     id: Mapped[uuid_pk]
+class DatasetModel(BaseModel):
+    id: Mapped[uuid_pk]
+    type: Mapped[DatasetType]
+    name: Mapped[str_non_nullable]
+    size: Mapped[int]
+    path: Mapped[str_non_nullable]
+    params: Mapped[OneOfDatasetParams] = mapped_column(JSON)
 
-#     type: Mapped[DatasetType]
+    status: Mapped[DatasetStatus] = mapped_column(default=DatasetStatus.Queued)
+    info: Mapped[OneOfDatasetInfo] = mapped_column(JSON, default=None)
 
-#     params: Mapped[OneOfDatasetParams] = mapped_column(JSONB)
-
-#     file_id: Mapped[UUID] = mapped_column(ForeignKey("files.id", ondelete="CASCADE"))
-#     file: Mapped["FileModel"] = relationship(lazy="joined")
-# #
+    owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    owner: Mapped["UserModel"] = relationship(back_populates="datasets", lazy="joined")

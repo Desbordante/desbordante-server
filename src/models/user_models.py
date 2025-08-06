@@ -1,8 +1,12 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.annotations import int_pk, str_non_nullable, str_uniq
 from src.models.base_models import BaseModel
-from src.models.file_models import FileModel
+
+if TYPE_CHECKING:
+    from src.models.dataset_models import DatasetModel
 
 
 class UserModel(BaseModel):
@@ -19,6 +23,6 @@ class UserModel(BaseModel):
     is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
     is_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
 
-    files: Mapped[list["FileModel"]] = relationship(
+    datasets: Mapped[list["DatasetModel"]] = relationship(
         back_populates="owner", lazy="selectin"
     )
