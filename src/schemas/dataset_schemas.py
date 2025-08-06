@@ -1,144 +1,127 @@
-# from datetime import datetime
-# from enum import StrEnum, auto
-# from typing import Annotated, Literal, Union
-# from uuid import UUID
+import json
+from datetime import datetime
+from enum import StrEnum, auto
+from typing import Annotated, Any, BinaryIO, Literal, Protocol
+from uuid import UUID
 
-# from pydantic import Field
+from pydantic import Field, model_validator
 
-# from src.schemas.base_schemas import BaseSchema
-# from src.schemas.file_schemas import FileSchema
-
-
-# class DatasetSeparator(StrEnum):
-#     Comma = ","
-#     Semicolon = ";"
-#     Pipe = "|"
+from src.schemas.base_schemas import BaseSchema
 
 
-# class DatasetType(StrEnum):
-#     Tabular = auto()
-#     Transactional = auto()
-#     Graph = auto()
+class File(Protocol):
+    name: str
+    data: BinaryIO
+    size: int
+    content_type: str
 
 
-# class SingularTransactionalParams(BaseSchema):
-#     itemset_format: Literal["singular"]
-#     id_column: int
-#     itemset_column: int
+class DatasetSeparator(StrEnum):
+    Comma = ","
+    Semicolon = ";"
+    Pipe = "|"
 
 
-# class TabularTransactionalParams(BaseSchema):
-#     itemset_format: Literal["tabular"]
-#     has_transaction_id: bool
+class DatasetType(StrEnum):
+    Tabular = auto()
+    Transactional = auto()
+    Graph = auto()
 
 
-# OneOfTransactionalParams = Annotated[
-#     SingularTransactionalParams | TabularTransactionalParams,
-#     Field(discriminator="itemset_format"),
-# ]
+class SingularTransactionalParams(BaseSchema):
+    itemset_format: Literal["singular"]
+    id_column: int
+    itemset_column: int
 
 
-# class NonGraphDatasetParams(BaseSchema):
-#     has_header: bool
-#     separator: DatasetSeparator
-#     number_of_columns: int
-#     number_of_rows: int
-#     column_names: list[str]
+class TabularTransactionalParams(BaseSchema):
+    itemset_format: Literal["tabular"]
+    has_transaction_id: bool
 
 
-# class TabularDatasetParams(NonGraphDatasetParams):
-#     type: Literal[DatasetType.Tabular]
+OneOfTransactionalParams = Annotated[
+    SingularTransactionalParams | TabularTransactionalParams,
+    Field(discriminator="itemset_format"),
+]
 
 
-# class TransactionalDatasetParams(NonGraphDatasetParams):
-#     type: Literal[DatasetType.Transactional]
-#     transactional_params: OneOfTransactionalParams
+class NonGraphDatasetParams(BaseSchema):
+    has_header: bool
+    separator: DatasetSeparator
 
 
-# class GraphDatasetParams(BaseSchema):
-#     type: Literal[DatasetType.Graph]
+class TabularDatasetParams(NonGraphDatasetParams):
+    pass
 
 
-# OneOfDatasetParams = Annotated[
-#     TabularDatasetParams | TransactionalDatasetParams | GraphDatasetParams,
-#     Field(discriminator="type"),
-# ]
+class TransactionalDatasetParams(NonGraphDatasetParams):
+    transactional_params: OneOfTransactionalParams
 
 
-# class UploadTabularDatasetSchema(BaseSchema):
-#     type: Literal[DatasetType.Tabular] = DatasetType.Tabular
-#     has_header: bool
-#     separator: DatasetSeparator
+class GraphDatasetParams(BaseSchema):
+    pass
 
 
-# class UploadTransactionalDatasetSchema(BaseSchema):
-#     type: Literal[DatasetType.Transactional]
-#     has_header: bool
-#     separator: DatasetSeparator
-#     transactional_params: OneOfTransactionalParams
+OneOfDatasetParams = (
+    TabularDatasetParams | TransactionalDatasetParams | GraphDatasetParams
+)
 
 
-# class UploadGraphDatasetSchema(BaseSchema):
-#     type: Literal[DatasetType.Graph]
+class BaseUploadDatasetParams(BaseSchema):
+    @model_validator(mode="before")
+    @classmethod
+    def validate_to_json(cls, value: Any):
+        if isinstance(value, str):
+            return cls(**json.loads(value))
+        return value
 
 
-# OneOfUploadDatasetSchema = Annotated[
-#     Union[
-#         UploadTabularDatasetSchema,
-#         UploadTransactionalDatasetSchema,
-#         UploadGraphDatasetSchema,
-#     ],
-#     Field(discriminator="type"),
-# ]
+class UploadTabularDatasetParams(TabularDatasetParams, BaseUploadDatasetParams):
+    type: Literal[DatasetType.Tabular]
 
 
-# class DatasetSchema(BaseSchema):
-#     id: UUID
-#     type: DatasetType
-
-#     params: OneOfDatasetParams
-
-#     file: FileSchema
-
-#     created_at: datetime
+class UploadTransactionalDatasetParams(
+    TransactionalDatasetParams, BaseUploadDatasetParams
+):
+    type: Literal[DatasetType.Transactional]
 
 
-# class DatasetSortField(StrEnum):
-#     """Fields that can be used for sorting datasets"""
-
-#     NAME = "name"
-#     SIZE = "size"
-#     CREATED_AT = "created_at"
+class UploadGraphDatasetParams(GraphDatasetParams, BaseUploadDatasetParams):
+    type: Literal[DatasetType.Graph]
 
 
-# class SortDirection(StrEnum):
-#     """Sort direction options"""
-
-#     ASC = "asc"
-#     DESC = "desc"
-
-
-# class DatasetOrderingSchema(BaseSchema):
-#     """Schema for ordering datasets"""
-
-#     field: DatasetSortField
-#     direction: SortDirection = SortDirection.ASC
+OneOfUploadDatasetParams = Annotated[
+    UploadTabularDatasetParams
+    | UploadTransactionalDatasetParams
+    | UploadGraphDatasetParams,
+    Field(discriminator="type"),
+]
 
 
-# class DatasetFilterSchema(BaseSchema):
-#     """Schema for filtering datasets"""
-
-#     min_size: int | None = None
-#     max_size: int | None = None
-#     created_after: datetime | None = None
-#     created_before: datetime | None = None
-#     search: str | None = None
+class NonGraphDatasetInfo(BaseSchema):
+    number_of_columns: int
+    number_of_rows: int
+    column_names: list[str]
 
 
-# class DatasetQueryParamsSchema(BaseSchema):
-#     """Combined schema for all dataset query parameters"""
+OneOfDatasetInfo = NonGraphDatasetInfo | None
 
-#     filters: DatasetFilterSchema = Field(default_factory=DatasetFilterSchema)
-#     ordering: DatasetOrderingSchema | None = None
-#     limit: int = 100
-#     offset: int = 0
+
+class DatasetStatus(StrEnum):
+    Queued = auto()
+    Processing = auto()
+    Ready = auto()
+    Failed = auto()
+
+
+class DatasetSchema(BaseSchema):
+    id: UUID
+    type: DatasetType
+    name: str
+    size: int
+    params: OneOfDatasetParams
+
+    info: OneOfDatasetInfo
+    status: DatasetStatus
+
+    created_at: datetime
