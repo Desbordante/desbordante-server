@@ -1,17 +1,15 @@
 from typing import Protocol
+from uuid import UUID
 
 from src.models.dataset_models import DatasetModel
 from src.models.user_models import UserModel
-from src.schemas.base_schemas import PaginationParams
 
 
 class DatasetCrud(Protocol):
-    async def get_many(
-        self, *, pagination: PaginationParams, owner_id: int
-    ) -> list[DatasetModel]: ...
+    async def get_by(self, *, id: UUID, owner_id: int) -> DatasetModel: ...
 
 
-class GetDatasetsUseCase:
+class GetDatasetUseCase:
     def __init__(
         self,
         *,
@@ -24,9 +22,9 @@ class GetDatasetsUseCase:
     async def __call__(
         self,
         *,
-        pagination: PaginationParams,
-    ) -> list[DatasetModel]:
-        return await self.dataset_crud.get_many(
-            pagination=pagination,
+        id: UUID,
+    ) -> DatasetModel:
+        return await self.dataset_crud.get_by(
             owner_id=self.user.id,
+            id=id,
         )

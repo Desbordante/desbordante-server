@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.exceptions import ResourceAlreadyExistsException, ResourceNotFoundException
 from src.models.base_models import BaseModel
+from src.schemas.base_schemas import PaginationParams
 
 
 class BaseFindProps[T: int | UUID](TypedDict, total=False):
@@ -47,13 +48,17 @@ class BaseCrud[
     async def get_many(
         self,
         *,
-        limit: int = 100,
-        offset: int = 0,
+        pagination: PaginationParams,
         query: Select[tuple[ModelType]] | None = None,
         **kwargs: Unpack[BaseFindProps[IdType]],
     ) -> list[ModelType]:
         if query is None:
-            query = select(self.model).filter_by(**kwargs).limit(limit).offset(offset)
+            query = (
+                select(self.model)
+                .filter_by(**kwargs)
+                .limit(pagination.limit)
+                .offset(pagination.offset)
+            )
         result = await self._session.execute(query)
         return list(result.scalars().all())
 
