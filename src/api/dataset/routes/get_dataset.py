@@ -18,6 +18,7 @@ router = APIRouter()
     description="Get user dataset by id",
     responses={
         status.HTTP_401_UNAUTHORIZED: {"model": ApiErrorSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ApiErrorSchema},
     },
 )
 async def get_dataset(
