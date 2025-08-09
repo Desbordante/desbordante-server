@@ -45,3 +45,6 @@ class DatasetCrud(BaseCrud[DatasetModel, UUID]):
         **kwargs: Unpack[DatasetFindProps],
     ) -> list[DatasetModel]:
         return await super().get_many(pagination=pagination, query=query, **kwargs)
+
+    async def delete(self, *, entity: DatasetModel) -> None:
+        return await super().delete(entity=entity)

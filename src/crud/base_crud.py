@@ -43,7 +43,9 @@ class BaseCrud[
             result = await self._session.execute(query)
             return result.scalars().one()
         except exc.NoResultFound:
-            raise ResourceNotFoundException(f"{self.model.__name__} not found")
+            raise ResourceNotFoundException(
+                f"{self.model.__name__.replace('Model', '')} not found"
+            )
 
     async def get_many(
         self,
@@ -70,3 +72,7 @@ class BaseCrud[
         await self._session.commit()
         await self._session.refresh(entity)
         return entity
+
+    async def delete(self, *, entity: ModelType) -> None:
+        await self._session.delete(entity)
+        await self._session.commit()
