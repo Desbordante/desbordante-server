@@ -1,15 +1,17 @@
 from typing import TypedDict, Unpack
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import Select, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.crud.base_crud import BaseCrud
 from src.models.dataset_models import DatasetModel
+from src.schemas.base_schemas import PaginationParams
 
 
 class DatasetFindProps(TypedDict, total=False):
     id: UUID
+    owner_id: int
 
 
 class DatasetUpdateProps(TypedDict, total=False):
@@ -34,3 +36,12 @@ class DatasetCrud(BaseCrud[DatasetModel, UUID]):
         )
         result = await self._session.execute(query)
         return result.scalar() or 0
+
+    async def get_many(
+        self,
+        *,
+        pagination: PaginationParams,
+        query: Select[tuple[DatasetModel]] | None = None,
+        **kwargs: Unpack[DatasetFindProps],
+    ) -> list[DatasetModel]:
+        return await super().get_many(pagination=pagination, query=query, **kwargs)

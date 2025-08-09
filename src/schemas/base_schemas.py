@@ -1,7 +1,7 @@
 from typing import Any
 
 from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class BaseSchema(BaseModel):
@@ -57,3 +57,8 @@ class OptionalSchema(BaseModel):
             value.default = None
 
         cls.model_rebuild(force=True)
+
+
+class PaginationParams(BaseSchema):
+    limit: int = Field(default=10, ge=1, le=100)
+    offset: int = Field(default=0, ge=0)

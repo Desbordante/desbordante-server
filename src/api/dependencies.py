@@ -2,7 +2,6 @@ from typing import Annotated
 
 from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer
-from pydantic import Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.constants import ACCESS_TOKEN_KEY
@@ -12,7 +11,7 @@ from src.db.session import get_session
 from src.exceptions import ForbiddenException
 from src.models.user_models import UserModel
 from src.schemas.auth_schemas import AccessTokenPayloadSchema
-from src.schemas.base_schemas import BaseSchema
+from src.schemas.base_schemas import PaginationParams
 from src.usecases.account.send_confirmation_email import SendConfirmationEmailUseCase
 from src.usecases.auth.validate_token import ValidateTokenUseCase
 from src.usecases.user.get_user_by_id import GetUserByIdUseCase
@@ -129,11 +128,6 @@ async def get_send_confirmation_email_use_case() -> SendConfirmationEmailUseCase
 SendConfirmationEmailUseCaseDep = Annotated[
     SendConfirmationEmailUseCase, Depends(get_send_confirmation_email_use_case)
 ]
-
-
-class PaginationParams(BaseSchema):
-    limit: int = Field(default=10, ge=1, le=100)
-    offset: int = Field(default=0, ge=0)
 
 
 PaginationParamsDep = Annotated[PaginationParams, Depends(PaginationParams)]
