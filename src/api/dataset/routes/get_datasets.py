@@ -2,7 +2,7 @@ from typing import Any
 
 from fastapi import APIRouter, status
 
-from src.api.dataset.dependencies import GetDatasetsUseCaseDep
+from src.api.dataset.dependencies import DatasetQueryParamsDep, GetDatasetsUseCaseDep
 from src.api.dependencies import PaginationParamsDep
 from src.schemas.base_schemas import ApiErrorSchema
 from src.schemas.dataset_schemas import DatasetSchema
@@ -23,7 +23,11 @@ router = APIRouter()
 async def get_datasets(
     pagination: PaginationParamsDep,
     get_datasets: GetDatasetsUseCaseDep,
+    query_params: DatasetQueryParamsDep,
 ) -> Any:
-    datasets = await get_datasets(pagination=pagination)
+    datasets = await get_datasets(
+        pagination=pagination,
+        query_params=query_params,
+    )
 
     return datasets

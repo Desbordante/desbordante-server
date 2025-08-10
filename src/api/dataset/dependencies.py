@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from src.api.dependencies import AuthorizedUserDep, DatasetCrudDep, VerifiedUserDep
+from src.schemas.dataset_schemas import DatasetQueryParamsSchema
 from src.usecases.dataset.delete_dataset import DeleteDatasetUseCase
 from src.usecases.dataset.get_dataset import GetDatasetUseCase
 from src.usecases.dataset.get_datasets import GetDatasetsUseCase
@@ -52,4 +53,10 @@ async def get_delete_dataset_use_case(
 
 DeleteDatasetUseCaseDep = Annotated[
     DeleteDatasetUseCase, Depends(get_delete_dataset_use_case)
+]
+
+
+DatasetQueryParamsDep = Annotated[
+    DatasetQueryParamsSchema,
+    Depends(DatasetQueryParamsSchema),
 ]

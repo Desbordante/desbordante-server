@@ -11,7 +11,7 @@ from src.db.session import get_session
 from src.exceptions import ForbiddenException
 from src.models.user_models import UserModel
 from src.schemas.auth_schemas import AccessTokenPayloadSchema
-from src.schemas.base_schemas import PaginationParams
+from src.schemas.base_schemas import PaginationParamsSchema
 from src.usecases.account.send_confirmation_email import SendConfirmationEmailUseCase
 from src.usecases.auth.validate_token import ValidateTokenUseCase
 from src.usecases.user.get_user_by_id import GetUserByIdUseCase
@@ -130,4 +130,4 @@ SendConfirmationEmailUseCaseDep = Annotated[
 ]
 
 
-PaginationParamsDep = Annotated[PaginationParams, Depends(PaginationParams)]
+PaginationParamsDep = Annotated[PaginationParamsSchema, Depends(PaginationParamsSchema)]

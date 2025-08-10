@@ -2,12 +2,17 @@ from typing import Protocol
 
 from src.models.dataset_models import DatasetModel
 from src.models.user_models import UserModel
-from src.schemas.base_schemas import PaginationParams
+from src.schemas.base_schemas import PaginationParamsSchema
+from src.schemas.dataset_schemas import DatasetQueryParamsSchema
 
 
 class DatasetCrud(Protocol):
     async def get_many(
-        self, *, pagination: PaginationParams, owner_id: int
+        self,
+        *,
+        pagination: PaginationParamsSchema,
+        query_params: DatasetQueryParamsSchema,
+        owner_id: int,
     ) -> list[DatasetModel]: ...
 
 
@@ -24,9 +29,11 @@ class GetDatasetsUseCase:
     async def __call__(
         self,
         *,
-        pagination: PaginationParams,
+        pagination: PaginationParamsSchema,
+        query_params: DatasetQueryParamsSchema,
     ) -> list[DatasetModel]:
         return await self.dataset_crud.get_many(
             pagination=pagination,
+            query_params=query_params,
             owner_id=self.user.id,
         )
