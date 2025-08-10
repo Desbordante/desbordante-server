@@ -6,7 +6,7 @@ from uuid import UUID
 
 from pydantic import Field, model_validator
 
-from src.schemas.base_schemas import BaseSchema
+from src.schemas.base_schemas import BaseSchema, QueryParamsSchema
 
 
 class File(Protocol):
@@ -125,3 +125,16 @@ class DatasetSchema(BaseSchema):
     status: DatasetStatus
 
     created_at: datetime
+
+
+class DatasetFiltersSchema(BaseSchema):
+    type: DatasetType | None = None
+    min_size: int | None = None
+    max_size: int | None = None
+    created_after: datetime | None = None
+    created_before: datetime | None = None
+
+
+DatasetQueryParamsSchema = QueryParamsSchema[
+    DatasetFiltersSchema, Literal["name", "size", "created_at"]
+]

@@ -1,13 +1,13 @@
 from abc import ABC
-from typing import TypedDict, Unpack
+from typing import Any, TypedDict, Unpack
 from uuid import UUID
 
-from sqlalchemy import Select, exc, select
+from sqlalchemy import ColumnExpressionArgument, asc, desc, exc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.exceptions import ResourceAlreadyExistsException, ResourceNotFoundException
 from src.models.base_models import BaseModel
-from src.schemas.base_schemas import PaginationParams
+from src.schemas.base_schemas import OrderingDirection, PaginationParamsSchema
 
 
 class BaseFindProps[T: int | UUID](TypedDict, total=False):
@@ -47,20 +47,35 @@ class BaseCrud[
                 f"{self.model.__name__.replace('Model', '')} not found"
             )
 
+    def _make_filters(
+        self, query_params: Any
+    ) -> list[ColumnExpressionArgument[bool] | None]:
+        return []
+
     async def get_many(
         self,
         *,
-        pagination: PaginationParams,
-        query: Select[tuple[ModelType]] | None = None,
+        pagination: PaginationParamsSchema,
+        query_params: Any,
         **kwargs: Unpack[BaseFindProps[IdType]],
     ) -> list[ModelType]:
-        if query is None:
-            query = (
-                select(self.model)
-                .filter_by(**kwargs)
-                .limit(pagination.limit)
-                .offset(pagination.offset)
-            )
+        query = select(self.model).filter_by(**kwargs)
+
+        filters = [
+            filter for filter in self._make_filters(query_params) if filter is not None
+        ]
+        query = query.where(*filters)
+
+        order_field = getattr(self.model, query_params.ordering.order_by)
+
+        query = query.order_by(
+            asc(order_field)
+            if query_params.ordering.direction == OrderingDirection.Asc
+            else desc(order_field)
+        )
+
+        query = query.limit(pagination.limit).offset(pagination.offset)
+
         result = await self._session.execute(query)
         return list(result.scalars().all())
 

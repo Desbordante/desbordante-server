@@ -1,5 +1,7 @@
-from typing import Any
+from enum import StrEnum, auto
+from typing import Annotated, Any
 
+from fastapi import Depends
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -59,6 +61,22 @@ class OptionalSchema(BaseModel):
         cls.model_rebuild(force=True)
 
 
-class PaginationParams(BaseSchema):
+class PaginationParamsSchema(BaseSchema):
     limit: int = Field(default=10, ge=1, le=100)
     offset: int = Field(default=0, ge=0)
+
+
+class OrderingDirection(StrEnum):
+    Asc = auto()
+    Desc = auto()
+
+
+class OrderingParamsSchema[T: str](BaseSchema):
+    order_by: T
+    direction: OrderingDirection = OrderingDirection.Desc
+
+
+class QueryParamsSchema[T, U: str](BaseSchema):
+    search: str | None = None
+    filters: Annotated[T, Depends()]
+    ordering: Annotated[OrderingParamsSchema[U], Depends()]
