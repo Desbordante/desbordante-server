@@ -72,3 +72,17 @@ class TooManyRequestsException(BaseAppException):
 
     def __init__(self, message: str):
         super().__init__(message, status_code=status.HTTP_429_TOO_MANY_REQUESTS)
+
+
+class ConflictException(BaseAppException):
+    """Raised when a conflict occurs"""
+
+    def __init__(self, message: str):
+        super().__init__(message, status_code=status.HTTP_409_CONFLICT)
+
+
+class PayloadTooLargeException(BaseAppException):
+    """Raised when the payload is too large"""
+
+    def __init__(self, message: str):
+        super().__init__(message, status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)

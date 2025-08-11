@@ -31,11 +31,20 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       MINIO_DEFAULT_BUCKETS: ${MINIO_DEFAULT_BUCKETS}
+
+  redis:
+    image: redis:alpine3.22
+    ports:
+      - '${REDIS_PORT}:6379'
+    volumes:
+      - ./volumes/redis/:/data
+
   flower:
     image: mher/flower:2.0.1
     ports:
       - '${FLOWER_PORT}:5555'
     command: celery --broker=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:${RABBITMQ_PORT}// flower --basic_auth=${FLOWER_USER}:${FLOWER_PASSWORD}
+
   worker:
     build:
       context: .

@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "aioredlock>=0.7.3",
     "alembic>=1.15.1",
     "asyncpg>=0.30.0",
     "celery>=5.4.0",
@@ -28,6 +29,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "celery-types>=0.23.0",
+    "mypy>=1.17.1",
     "pre-commit>=4.1.0",
     "pytest>=8.3.5",
     "pytest-asyncio>=0.26.0",
