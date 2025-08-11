@@ -72,7 +72,7 @@ class OrderingDirection(StrEnum):
 
 
 class OrderingParamsSchema[T: str](BaseSchema):
-    order_by: T
+    order_by: T | None = None
     direction: OrderingDirection = OrderingDirection.Desc
 
 

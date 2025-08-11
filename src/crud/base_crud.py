@@ -66,13 +66,14 @@ class BaseCrud[
         ]
         query = query.where(*filters)
 
-        order_field = getattr(self.model, query_params.ordering.order_by)
+        if query_params.ordering.order_by is not None:
+            order_field = getattr(self.model, query_params.ordering.order_by)
 
-        query = query.order_by(
-            asc(order_field)
-            if query_params.ordering.direction == OrderingDirection.Asc
-            else desc(order_field)
-        )
+            query = query.order_by(
+                asc(order_field)
+                if query_params.ordering.direction == OrderingDirection.Asc
+                else desc(order_field)
+            )
 
         query = query.limit(pagination.limit).offset(pagination.offset)
 

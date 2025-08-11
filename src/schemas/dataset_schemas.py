@@ -138,3 +138,8 @@ class DatasetFiltersSchema(BaseSchema):
 DatasetQueryParamsSchema = QueryParamsSchema[
     DatasetFiltersSchema, Literal["name", "size", "created_at"]
 ]
+
+
+class DatasetsStatsSchema(BaseSchema):
+    total_count: int
+    total_size: int
