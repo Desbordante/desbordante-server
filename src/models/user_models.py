@@ -24,5 +24,6 @@ class UserModel(BaseModel):
     is_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
 
     datasets: Mapped[list["DatasetModel"]] = relationship(
-        back_populates="owner", lazy="selectin"
+        back_populates="owner",
+        # lazy="selectin"
     )

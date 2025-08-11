@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.crud.base_crud import BaseCrud
 from src.models.dataset_models import DatasetModel
 from src.schemas.base_schemas import PaginationParamsSchema
-from src.schemas.dataset_schemas import DatasetQueryParamsSchema
+from src.schemas.dataset_schemas import DatasetQueryParamsSchema, DatasetsStatsSchema
 
 
 class DatasetFindProps(TypedDict, total=False):
@@ -30,13 +30,6 @@ class DatasetCrud(BaseCrud[DatasetModel, UUID]):
         self, *, entity: DatasetModel, **kwargs: Unpack[DatasetUpdateProps]
     ) -> DatasetModel:
         return await super().update(entity=entity, **kwargs)
-
-    async def get_user_datasets_size(self, *, owner_id: int) -> int:
-        query = select(func.sum(self.model.size)).where(
-            self.model.owner_id == owner_id,
-        )
-        result = await self._session.execute(query)
-        return result.scalar() or 0
 
     def _make_filters(
         self, query_params: DatasetQueryParamsSchema
@@ -77,3 +70,19 @@ class DatasetCrud(BaseCrud[DatasetModel, UUID]):
 
     async def delete(self, *, entity: DatasetModel) -> None:
         return await super().delete(entity=entity)
+
+    async def get_stats(self, *, user_id: int) -> DatasetsStatsSchema:
+        query = select(
+            func.count(self.model.id),
+            func.sum(self.model.size),
+        ).where(
+            self.model.owner_id == user_id,
+        )
+        result = await self._session.execute(query)
+
+        total_count, total_size = result.first() or (0, 0)
+
+        return DatasetsStatsSchema(
+            total_count=total_count,
+            total_size=total_size,
+        )

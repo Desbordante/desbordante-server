@@ -2,6 +2,7 @@ from pydantic import ValidationInfo, field_validator
 
 from src.domain.security.utils import validate_password_strength
 from src.schemas.base_schemas import BaseSchema, OptionalSchema
+from src.schemas.dataset_schemas import DatasetsStatsSchema
 from src.schemas.security_schemas import password_field
 from src.schemas.user_schemas import UserInfoSchema
 
@@ -24,3 +25,8 @@ class ChangePasswordSchema(BaseSchema):
 
 class UpdateUserInfoSchema(UserInfoSchema, OptionalSchema):
     pass
+
+
+class AccountStatsSchema(BaseSchema):
+    datasets: DatasetsStatsSchema
+    storage_limit: int
