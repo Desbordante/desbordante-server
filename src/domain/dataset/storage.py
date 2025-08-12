@@ -79,6 +79,19 @@ class AsyncMinioClient:
             object_name=path,
         )
 
+    def download_file_sync(self, *, path: str) -> bytes:
+        response = None
+        try:
+            response = self.client.get_object(self.bucket, path)
+            data = response.read()
+            return data
+        except Exception as e:
+            raise e
+        finally:
+            if response:
+                response.close()
+                response.release_conn()
+
 
 storage = AsyncMinioClient(
     minio_endpoint=settings.minio_endpoint,

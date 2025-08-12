@@ -1,9 +1,20 @@
-from typing import Any
 from uuid import UUID
 
 from src.crud.dataset_crud import DatasetCrud
+from src.domain.dataset.storage import storage
+from src.domain.dataset.utils import (
+    get_graph_info,
+    get_tabular_info,
+    get_transactional_info,
+)
 from src.models.dataset_models import DatasetModel
-from src.schemas.dataset_schemas import NonGraphDatasetInfo
+from src.schemas.dataset_schemas import (
+    DatasetType,
+    GraphDatasetParams,
+    OneOfDatasetInfo,
+    TabularDatasetParams,
+    TransactionalDatasetParams,
+)
 from src.worker.task import DatabaseTaskBase
 from src.worker.worker import worker
 
@@ -14,14 +25,19 @@ class PreprocessDatasetTask(DatabaseTaskBase[DatasetModel, UUID]):
 
 
 @worker.task(name="tasks.preprocess_dataset", base=PreprocessDatasetTask, bind=True)
-def preprocess_dataset(self: PreprocessDatasetTask, dataset_id: UUID) -> Any:
-    import time
+def preprocess_dataset(
+    self: PreprocessDatasetTask, dataset_id: UUID
+) -> OneOfDatasetInfo:
+    dataset = self.entity
+    data = storage.download_file_sync(path=dataset.path)
 
-    time.sleep(5)  # Имитация 5-секундной задержки обработки
-
-    print("TETSTSTTSTSTS", self.entity)
-    return NonGraphDatasetInfo(
-        number_of_columns=10,
-        number_of_rows=100,
-        column_names=["col1", "col2", "col3"],
-    )
+    match dataset.type:
+        case DatasetType.Tabular:
+            params = TabularDatasetParams.model_validate(dataset.params)
+            return get_tabular_info(params, data)
+        case DatasetType.Transactional:
+            params = TransactionalDatasetParams.model_validate(dataset.params)
+            return get_transactional_info(params, data)
+        case DatasetType.Graph:
+            params = GraphDatasetParams.model_validate(dataset.params)
+            return get_graph_info(params, data)

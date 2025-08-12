@@ -8,7 +8,7 @@ from celery import Task
 from src.crud.base_crud import BaseCrud
 from src.db.session import scoped_session
 from src.models.base_models import BaseModel
-from src.schemas.base_schemas import TaskStatus
+from src.schemas.base_schemas import TaskErrorSchema, TaskStatus
 
 loop = asyncio.get_event_loop()
 
@@ -63,7 +63,10 @@ class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type:
 
         self._update_object(
             id,
-            **{self.status_field: TaskStatus.Failed, self.result_field: str(exc)},
+            **{
+                self.status_field: TaskStatus.Failed,
+                self.result_field: TaskErrorSchema(error=str(exc)),
+            },
         )
 
     def _update_object(self, id: IdType, **kwargs: Any) -> ModelType:

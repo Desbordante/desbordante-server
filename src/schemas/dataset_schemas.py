@@ -6,7 +6,12 @@ from uuid import UUID
 
 from pydantic import Field, model_validator
 
-from src.schemas.base_schemas import BaseSchema, QueryParamsSchema, TaskStatus
+from src.schemas.base_schemas import (
+    BaseSchema,
+    QueryParamsSchema,
+    TaskErrorSchema,
+    TaskStatus,
+)
 
 
 class File(Protocol):
@@ -98,13 +103,25 @@ OneOfUploadDatasetParams = Annotated[
 ]
 
 
-class NonGraphDatasetInfo(BaseSchema):
+class TabularDatasetInfo(BaseSchema):
     number_of_columns: int
     number_of_rows: int
     column_names: list[str]
 
 
-OneOfDatasetInfo = NonGraphDatasetInfo | None
+class TransactionalDatasetInfo(TabularDatasetInfo):
+    pass
+
+
+class GraphDatasetInfo(BaseSchema):
+    number_of_nodes: int
+    number_of_edges: int
+    is_directed: bool
+
+
+OneOfDatasetInfo = (
+    TabularDatasetInfo | TransactionalDatasetInfo | GraphDatasetInfo | TaskErrorSchema
+)
 
 
 class DatasetSchema(BaseSchema):
@@ -114,10 +131,11 @@ class DatasetSchema(BaseSchema):
     size: int
     params: OneOfDatasetParams
 
-    info: OneOfDatasetInfo
+    info: OneOfDatasetInfo | None
     status: TaskStatus
 
     created_at: datetime
+    updated_at: datetime
 
 
 class DatasetFiltersSchema(BaseSchema):
