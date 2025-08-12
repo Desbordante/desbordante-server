@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/{id}",
+    "/{id}/",
     response_model=DatasetSchema,
     status_code=status.HTTP_200_OK,
     summary="Get dataset",

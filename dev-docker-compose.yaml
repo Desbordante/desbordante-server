@@ -57,12 +57,12 @@ services:
       - minio
     restart: always
     environment:
-      # # Postgres settings
-      # POSTGRES_USER: ${POSTGRES_USER}
-      # POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      # POSTGRES_HOST: postgres
-      # POSTGRES_DB: ${POSTGRES_DB}
-      # POSTGRES_PORT: ${POSTGRES_PORT}
+      # Postgres settings
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PORT: ${POSTGRES_PORT}
 
       # RabbitMQ settings
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}

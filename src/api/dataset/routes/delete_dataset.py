@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.delete(
-    "/{id}",
+    "/{id}/",
     response_model=None,
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete dataset",

@@ -1,19 +1,19 @@
 """empty message
 
-Revision ID: f28fcbcb34a1
+Revision ID: 2c6dfd86894e
 Revises: 6e133040e049
-Create Date: 2025-08-06 20:51:45.297636
+Create Date: 2025-08-11 22:57:44.795266
 
 """
 
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = "f28fcbcb34a1"
+revision: str = "2c6dfd86894e"
 down_revision: Union[str, None] = "6e133040e049"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -36,7 +36,7 @@ def upgrade() -> None:
         sa.Column("params", sa.JSON(), nullable=False),
         sa.Column(
             "status",
-            sa.Enum("Queued", "Processing", "Ready", "Failed", name="datasetstatus"),
+            sa.Enum("Pending", "Processing", "Success", "Failed", name="taskstatus"),
             nullable=False,
         ),
         sa.Column("info", sa.JSON(), nullable=True),

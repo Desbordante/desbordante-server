@@ -1,19 +1,15 @@
-from typing import TYPE_CHECKING
-
 from sqlalchemy import JSON, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.annotations import str_non_nullable, uuid_pk
 from src.models.base_models import BaseModel
+from src.models.user_models import UserModel
 from src.schemas.dataset_schemas import (
-    DatasetStatus,
     DatasetType,
     OneOfDatasetInfo,
     OneOfDatasetParams,
+    TaskStatus,
 )
-
-if TYPE_CHECKING:
-    from src.models.user_models import UserModel
 
 
 class DatasetModel(BaseModel):
@@ -24,7 +20,7 @@ class DatasetModel(BaseModel):
     path: Mapped[str_non_nullable]
     params: Mapped[OneOfDatasetParams] = mapped_column(JSON)
 
-    status: Mapped[DatasetStatus] = mapped_column(default=DatasetStatus.Queued)
+    status: Mapped[TaskStatus] = mapped_column(default=TaskStatus.Pending)
     info: Mapped[OneOfDatasetInfo] = mapped_column(JSON, default=None)
 
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))

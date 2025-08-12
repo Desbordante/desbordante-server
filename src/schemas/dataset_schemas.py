@@ -6,7 +6,7 @@ from uuid import UUID
 
 from pydantic import Field, model_validator
 
-from src.schemas.base_schemas import BaseSchema, QueryParamsSchema
+from src.schemas.base_schemas import BaseSchema, QueryParamsSchema, TaskStatus
 
 
 class File(Protocol):
@@ -107,13 +107,6 @@ class NonGraphDatasetInfo(BaseSchema):
 OneOfDatasetInfo = NonGraphDatasetInfo | None
 
 
-class DatasetStatus(StrEnum):
-    Queued = auto()
-    Processing = auto()
-    Ready = auto()
-    Failed = auto()
-
-
 class DatasetSchema(BaseSchema):
     id: UUID
     type: DatasetType
@@ -122,7 +115,7 @@ class DatasetSchema(BaseSchema):
     params: OneOfDatasetParams
 
     info: OneOfDatasetInfo
-    status: DatasetStatus
+    status: TaskStatus
 
     created_at: datetime
 

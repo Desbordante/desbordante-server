@@ -21,8 +21,10 @@ class BaseCrud[
     ModelType: BaseModel,
     IdType: int | UUID = UUID,
 ](ABC):
-    def __init__(self, *, model: type[ModelType], session: AsyncSession):
-        self.model = model
+    model: type[ModelType]
+    _session: AsyncSession
+
+    def __init__(self, *, session: AsyncSession):
         self._session = session
 
     async def create(self, entity: ModelType) -> ModelType:
