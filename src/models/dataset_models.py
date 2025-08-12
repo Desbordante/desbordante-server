@@ -21,7 +21,7 @@ class DatasetModel(BaseModel):
     params: Mapped[OneOfDatasetParams] = mapped_column(JSON)
 
     status: Mapped[TaskStatus] = mapped_column(default=TaskStatus.Pending)
-    info: Mapped[OneOfDatasetInfo] = mapped_column(JSON, default=None)
+    info: Mapped[OneOfDatasetInfo | None] = mapped_column(JSON, default=None)
 
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     owner: Mapped["UserModel"] = relationship(back_populates="datasets", lazy="joined")

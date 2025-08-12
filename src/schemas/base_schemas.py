@@ -116,3 +116,7 @@ def custom_dumps(*args: Any, **kwargs: Any) -> str:
 
 
 json.dumps = custom_dumps
+
+
+class TaskErrorSchema(BaseSchema):
+    error: str
