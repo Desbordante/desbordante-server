@@ -7,6 +7,7 @@ from aioredlock import LockError
 
 from src.domain.account.config import settings
 from src.domain.dataset.storage import storage
+from src.domain.dataset.tasks import preprocess_dataset
 from src.exceptions import (
     ConflictException,
     PayloadTooLargeException,
@@ -71,7 +72,13 @@ class UploadDatasetUseCase:
                 )
 
                 try:
-                    return await self.dataset_crud.create(entity=dataset_entity)
+                    created_dataset = await self.dataset_crud.create(
+                        entity=dataset_entity
+                    )
+
+                    preprocess_dataset.delay(created_dataset.id)
+
+                    return created_dataset
                 except Exception as e:
                     await storage.delete_file(path=path)
                     raise e

@@ -1,3 +1,4 @@
+import json
 from enum import StrEnum, auto
 from typing import Annotated, Any
 
@@ -16,6 +17,10 @@ class BaseSchema(BaseModel):
         default_dict = self.model_dump()
 
         return jsonable_encoder(default_dict)
+
+    def __json__(self):
+        """Make BaseSchema objects JSON serializable by default."""
+        return self.serializable_dict()
 
 
 class ApiErrorSchema(BaseSchema):
@@ -80,3 +85,34 @@ class QueryParamsSchema[T, U: str](BaseSchema):
     search: str | None = None
     filters: Annotated[T, Depends()]
     ordering: Annotated[OrderingParamsSchema[U], Depends()]
+
+
+class TaskStatus(StrEnum):
+    Pending = auto()
+    Processing = auto()
+    Success = auto()
+    Failed = auto()
+
+
+# JSON encoder and monkey patch for BaseSchema objects
+class BaseSchemaJSONEncoder(json.JSONEncoder):
+    """Custom JSON encoder that handles BaseSchema objects."""
+
+    def default(self, o: Any) -> Any:
+        if isinstance(o, BaseSchema):
+            return o.serializable_dict()
+        return super().default(o)
+
+
+# Monkey patch the default json encoder to use our custom encoder
+_original_dumps = json.dumps
+
+
+def custom_dumps(*args: Any, **kwargs: Any) -> str:
+    """Custom json.dumps that uses BaseSchemaJSONEncoder by default."""
+    if "cls" not in kwargs:
+        kwargs["cls"] = BaseSchemaJSONEncoder
+    return _original_dumps(*args, **kwargs)
+
+
+json.dumps = custom_dumps

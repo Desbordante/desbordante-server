@@ -20,8 +20,10 @@ class DatasetUpdateProps(TypedDict, total=False):
 
 
 class DatasetCrud(BaseCrud[DatasetModel, UUID]):
+    model = DatasetModel
+
     def __init__(self, session: AsyncSession):
-        super().__init__(model=DatasetModel, session=session)
+        super().__init__(session=session)
 
     async def get_by(self, **kwargs: Unpack[DatasetFindProps]) -> DatasetModel:
         return await super().get_by(**kwargs)
@@ -80,7 +82,10 @@ class DatasetCrud(BaseCrud[DatasetModel, UUID]):
         )
         result = await self._session.execute(query)
 
-        total_count, total_size = result.first() or (0, 0)
+        row = result.first()
+
+        total_count = row[0] if row and row[0] else 0
+        total_size = row[1] if row and row[1] else 0
 
         return DatasetsStatsSchema(
             total_count=total_count,

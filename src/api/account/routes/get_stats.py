@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/stats",
+    "/stats/",
     response_model=AccountStatsSchema,
     status_code=status.HTTP_200_OK,
     summary="Get current user's account stats",

@@ -17,8 +17,10 @@ class UserUpdateProps(TypedDict, total=False):
 
 
 class UserCrud(BaseCrud[UserModel, int]):
+    model = UserModel
+
     def __init__(self, session: AsyncSession):
-        super().__init__(model=UserModel, session=session)
+        super().__init__(session=session)
 
     async def get_by(self, **kwargs: Unpack[UserFindProps]) -> UserModel:
         return await super().get_by(**kwargs)
