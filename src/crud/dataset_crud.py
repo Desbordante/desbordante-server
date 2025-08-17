@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.crud.base_crud import BaseCrud
 from src.models.dataset_models import DatasetModel
-from src.schemas.base_schemas import PaginationParamsSchema
+from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema
 from src.schemas.dataset_schemas import DatasetQueryParamsSchema, DatasetsStatsSchema
 
 
@@ -63,7 +63,7 @@ class DatasetCrud(BaseCrud[DatasetModel, UUID]):
         pagination: PaginationParamsSchema,
         query_params: DatasetQueryParamsSchema,
         **kwargs: Unpack[DatasetFindProps],
-    ) -> list[DatasetModel]:
+    ) -> PaginatedResult[DatasetModel]:
         return await super().get_many(
             pagination=pagination,
             query_params=query_params,

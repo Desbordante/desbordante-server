@@ -1,4 +1,5 @@
 import json
+from dataclasses import dataclass
 from enum import StrEnum, auto
 from typing import Annotated, Any
 
@@ -120,3 +121,18 @@ json.dumps = custom_dumps
 
 class TaskErrorSchema(BaseSchema):
     error: str
+
+
+@dataclass
+class PaginatedResult[T]:
+    total_count: int
+    limit: int
+    offset: int
+    items: list[T]
+
+
+class PaginatedResponseSchema[T: BaseSchema](BaseSchema):
+    total_count: int
+    limit: int
+    offset: int
+    items: list[T]
