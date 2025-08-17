@@ -2,12 +2,16 @@ from abc import ABC
 from typing import Any, TypedDict, Unpack
 from uuid import UUID
 
-from sqlalchemy import ColumnExpressionArgument, asc, desc, exc, select
+from sqlalchemy import ColumnExpressionArgument, asc, desc, exc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.exceptions import ResourceAlreadyExistsException, ResourceNotFoundException
 from src.models.base_models import BaseModel
-from src.schemas.base_schemas import OrderingDirection, PaginationParamsSchema
+from src.schemas.base_schemas import (
+    OrderingDirection,
+    PaginatedResult,
+    PaginationParamsSchema,
+)
 
 
 class BaseFindProps[T: int | UUID](TypedDict, total=False):
@@ -60,8 +64,11 @@ class BaseCrud[
         pagination: PaginationParamsSchema,
         query_params: Any,
         **kwargs: Unpack[BaseFindProps[IdType]],
-    ) -> list[ModelType]:
-        query = select(self.model).filter_by(**kwargs)
+    ) -> PaginatedResult[ModelType]:
+        query = select(
+            self.model,
+            func.count().over().label("total_count"),
+        ).filter_by(**kwargs)
 
         filters = [
             filter for filter in self._make_filters(query_params) if filter is not None
@@ -80,7 +87,15 @@ class BaseCrud[
         query = query.limit(pagination.limit).offset(pagination.offset)
 
         result = await self._session.execute(query)
-        return list(result.scalars().all())
+
+        rows = result.all()
+
+        return PaginatedResult(
+            items=[row[0] for row in rows],
+            total_count=rows[0][1] if rows else 0,
+            limit=pagination.limit,
+            offset=pagination.offset,
+        )
 
     async def update(
         self, *, entity: ModelType, **kwargs: Unpack[BaseUpdateProps]

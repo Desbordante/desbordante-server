@@ -2,7 +2,7 @@ from typing import Protocol
 
 from src.models.dataset_models import DatasetModel
 from src.models.user_models import UserModel
-from src.schemas.base_schemas import PaginationParamsSchema
+from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema
 from src.schemas.dataset_schemas import DatasetQueryParamsSchema
 
 
@@ -13,7 +13,7 @@ class DatasetCrud(Protocol):
         pagination: PaginationParamsSchema,
         query_params: DatasetQueryParamsSchema,
         owner_id: int,
-    ) -> list[DatasetModel]: ...
+    ) -> PaginatedResult[DatasetModel]: ...
 
 
 class GetDatasetsUseCase:
@@ -31,7 +31,7 @@ class GetDatasetsUseCase:
         *,
         pagination: PaginationParamsSchema,
         query_params: DatasetQueryParamsSchema,
-    ) -> list[DatasetModel]:
+    ) -> PaginatedResult[DatasetModel]:
         return await self.dataset_crud.get_many(
             pagination=pagination,
             query_params=query_params,
