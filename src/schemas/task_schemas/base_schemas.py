@@ -1,10 +1,10 @@
 from datetime import datetime
-from typing import Annotated, Union
+from typing import Annotated, Literal, Union
 from uuid import UUID
 
 from pydantic import Field
 
-from src.schemas.base_schemas import BaseSchema, TaskStatus
+from src.schemas.base_schemas import BaseSchema, QueryParamsSchema, TaskStatus
 from src.schemas.dataset_schemas import DatasetSchema
 from src.schemas.task_schemas.afd.task_params import AFdTaskParams
 from src.schemas.task_schemas.fd.task_params import FdTaskParams
@@ -26,3 +26,14 @@ class TaskSchema(BaseSchema):
 
     created_at: datetime
     updated_at: datetime
+
+
+class TaskFiltersSchema(BaseSchema):
+    status: TaskStatus | None = None
+    created_after: datetime | None = None
+    created_before: datetime | None = None
+
+
+TaskQueryParamsSchema = QueryParamsSchema[
+    TaskFiltersSchema, Literal["status", "created_at"]
+]

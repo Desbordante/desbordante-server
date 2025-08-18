@@ -26,4 +26,4 @@ class UserModel(BaseModel):
 
     datasets: Mapped[list["DatasetModel"]] = relationship(back_populates="owner")
 
-    tasks: Mapped[list["TaskModel"]] = relationship(back_populates="initiator")
+    tasks: Mapped[list["TaskModel"]] = relationship(back_populates="owner")

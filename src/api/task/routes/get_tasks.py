@@ -2,30 +2,30 @@ from typing import Any
 
 from fastapi import APIRouter, status
 
-from src.api.dataset.dependencies import DatasetQueryParamsDep, GetDatasetsUseCaseDep
 from src.api.dependencies import PaginationParamsDep
+from src.api.task.dependencies import GetTasksUseCaseDep, TaskQueryParamsDep
 from src.schemas.base_schemas import ApiErrorSchema, PaginatedResponseSchema
-from src.schemas.dataset_schemas import DatasetSchema
+from src.schemas.task_schemas.base_schemas import TaskSchema
 
 router = APIRouter()
 
 
 @router.get(
     "/",
-    response_model=PaginatedResponseSchema[DatasetSchema],
+    response_model=PaginatedResponseSchema[TaskSchema],
     status_code=status.HTTP_200_OK,
-    summary="Get datasets",
-    description="Get user datasets with filtering, ordering and searching capabilities",
+    summary="Get profiling tasks",
+    description="Get profiling tasks",
     responses={
         status.HTTP_401_UNAUTHORIZED: {"model": ApiErrorSchema},
     },
 )
-async def get_datasets(
+async def get_tasks(
     pagination: PaginationParamsDep,
-    get_datasets: GetDatasetsUseCaseDep,
-    query_params: DatasetQueryParamsDep,
+    get_tasks: GetTasksUseCaseDep,
+    query_params: TaskQueryParamsDep,
 ) -> Any:
-    return await get_datasets(
+    return await get_tasks(
         pagination=pagination,
         query_params=query_params,
     )

@@ -53,7 +53,7 @@ class CreateTaskUseCase:
             )
 
         task_entity = TaskModel(
-            initiator_id=self.user.id,
+            owner_id=self.user.id,
             params=params,
             datasets=datasets,
         )

@@ -15,10 +15,7 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
     summary="Create profiling task",
     description="Create profiling task",
-    responses={
-        status.HTTP_401_UNAUTHORIZED: {"model": ApiErrorSchema},
-        status.HTTP_403_FORBIDDEN: {"model": ApiErrorSchema},
-    },
+    responses={status.HTTP_401_UNAUTHORIZED: {"model": ApiErrorSchema}},
 )
 async def create_task(
     create_task: CreateTaskUseCaseDep,

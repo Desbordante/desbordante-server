@@ -22,10 +22,8 @@ class TaskModel(BaseModel):
     status: Mapped[TaskStatus] = mapped_column(default=TaskStatus.Pending)
     result: Mapped[None] = mapped_column(JSON, default=None)
 
-    initiator_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE")
-    )
-    initiator: Mapped["UserModel"] = relationship(back_populates="tasks")
+    owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    owner: Mapped["UserModel"] = relationship(back_populates="tasks")
 
     datasets: Mapped[list["DatasetModel"]] = relationship(
         secondary=TaskDatasetLink.__table__,
