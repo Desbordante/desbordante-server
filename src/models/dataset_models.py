@@ -1,8 +1,11 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import JSON, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.annotations import str_non_nullable, uuid_pk
 from src.models.base_models import BaseModel
+from src.models.links import TaskDatasetLink
 from src.models.user_models import UserModel
 from src.schemas.dataset_schemas import (
     DatasetType,
@@ -10,6 +13,9 @@ from src.schemas.dataset_schemas import (
     OneOfDatasetParams,
     TaskStatus,
 )
+
+if TYPE_CHECKING:
+    from src.models.task_models import TaskModel
 
 
 class DatasetModel(BaseModel):
@@ -24,4 +30,8 @@ class DatasetModel(BaseModel):
     info: Mapped[OneOfDatasetInfo | None] = mapped_column(JSON, default=None)
 
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
-    owner: Mapped["UserModel"] = relationship(back_populates="datasets", lazy="joined")
+    owner: Mapped["UserModel"] = relationship(back_populates="datasets")
+
+    related_tasks: Mapped[list["TaskModel"]] = relationship(
+        secondary=TaskDatasetLink.__table__, back_populates="datasets"
+    )

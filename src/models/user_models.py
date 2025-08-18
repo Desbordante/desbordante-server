@@ -7,6 +7,7 @@ from src.models.base_models import BaseModel
 
 if TYPE_CHECKING:
     from src.models.dataset_models import DatasetModel
+    from src.models.task_models import TaskModel
 
 
 class UserModel(BaseModel):
@@ -23,7 +24,6 @@ class UserModel(BaseModel):
     is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
     is_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
 
-    datasets: Mapped[list["DatasetModel"]] = relationship(
-        back_populates="owner",
-        # lazy="selectin"
-    )
+    datasets: Mapped[list["DatasetModel"]] = relationship(back_populates="owner")
+
+    tasks: Mapped[list["TaskModel"]] = relationship(back_populates="initiator")

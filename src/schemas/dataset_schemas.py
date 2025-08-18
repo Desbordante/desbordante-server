@@ -140,6 +140,7 @@ class DatasetSchema(BaseSchema):
 
 class DatasetFiltersSchema(BaseSchema):
     type: DatasetType | None = None
+    status: TaskStatus | None = None
     min_size: int | None = None
     max_size: int | None = None
     created_after: datetime | None = None

@@ -7,12 +7,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.crud.base_crud import BaseCrud
 from src.models.dataset_models import DatasetModel
 from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema
-from src.schemas.dataset_schemas import DatasetQueryParamsSchema, DatasetsStatsSchema
+from src.schemas.dataset_schemas import (
+    DatasetQueryParamsSchema,
+    DatasetsStatsSchema,
+    DatasetType,
+    TaskStatus,
+)
 
 
 class DatasetFindProps(TypedDict, total=False):
     id: UUID
     owner_id: int
+    type: DatasetType
+    status: TaskStatus
 
 
 class DatasetUpdateProps(TypedDict, total=False):
@@ -42,6 +49,9 @@ class DatasetCrud(BaseCrud[DatasetModel, UUID]):
             else None,
             self.model.type == query_params.filters.type
             if query_params.filters.type
+            else None,
+            self.model.status == query_params.filters.status
+            if query_params.filters.status
             else None,
             self.model.size >= query_params.filters.min_size
             if query_params.filters.min_size
@@ -91,3 +101,12 @@ class DatasetCrud(BaseCrud[DatasetModel, UUID]):
             total_count=total_count,
             total_size=total_size,
         )
+
+    async def get_by_ids(
+        self, *, ids: list[UUID], **kwargs: Unpack[DatasetFindProps]
+    ) -> list[DatasetModel]:
+        query = select(self.model).filter_by(**kwargs).where(self.model.id.in_(ids))
+
+        result = await self._session.execute(query)
+
+        return list(result.scalars().all())

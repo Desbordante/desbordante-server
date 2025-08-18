@@ -86,3 +86,10 @@ class PayloadTooLargeException(BaseAppException):
 
     def __init__(self, message: str):
         super().__init__(message, status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
+
+
+class BadRequestException(BaseAppException):
+    """Raised when a bad request is made"""
+
+    def __init__(self, message: str):
+        super().__init__(message, status_code=status.HTTP_400_BAD_REQUEST)
