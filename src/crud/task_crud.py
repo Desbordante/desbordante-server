@@ -2,7 +2,6 @@ from typing import TypedDict, Unpack
 from uuid import UUID
 
 from sqlalchemy import ColumnExpressionArgument
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.crud.base_crud import BaseCrud
 from src.models.dataset_models import DatasetModel
@@ -22,9 +21,6 @@ class TaskUpdateProps(TypedDict, total=False):
 
 class TaskCrud(BaseCrud[TaskModel, UUID]):
     model = TaskModel
-
-    def __init__(self, session: AsyncSession):
-        super().__init__(session=session)
 
     async def get_by(self, **kwargs: Unpack[TaskFindProps]) -> TaskModel:
         return await super().get_by(**kwargs)

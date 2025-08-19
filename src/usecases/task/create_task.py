@@ -2,6 +2,7 @@ import logging
 from typing import Protocol
 from uuid import UUID
 
+from src.domain.task.tasks import profile_task
 from src.exceptions import BadRequestException
 from src.models.dataset_models import DatasetModel
 from src.models.task_models import TaskModel
@@ -58,4 +59,8 @@ class CreateTaskUseCase:
             datasets=datasets,
         )
 
-        return await self.task_crud.create(task_entity)
+        created_task = await self.task_crud.create(task_entity)
+
+        profile_task.delay(created_task.id)
+
+        return created_task

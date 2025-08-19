@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.api.constants import ACCESS_TOKEN_KEY
 from src.crud.dataset_crud import DatasetCrud
 from src.crud.task_crud import TaskCrud
+from src.crud.task_result_crud import TaskResultCrud
 from src.crud.user_crud import UserCrud
 from src.db.session import get_session
 from src.exceptions import ForbiddenException
@@ -42,6 +43,13 @@ async def get_task_crud(session: SessionDep) -> TaskCrud:
 
 
 TaskCrudDep = Annotated[TaskCrud, Depends(get_task_crud)]
+
+
+async def get_task_result_crud(session: SessionDep) -> TaskResultCrud:
+    return TaskResultCrud(session=session)
+
+
+TaskResultCrudDep = Annotated[TaskResultCrud, Depends(get_task_result_crud)]
 
 
 async def get_validate_token_use_case() -> ValidateTokenUseCase:

@@ -12,6 +12,7 @@ from src.models.dataset_models import DatasetModel  # type: ignore # noqa
 from src.models.links import TaskDatasetLink  # type: ignore # noqa
 from src.models.task_models import TaskModel  # type: ignore # noqa
 from src.models.user_models import UserModel  # type: ignore # noqa
+from src.models.task_models import TaskResultModel  # type: ignore # noqa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

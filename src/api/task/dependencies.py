@@ -2,9 +2,16 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from src.api.dependencies import AuthorizedUserDep, DatasetCrudDep, TaskCrudDep
+from src.api.dependencies import (
+    AuthorizedUserDep,
+    DatasetCrudDep,
+    TaskCrudDep,
+    TaskResultCrudDep,
+)
 from src.schemas.task_schemas.base_schemas import TaskQueryParamsSchema
 from src.usecases.task.create_task import CreateTaskUseCase
+from src.usecases.task.get_task import GetTaskUseCase
+from src.usecases.task.get_task_result import GetTaskResultUseCase
 from src.usecases.task.get_tasks import GetTasksUseCase
 
 
@@ -27,6 +34,28 @@ async def get_get_tasks_use_case(
 
 
 GetTasksUseCaseDep = Annotated[GetTasksUseCase, Depends(get_get_tasks_use_case)]
+
+
+async def get_get_task_use_case(
+    task_crud: TaskCrudDep,
+    user: AuthorizedUserDep,
+) -> GetTaskUseCase:
+    return GetTaskUseCase(task_crud=task_crud, user=user)
+
+
+GetTaskUseCaseDep = Annotated[GetTaskUseCase, Depends(get_get_task_use_case)]
+
+
+async def get_get_task_result_use_case(
+    task_result_crud: TaskResultCrudDep,
+    user: AuthorizedUserDep,
+) -> GetTaskResultUseCase:
+    return GetTaskResultUseCase(task_result_crud=task_result_crud, user=user)
+
+
+GetTaskResultUseCaseDep = Annotated[
+    GetTaskResultUseCase, Depends(get_get_task_result_use_case)
+]
 
 TaskQueryParamsDep = Annotated[
     TaskQueryParamsSchema,

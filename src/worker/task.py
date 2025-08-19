@@ -47,7 +47,7 @@ class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type:
             id,
             **{
                 self.status_field: TaskStatus.Success,
-                self.result_field: retval,
+                self.result_field: self.create_result_object(id, retval),
             },
         )
 
@@ -65,9 +65,15 @@ class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type:
             id,
             **{
                 self.status_field: TaskStatus.Failed,
-                self.result_field: TaskErrorSchema(error=str(exc)),
+                self.result_field: self.create_error_object(id, exc),
             },
         )
+
+    def create_result_object(self, id: IdType, retval: Any) -> Any:
+        return retval
+
+    def create_error_object(self, id: IdType, exc: Exception) -> Any:
+        return TaskErrorSchema(error=str(exc))
 
     def _update_object(self, id: IdType, **kwargs: Any) -> ModelType:
         return loop.run_until_complete(self._update_object_async(id, **kwargs))

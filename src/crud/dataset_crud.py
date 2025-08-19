@@ -2,7 +2,6 @@ from typing import TypedDict, Unpack
 from uuid import UUID
 
 from sqlalchemy import ColumnExpressionArgument, func, select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.crud.base_crud import BaseCrud
 from src.models.dataset_models import DatasetModel
@@ -28,9 +27,6 @@ class DatasetUpdateProps(TypedDict, total=False):
 
 class DatasetCrud(BaseCrud[DatasetModel, UUID]):
     model = DatasetModel
-
-    def __init__(self, session: AsyncSession):
-        super().__init__(session=session)
 
     async def get_by(self, **kwargs: Unpack[DatasetFindProps]) -> DatasetModel:
         return await super().get_by(**kwargs)

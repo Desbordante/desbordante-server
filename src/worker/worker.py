@@ -9,5 +9,6 @@ worker = Celery(
         "src.domain.account.tasks",
         "src.domain.auth.tasks",
         "src.domain.dataset.tasks",
+        "src.domain.task.tasks",
     ],
 )

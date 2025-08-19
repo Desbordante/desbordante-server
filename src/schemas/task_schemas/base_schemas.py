@@ -4,7 +4,12 @@ from uuid import UUID
 
 from pydantic import Field
 
-from src.schemas.base_schemas import BaseSchema, QueryParamsSchema, TaskStatus
+from src.schemas.base_schemas import (
+    BaseSchema,
+    QueryParamsSchema,
+    TaskErrorSchema,
+    TaskStatus,
+)
 from src.schemas.dataset_schemas import DatasetSchema
 from src.schemas.task_schemas.afd.task_params import AFdTaskParams
 from src.schemas.task_schemas.fd.task_params import FdTaskParams
@@ -13,6 +18,17 @@ OneOfTaskParams = Annotated[
     Union[FdTaskParams, AFdTaskParams],
     Field(discriminator="primitive_name"),
 ]
+
+
+class FdTaskResult(BaseSchema):
+    primitive_name: Literal["fd"]
+
+
+class AfdTaskResult(BaseSchema):
+    primitive_name: Literal["afd"]
+
+
+OneOfTaskResult = FdTaskResult | AfdTaskResult | TaskErrorSchema
 
 
 class TaskSchema(BaseSchema):
@@ -37,3 +53,9 @@ class TaskFiltersSchema(BaseSchema):
 TaskQueryParamsSchema = QueryParamsSchema[
     TaskFiltersSchema, Literal["status", "created_at"]
 ]
+
+
+class TaskResultSchema(BaseSchema):
+    task: TaskSchema
+
+    result: OneOfTaskResult
