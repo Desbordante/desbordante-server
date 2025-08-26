@@ -27,6 +27,6 @@ class ProfileTaskTask(DatabaseTaskBase[TaskModel, UUID]):
 
 @worker.task(name="tasks.profile_task", base=ProfileTaskTask, bind=True)
 def profile_task(self: ProfileTaskTask, task_id: UUID) -> OneOfTaskResult:
-    # task = self.entity
+    task = self.entity
 
-    return AfdTaskResult(primitive_name="afd")
+    return AfdTaskResult(primitive_name=task.params.primitive_name)

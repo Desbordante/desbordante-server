@@ -21,11 +21,11 @@ OneOfTaskParams = Annotated[
 
 
 class FdTaskResult(BaseSchema):
-    primitive_name: Literal["fd"]
+    primitive_name: str
 
 
 class AfdTaskResult(BaseSchema):
-    primitive_name: Literal["afd"]
+    primitive_name: str
 
 
 OneOfTaskResult = FdTaskResult | AfdTaskResult | TaskErrorSchema
