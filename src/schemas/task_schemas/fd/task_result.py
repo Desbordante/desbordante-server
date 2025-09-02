@@ -1,15 +1,17 @@
 from typing import Literal
 
 from src.schemas.base_schemas import BaseSchema
-from src.schemas.task_schemas.types import PrimitiveName
 
 
 class FdSchema(BaseSchema):
     lhs_indices: list[int]
+    lhs_names: list[str]
     rhs_index: int
+    rhs_name: str
 
 
-class FdTaskResult(BaseSchema):
-    primitive_name: Literal[PrimitiveName.FD]
-    result: list[FdSchema]
-    total_count: int
+class FdTaskResultFiltersSchema(BaseSchema):
+    fd_test_filter: bool | None = None
+
+
+FdTaskResultOrderingField = Literal["lhs_indices", "lhs_names", "rhs_index", "rhs_name"]

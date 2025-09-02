@@ -16,8 +16,7 @@ from src.domain.task.primitives.base_primitive import BasePrimitive
 from src.schemas.dataset_schemas import DatasetType, TabularDownloadedDatasetSchema
 from src.schemas.task_schemas.fd.algo_name import FdAlgoName
 from src.schemas.task_schemas.fd.task_params import FdTaskParams
-from src.schemas.task_schemas.fd.task_result import FdSchema, FdTaskResult
-from src.schemas.task_schemas.types import PrimitiveName
+from src.schemas.task_schemas.fd.task_result import FdSchema
 
 
 class FdPrimitive(
@@ -25,7 +24,7 @@ class FdPrimitive(
         desbordante.fd.FdAlgorithm,
         FdAlgoName,
         FdTaskParams[TabularDownloadedDatasetSchema],
-        FdTaskResult,
+        FdSchema,
     ]
 ):
     _algo_map = {
@@ -47,6 +46,7 @@ class FdPrimitive(
 
     def execute(self, params: FdTaskParams[TabularDownloadedDatasetSchema]):
         dataset = params.datasets.table
+        columns = dataset.info.column_names
 
         self._algo.load_data(table=dataset.df)  # type: ignore
 
@@ -56,11 +56,12 @@ class FdPrimitive(
 
         fds = self._algo.get_fds()  # type: ignore
 
-        return FdTaskResult(
-            primitive_name=PrimitiveName.FD,
-            result=[
-                FdSchema(lhs_indices=fd.lhs_indices, rhs_index=fd.rhs_index)
-                for fd in fds
-            ],
-            total_count=len(fds),
-        )
+        return [
+            FdSchema(
+                lhs_indices=fd.lhs_indices,
+                lhs_names=[columns[index] for index in fd.lhs_indices],
+                rhs_index=fd.rhs_index,
+                rhs_name=columns[fd.rhs_index],
+            )
+            for fd in fds
+        ]

@@ -25,22 +25,11 @@ class BaseParams(Protocol):
     def datasets(self) -> BaseSchema: ...
 
 
-class BaseTaskResult(Protocol):
-    @property
-    def primitive_name(self) -> StrEnum: ...
-
-    @property
-    def result(self) -> list[Any]: ...
-
-    @property
-    def total_count(self) -> int: ...
-
-
 class BasePrimitive[
     A: desbordante.Algorithm,
     N: StrEnum,
     P: BaseParams,
-    R: BaseTaskResult,
+    R: BaseSchema,
 ](ABC):
     _algo: A
     _algo_map: Mapping[N, type[A]]
@@ -60,4 +49,4 @@ class BasePrimitive[
         raise ValueError(f"Algorithm {algo_name} not found")
 
     @abstractmethod
-    def execute(self, params: P) -> R: ...
+    def execute(self, params: P) -> list[R]: ...

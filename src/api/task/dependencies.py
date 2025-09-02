@@ -8,7 +8,10 @@ from src.api.dependencies import (
     TaskCrudDep,
     TaskResultCrudDep,
 )
-from src.schemas.task_schemas.base_schemas import TaskQueryParamsSchema
+from src.schemas.task_schemas.base_schemas import (
+    TaskQueryParamsSchema,
+    TaskResultQueryParamsSchema,
+)
 from src.usecases.task.create_task import CreateTaskUseCase
 from src.usecases.task.get_task import GetTaskUseCase
 from src.usecases.task.get_task_result import GetTaskResultUseCase
@@ -60,4 +63,9 @@ GetTaskResultUseCaseDep = Annotated[
 TaskQueryParamsDep = Annotated[
     TaskQueryParamsSchema,
     Depends(TaskQueryParamsSchema),
+]
+
+TaskResultQueryParamsDep = Annotated[
+    TaskResultQueryParamsSchema,
+    Depends(TaskResultQueryParamsSchema),
 ]

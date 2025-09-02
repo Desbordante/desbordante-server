@@ -12,9 +12,17 @@ from src.schemas.base_schemas import (
 )
 from src.schemas.dataset_schemas import DatasetSchema
 from src.schemas.task_schemas.afd.task_params import AFdTaskParams
-from src.schemas.task_schemas.afd.task_result import AfdTaskResult
+from src.schemas.task_schemas.afd.task_result import (
+    AfdSchema,
+    AfdTaskResultFiltersSchema,
+    AfdTaskResultOrderingField,
+)
 from src.schemas.task_schemas.fd.task_params import FdTaskParams
-from src.schemas.task_schemas.fd.task_result import FdTaskResult
+from src.schemas.task_schemas.fd.task_result import (
+    FdSchema,
+    FdTaskResultFiltersSchema,
+    FdTaskResultOrderingField,
+)
 
 OneOfTaskParams = Annotated[
     Union[FdTaskParams, AFdTaskParams],
@@ -22,7 +30,7 @@ OneOfTaskParams = Annotated[
 ]
 
 
-OneOfTaskResult = FdTaskResult | AfdTaskResult | TaskErrorSchema
+OneOfTaskResult = FdSchema | AfdSchema
 
 
 class TaskSchema(BaseSchema):
@@ -52,4 +60,17 @@ TaskQueryParamsSchema = QueryParamsSchema[
 class TaskResultSchema(BaseSchema):
     task: TaskSchema
 
-    result: OneOfTaskResult
+    result: list[OneOfTaskResult] | TaskErrorSchema
+
+
+class TaskResultFiltersSchema(AfdTaskResultFiltersSchema, FdTaskResultFiltersSchema):
+    pass
+
+
+TaskResultQueryParamsSchema = QueryParamsSchema[
+    TaskResultFiltersSchema,
+    Literal[
+        AfdTaskResultOrderingField,
+        FdTaskResultOrderingField,
+    ],
+]
