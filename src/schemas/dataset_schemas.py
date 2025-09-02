@@ -1,10 +1,13 @@
 import json
+from dataclasses import dataclass
 from datetime import datetime
 from enum import StrEnum, auto
 from typing import Annotated, Any, BinaryIO, Literal, Protocol
 from uuid import UUID
 
-from pydantic import Field, model_validator
+import networkx as nx
+import pandas as pd
+from pydantic import ConfigDict, Field, model_validator
 
 from src.schemas.base_schemas import (
     BaseSchema,
@@ -156,22 +159,23 @@ class DatasetsStatsSchema(BaseSchema):
 
 
 class TabularDownloadedDatasetSchema(BaseSchema):
-    id: UUID
-    data: bytes
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    df: pd.DataFrame
     params: TabularDatasetParams
     info: TabularDatasetInfo
 
 
+@dataclass
 class TransactionalDownloadedDatasetSchema(BaseSchema):
-    id: UUID
-    data: bytes
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    df: pd.DataFrame
     params: TransactionalDatasetParams
     info: TransactionalDatasetInfo
 
 
 class GraphDownloadedDatasetSchema(BaseSchema):
-    id: UUID
-    data: bytes
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    graph: nx.Graph
     params: GraphDatasetParams
     info: GraphDatasetInfo
 

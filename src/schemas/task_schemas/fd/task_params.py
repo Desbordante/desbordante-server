@@ -10,7 +10,7 @@ class FdTaskDatasetsConfig[T](BaseSchema):
     table: T
 
 
-class FdTaskParams(BaseSchema):
+class FdTaskParams[T = UUID](BaseSchema):
     primitive_name: Literal[PrimitiveName.FD]
     config: OneOfFdAlgoConfig
-    datasets: FdTaskDatasetsConfig[UUID]
+    datasets: FdTaskDatasetsConfig[T]

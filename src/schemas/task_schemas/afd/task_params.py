@@ -10,7 +10,7 @@ class AFdTaskDatasetsConfig[T](BaseSchema):
     table: T
 
 
-class AFdTaskParams(BaseSchema):
+class AFdTaskParams[T = UUID](BaseSchema):
     primitive_name: Literal[PrimitiveName.AFD]
     config: OneOfAfdAlgoConfig
-    datasets: AFdTaskDatasetsConfig[UUID]
+    datasets: AFdTaskDatasetsConfig[T]

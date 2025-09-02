@@ -1,9 +1,15 @@
+from typing import Literal
+
 from src.schemas.base_schemas import BaseSchema
+from src.schemas.task_schemas.types import PrimitiveName
 
 
-class FdModel(BaseSchema):
-    lhs: list[str]
-    rhs: list[str]
+class FdSchema(BaseSchema):
+    lhs_indices: list[int]
+    rhs_index: int
 
 
-FdTaskResult = list[FdModel]
+class FdTaskResult(BaseSchema):
+    primitive_name: Literal[PrimitiveName.FD]
+    result: list[FdSchema]
+    total_count: int

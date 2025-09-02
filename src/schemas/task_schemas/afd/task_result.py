@@ -1,4 +1,7 @@
+from typing import Literal
+
 from src.schemas.base_schemas import BaseSchema
+from src.schemas.task_schemas.types import PrimitiveName
 
 
 class AfdModel(BaseSchema):
@@ -6,4 +9,7 @@ class AfdModel(BaseSchema):
     rhs: list[str]
 
 
-AfdTaskResult = list[AfdModel]
+class AfdTaskResult(BaseSchema):
+    primitive_name: Literal[PrimitiveName.AFD]
+    result: list[AfdModel]
+    total_count: int
