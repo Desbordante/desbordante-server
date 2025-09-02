@@ -8,6 +8,7 @@ from src.db.annotations import str_non_nullable, uuid_pk
 from src.models.base_models import BaseModel
 from src.models.links import TaskDatasetLink
 from src.models.user_models import UserModel
+from src.schemas.base_schemas import TaskErrorSchema
 from src.schemas.dataset_schemas import (
     DatasetType,
     OneOfDatasetInfo,
@@ -28,7 +29,9 @@ class DatasetModel(BaseModel):
     params: Mapped[OneOfDatasetParams] = mapped_column(JSONB)
 
     status: Mapped[TaskStatus] = mapped_column(default=TaskStatus.Pending)
-    info: Mapped[OneOfDatasetInfo | None] = mapped_column(JSONB, default=None)
+    info: Mapped[OneOfDatasetInfo | TaskErrorSchema | None] = mapped_column(
+        JSONB, default=None
+    )
 
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     owner: Mapped["UserModel"] = relationship(back_populates="datasets")

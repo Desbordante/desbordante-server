@@ -12,20 +12,14 @@ from src.schemas.base_schemas import (
 )
 from src.schemas.dataset_schemas import DatasetSchema
 from src.schemas.task_schemas.afd.task_params import AFdTaskParams
+from src.schemas.task_schemas.afd.task_result import AfdTaskResult
 from src.schemas.task_schemas.fd.task_params import FdTaskParams
+from src.schemas.task_schemas.fd.task_result import FdTaskResult
 
 OneOfTaskParams = Annotated[
     Union[FdTaskParams, AFdTaskParams],
     Field(discriminator="primitive_name"),
 ]
-
-
-class FdTaskResult(BaseSchema):
-    primitive_name: str
-
-
-class AfdTaskResult(BaseSchema):
-    primitive_name: str
 
 
 OneOfTaskResult = FdTaskResult | AfdTaskResult | TaskErrorSchema

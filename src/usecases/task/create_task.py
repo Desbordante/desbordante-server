@@ -2,6 +2,7 @@ import logging
 from typing import Protocol
 from uuid import UUID
 
+from src.domain.task.primitives.utils import get_primitive_class_by_name
 from src.domain.task.tasks import profile_task
 from src.exceptions import BadRequestException
 from src.models.dataset_models import DatasetModel
@@ -41,10 +42,12 @@ class CreateTaskUseCase:
     async def __call__(self, *, params: OneOfTaskParams) -> TaskModel:
         dataset_ids = list(params.datasets.model_dump().values())
 
+        primitive_class = get_primitive_class_by_name(params.primitive_name)
+
         datasets = await self.dataset_crud.get_by_ids(
             ids=dataset_ids,
             owner_id=self.user.id,
-            type=DatasetType.Tabular,  # TODO: add other types
+            type=primitive_class.allowed_dataset_type,
             status=TaskStatus.Success,
         )
 

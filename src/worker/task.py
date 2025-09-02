@@ -10,8 +10,6 @@ from src.db.session import scoped_session
 from src.models.base_models import BaseModel
 from src.schemas.base_schemas import TaskErrorSchema, TaskStatus
 
-loop = asyncio.get_event_loop()
-
 
 class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type: ignore
     """
@@ -76,6 +74,7 @@ class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type:
         return TaskErrorSchema(error=str(exc))
 
     def _update_object(self, id: IdType, **kwargs: Any) -> ModelType:
+        loop = asyncio.get_event_loop()
         return loop.run_until_complete(self._update_object_async(id, **kwargs))
 
     async def _update_object_async(self, id: IdType, **kwargs: Any) -> ModelType:

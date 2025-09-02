@@ -119,9 +119,7 @@ class GraphDatasetInfo(BaseSchema):
     is_directed: bool
 
 
-OneOfDatasetInfo = (
-    TabularDatasetInfo | TransactionalDatasetInfo | GraphDatasetInfo | TaskErrorSchema
-)
+OneOfDatasetInfo = TabularDatasetInfo | TransactionalDatasetInfo | GraphDatasetInfo
 
 
 class DatasetSchema(BaseSchema):
@@ -131,7 +129,7 @@ class DatasetSchema(BaseSchema):
     size: int
     params: OneOfDatasetParams
 
-    info: OneOfDatasetInfo | None
+    info: OneOfDatasetInfo | TaskErrorSchema | None
     status: TaskStatus
 
     created_at: datetime
@@ -155,3 +153,31 @@ DatasetQueryParamsSchema = QueryParamsSchema[
 class DatasetsStatsSchema(BaseSchema):
     total_count: int
     total_size: int
+
+
+class TabularDownloadedDatasetSchema(BaseSchema):
+    id: UUID
+    data: bytes
+    params: TabularDatasetParams
+    info: TabularDatasetInfo
+
+
+class TransactionalDownloadedDatasetSchema(BaseSchema):
+    id: UUID
+    data: bytes
+    params: TransactionalDatasetParams
+    info: TransactionalDatasetInfo
+
+
+class GraphDownloadedDatasetSchema(BaseSchema):
+    id: UUID
+    data: bytes
+    params: GraphDatasetParams
+    info: GraphDatasetInfo
+
+
+OneOfDownloadedDatasetSchema = (
+    TabularDownloadedDatasetSchema
+    | TransactionalDownloadedDatasetSchema
+    | GraphDownloadedDatasetSchema
+)
