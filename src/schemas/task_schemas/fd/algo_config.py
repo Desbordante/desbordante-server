@@ -22,7 +22,7 @@ SEED_DESC = "RNG seed"
 
 
 class BaseFdConfig(BaseSchema):
-    max_lhs: int = Field(default=0, ge=0, description=MAX_LHS_DESC)
+    max_lhs: int = Field(default=1, ge=0, description=MAX_LHS_DESC)
 
 
 class AidConfig(BaseFdConfig):

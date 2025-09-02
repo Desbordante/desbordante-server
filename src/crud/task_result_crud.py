@@ -2,12 +2,9 @@ from typing import TypedDict, Unpack
 from uuid import UUID
 
 from src.crud.base_crud import BaseCrud
-from src.models.task_models import TaskResultModel
+from src.models.task_result_models import TaskResultModel
 from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema
-from src.schemas.task_schemas.base_schemas import (
-    OneOfTaskResult,
-    TaskResultQueryParamsSchema,
-)
+from src.schemas.task_schemas.base_schemas import TaskResultQueryParamsSchema
 
 
 class TaskResultFindProps(TypedDict, total=False):
@@ -25,18 +22,17 @@ class TaskResultCrud(BaseCrud[TaskResultModel, UUID]):
     async def get_by(self, **kwargs: Unpack[TaskResultFindProps]) -> TaskResultModel:
         return await super().get_by(**kwargs)
 
-    async def get_results(
+    async def get_many(
         self,
         *,
         pagination: PaginationParamsSchema,
         query_params: TaskResultQueryParamsSchema,
         **kwargs: Unpack[TaskResultFindProps],
-    ) -> PaginatedResult[OneOfTaskResult]:
-        return PaginatedResult(
-            items=[],
-            total_count=0,
-            limit=pagination.limit,
-            offset=pagination.offset,
+    ) -> PaginatedResult[TaskResultModel]:
+        return await super().get_many(
+            pagination=pagination,
+            query_params=query_params,
+            **kwargs,
         )
 
     async def update(

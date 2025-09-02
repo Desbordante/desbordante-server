@@ -27,11 +27,12 @@ class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type:
     crud_class: type[BaseCrud[ModelType, IdType]]
     status_field: str = "status"
     result_field: str = "result"
+    error_field: str = "info"
     entity: ModelType
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         id = args[0]
-        self.entity = self._update_object(
+        self.entity = self._update_object_sync(
             id, **{self.status_field: TaskStatus.Processing}
         )
         return self.run(*args, **kwargs)  # type: ignore
@@ -41,7 +42,7 @@ class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type:
     ) -> None:
         id = args[0]
 
-        self._update_object(
+        self._update_object_sync(
             id,
             **{
                 self.status_field: TaskStatus.Success,
@@ -59,11 +60,11 @@ class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type:
     ) -> None:
         id = args[0]
 
-        self._update_object(
+        self._update_object_sync(
             id,
             **{
                 self.status_field: TaskStatus.Failed,
-                self.result_field: self.create_error_object(id, exc),
+                self.error_field: self.create_error_object(id, exc),
             },
         )
 
@@ -73,7 +74,7 @@ class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type:
     def create_error_object(self, id: IdType, exc: Exception) -> Any:
         return TaskErrorSchema(error=str(exc))
 
-    def _update_object(self, id: IdType, **kwargs: Any) -> ModelType:
+    def _update_object_sync(self, id: IdType, **kwargs: Any) -> ModelType:
         loop = asyncio.get_event_loop()
         return loop.run_until_complete(self._update_object_async(id, **kwargs))
 

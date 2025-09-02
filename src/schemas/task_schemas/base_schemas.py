@@ -7,7 +7,6 @@ from pydantic import Field
 from src.schemas.base_schemas import (
     BaseSchema,
     QueryParamsSchema,
-    TaskErrorSchema,
     TaskStatus,
 )
 from src.schemas.dataset_schemas import DatasetSchema
@@ -55,12 +54,6 @@ class TaskFiltersSchema(BaseSchema):
 TaskQueryParamsSchema = QueryParamsSchema[
     TaskFiltersSchema, Literal["status", "created_at"]
 ]
-
-
-class TaskResultSchema(BaseSchema):
-    task: TaskSchema
-
-    result: list[OneOfTaskResult] | TaskErrorSchema
 
 
 class TaskResultFiltersSchema(AfdTaskResultFiltersSchema, FdTaskResultFiltersSchema):

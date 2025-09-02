@@ -6,6 +6,7 @@ from sqlalchemy import ColumnExpressionArgument
 from src.crud.base_crud import BaseCrud
 from src.models.dataset_models import DatasetModel
 from src.models.task_models import TaskModel
+from src.models.task_result_models import TaskResultModel
 from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema
 from src.schemas.task_schemas.base_schemas import TaskQueryParamsSchema
 
@@ -16,7 +17,7 @@ class TaskFindProps(TypedDict, total=False):
 
 
 class TaskUpdateProps(TypedDict, total=False):
-    pass
+    results: list[TaskResultModel]
 
 
 class TaskCrud(BaseCrud[TaskModel, UUID]):

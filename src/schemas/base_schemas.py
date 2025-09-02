@@ -110,7 +110,6 @@ class PydanticType(TypeDecorator[Any]):
 
     cache_ok = True
     impl = JSONB
-    alembic_type = "postgresql.JSONB()"
 
     def __init__(self, model_type: Any) -> None:
         super().__init__()
@@ -129,10 +128,6 @@ class PydanticType(TypeDecorator[Any]):
         if value is not None:
             return self._adapter.validate_python(value)
         return None
-
-    def __repr__(self) -> str:
-        # Used by alembic
-        return f"PydanticType({self.pydantic_type.__name__})"
 
 
 class PaginationParamsSchema(BaseSchema):
