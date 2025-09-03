@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Any, TypedDict, Unpack
+from typing import Any, Sequence, TypedDict, Unpack
 from uuid import UUID
 
 from sqlalchemy import (
@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.exceptions import ResourceAlreadyExistsException, ResourceNotFoundException
 from src.models.base_models import BaseModel
 from src.schemas.base_schemas import (
+    FiltersParamsSchema,
     OrderingDirection,
     PaginatedResult,
     PaginationParamsSchema,
@@ -62,8 +63,8 @@ class BaseCrud[
             )
 
     def _make_filters(
-        self, query_params: Any
-    ) -> list[ColumnExpressionArgument[bool] | None]:
+        self, filters_params: FiltersParamsSchema
+    ) -> Sequence[ColumnExpressionArgument[bool] | None]:
         return []
 
     def _get_ordering_field(self, order_by: str) -> ColumnElement[ModelType]:
@@ -82,7 +83,9 @@ class BaseCrud[
         ).filter_by(**kwargs)
 
         filters = [
-            filter for filter in self._make_filters(query_params) if filter is not None
+            filter
+            for filter in self._make_filters(query_params.filters)
+            if filter is not None
         ]
         query = query.where(*filters)
 

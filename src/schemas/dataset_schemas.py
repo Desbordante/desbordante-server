@@ -11,6 +11,7 @@ from pydantic import ConfigDict, Field, model_validator
 
 from src.schemas.base_schemas import (
     BaseSchema,
+    FiltersParamsSchema,
     QueryParamsSchema,
     TaskErrorSchema,
     TaskStatus,
@@ -139,7 +140,7 @@ class DatasetSchema(BaseSchema):
     updated_at: datetime
 
 
-class DatasetFiltersSchema(BaseSchema):
+class DatasetFiltersSchema(FiltersParamsSchema):
     type: DatasetType | None = None
     status: TaskStatus | None = None
     min_size: int | None = None

@@ -7,6 +7,7 @@ from pydantic import Field
 
 from src.schemas.base_schemas import (
     BaseSchema,
+    FiltersParamsSchema,
     QueryParamsSchema,
     TaskStatus,
 )
@@ -46,7 +47,7 @@ class TaskSchema(BaseSchema):
     updated_at: datetime
 
 
-class TaskFiltersSchema(BaseSchema):
+class TaskFiltersSchema(FiltersParamsSchema):
     status: TaskStatus | None = None
     created_after: datetime | None = None
     created_before: datetime | None = None

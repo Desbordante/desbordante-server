@@ -145,8 +145,11 @@ class OrderingParamsSchema[T: str](BaseSchema):
     direction: OrderingDirection = OrderingDirection.Desc
 
 
-class QueryParamsSchema[T, U: str](BaseSchema):
+class FiltersParamsSchema(BaseSchema):
     search: str | None = None
+
+
+class QueryParamsSchema[T: FiltersParamsSchema, U: str](BaseSchema):
     filters: Annotated[T, Depends()]
     ordering: Annotated[OrderingParamsSchema[U], Depends()]
 

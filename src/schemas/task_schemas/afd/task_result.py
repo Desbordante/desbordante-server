@@ -1,6 +1,6 @@
 from enum import StrEnum
 
-from src.schemas.base_schemas import BaseSchema
+from src.schemas.base_schemas import BaseSchema, FiltersParamsSchema
 
 
 class AfdSchema(BaseSchema):
@@ -10,8 +10,8 @@ class AfdSchema(BaseSchema):
     rhs_name: str
 
 
-class AfdTaskResultFiltersSchema(BaseSchema):
-    afd_test_filter: bool | None = None
+class AfdTaskResultFiltersSchema(FiltersParamsSchema):
+    pass
 
 
 class AfdTaskResultOrderingField(StrEnum):

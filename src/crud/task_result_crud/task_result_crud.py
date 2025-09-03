@@ -1,14 +1,18 @@
-from typing import Any, TypedDict, Unpack
+from typing import Sequence, TypedDict, Unpack
 from uuid import UUID
 
-from sqlalchemy import ColumnElement
+from sqlalchemy import ColumnElement, ColumnExpressionArgument
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.crud.base_crud import BaseCrud
 from src.crud.task_result_crud.query_helpers.base_query_helper import BaseQueryHelper
 from src.crud.task_result_crud.utils import get_query_helper_by_primitive_name
 from src.models.task_result_models import TaskResultModel
-from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema
+from src.schemas.base_schemas import (
+    FiltersParamsSchema,
+    PaginatedResult,
+    PaginationParamsSchema,
+)
 from src.schemas.task_schemas.base_schemas import (
     TaskResultQueryParamsSchema,
 )
@@ -26,7 +30,7 @@ class TaskResultUpdateProps(TypedDict, total=False):
 
 class TaskResultCrud(BaseCrud[TaskResultModel, UUID]):
     model = TaskResultModel
-    _query_helper: BaseQueryHelper[Any]
+    _query_helper: BaseQueryHelper
 
     def __init__(self, *, session: AsyncSession, primitive_name: PrimitiveName):
         self._query_helper = get_query_helper_by_primitive_name(primitive_name)
@@ -38,6 +42,11 @@ class TaskResultCrud(BaseCrud[TaskResultModel, UUID]):
 
     def _get_ordering_field(self, order_by: str) -> ColumnElement[TaskResultModel]:
         return self._query_helper.get_ordering_field(order_by)
+
+    def _make_filters(
+        self, filters_params: FiltersParamsSchema
+    ) -> Sequence[ColumnExpressionArgument[bool] | None]:
+        return self._query_helper.make_filters(filters_params)
 
     async def get_many(
         self,
