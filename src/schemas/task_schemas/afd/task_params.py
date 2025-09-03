@@ -6,11 +6,11 @@ from src.schemas.task_schemas.afd.algo_config import OneOfAfdAlgoConfig
 from src.schemas.task_schemas.types import PrimitiveName
 
 
-class AFdTaskDatasetsConfig[T](BaseSchema):
+class AfdTaskDatasetsConfig[T](BaseSchema):
     table: T
 
 
-class AFdTaskParams[T = UUID](BaseSchema):
+class AfdTaskParams[T = UUID](BaseSchema):
     primitive_name: Literal[PrimitiveName.AFD]
     config: OneOfAfdAlgoConfig
-    datasets: AFdTaskDatasetsConfig[T]
+    datasets: AfdTaskDatasetsConfig[T]

@@ -5,6 +5,7 @@ import pandas as pd
 from networkx.drawing import nx_pydot
 
 from src.domain.dataset.storage import storage
+from src.domain.task.constants import primitives_map
 from src.models.dataset_models import DatasetModel
 from src.schemas.dataset_schemas import (
     DatasetType,
@@ -19,6 +20,13 @@ from src.schemas.dataset_schemas import (
     TransactionalDatasetParams,
     TransactionalDownloadedDatasetSchema,
 )
+from src.schemas.task_schemas.types import PrimitiveName
+
+
+def get_primitive_class_by_name(primitive_name: PrimitiveName):
+    if primitive_class := primitives_map.get(primitive_name):
+        return primitive_class
+    raise ValueError(f"Primitive {primitive_name} not found")
 
 
 def download_dataset(dataset: DatasetModel) -> OneOfDownloadedDatasetSchema:

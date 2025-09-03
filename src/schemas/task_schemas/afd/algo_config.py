@@ -17,7 +17,7 @@ SEED_DESC = "RNG seed"
 
 
 class BaseAfdConfig(BaseSchema):
-    max_lhs: int = Field(default=0, ge=0, description=MAX_LHS_DESC)
+    max_lhs: int = Field(default=1, ge=0, description=MAX_LHS_DESC)
     error: float = Field(default=0, ge=0, le=1, description=ERROR_DESC)
     is_null_equal_null: bool = Field(default=False, description=NULL_EQUAL_DESC)
 

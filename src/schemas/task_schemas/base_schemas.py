@@ -12,7 +12,7 @@ from src.schemas.base_schemas import (
     TaskStatus,
 )
 from src.schemas.dataset_schemas import DatasetSchema
-from src.schemas.task_schemas.afd.task_params import AFdTaskParams
+from src.schemas.task_schemas.afd.task_params import AfdTaskParams
 from src.schemas.task_schemas.afd.task_result import (
     AfdSchema,
     AfdTaskResultFiltersSchema,
@@ -26,7 +26,7 @@ from src.schemas.task_schemas.fd.task_result import (
 )
 
 OneOfTaskParams = Annotated[
-    Union[FdTaskParams, AFdTaskParams],
+    Union[FdTaskParams, AfdTaskParams],
     Field(discriminator="primitive_name"),
 ]
 

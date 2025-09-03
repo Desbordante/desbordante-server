@@ -2,8 +2,7 @@ from typing import Any, Sequence
 from uuid import UUID
 
 from src.crud.task_crud import TaskCrud
-from src.domain.task.primitives.utils import get_primitive_class_by_name
-from src.domain.task.utils import download_dataset
+from src.domain.task.utils import download_dataset, get_primitive_class_by_name
 from src.models.task_models import TaskModel
 from src.models.task_result_models import TaskResultModel
 from src.schemas.task_schemas.base_schemas import OneOfTaskResult

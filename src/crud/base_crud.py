@@ -16,7 +16,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.exceptions import ResourceAlreadyExistsException, ResourceNotFoundException
 from src.models.base_models import BaseModel
 from src.schemas.base_schemas import (
-    FiltersParamsSchema,
     OrderingDirection,
     PaginatedResult,
     PaginationParamsSchema,
@@ -63,7 +62,7 @@ class BaseCrud[
             )
 
     def _make_filters(
-        self, filters_params: FiltersParamsSchema
+        self, filters_params: Any
     ) -> Sequence[ColumnExpressionArgument[bool] | None]:
         return []
 

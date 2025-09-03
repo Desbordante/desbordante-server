@@ -2,8 +2,8 @@ import logging
 from typing import Protocol
 from uuid import UUID
 
-from src.domain.task.primitives.utils import get_primitive_class_by_name
 from src.domain.task.tasks import profile_task
+from src.domain.task.utils import get_primitive_class_by_name
 from src.exceptions import BadRequestException
 from src.models.dataset_models import DatasetModel
 from src.models.task_models import TaskModel

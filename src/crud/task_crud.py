@@ -1,4 +1,4 @@
-from typing import TypedDict, Unpack
+from typing import Sequence, TypedDict, Unpack
 from uuid import UUID
 
 from sqlalchemy import ColumnExpressionArgument
@@ -8,7 +8,10 @@ from src.models.dataset_models import DatasetModel
 from src.models.task_models import TaskModel
 from src.models.task_result_models import TaskResultModel
 from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema
-from src.schemas.task_schemas.base_schemas import TaskQueryParamsSchema
+from src.schemas.task_schemas.base_schemas import (
+    TaskFiltersSchema,
+    TaskQueryParamsSchema,
+)
 
 
 class TaskFindProps(TypedDict, total=False):
@@ -32,20 +35,20 @@ class TaskCrud(BaseCrud[TaskModel, UUID]):
         return await super().update(entity=entity, **kwargs)
 
     def _make_filters(
-        self, query_params: TaskQueryParamsSchema
-    ) -> list[ColumnExpressionArgument[bool] | None]:
+        self, filters_params: TaskFiltersSchema
+    ) -> Sequence[ColumnExpressionArgument[bool] | None]:
         return [
-            self.model.datasets.any(DatasetModel.name.icontains(query_params.search))
-            if query_params.search
+            self.model.datasets.any(DatasetModel.name.icontains(filters_params.search))
+            if filters_params.search
             else None,
-            self.model.status == query_params.filters.status
-            if query_params.filters.status
+            self.model.status == filters_params.status
+            if filters_params.status
             else None,
-            self.model.created_at >= query_params.filters.created_after
-            if query_params.filters.created_after
+            self.model.created_at >= filters_params.created_after
+            if filters_params.created_after
             else None,
-            self.model.created_at <= query_params.filters.created_before
-            if query_params.filters.created_before
+            self.model.created_at <= filters_params.created_before
+            if filters_params.created_before
             else None,
         ]
 
