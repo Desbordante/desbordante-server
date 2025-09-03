@@ -2,7 +2,6 @@ from typing import Protocol
 from uuid import UUID
 
 from src.models.task_result_models import TaskResultModel
-from src.models.user_models import UserModel
 from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema
 from src.schemas.task_schemas.base_schemas import TaskResultQueryParamsSchema
 
@@ -23,10 +22,8 @@ class GetTaskResultsUseCase:
         self,
         *,
         task_result_crud: TaskResultCrud,
-        user: UserModel,
     ):
         self.task_result_crud = task_result_crud
-        self.user = user
 
     async def __call__(
         self,

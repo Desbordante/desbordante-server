@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import StrEnum
 from typing import Annotated, Literal, Union
 from uuid import UUID
 
@@ -60,10 +61,19 @@ class TaskResultFiltersSchema(AfdTaskResultFiltersSchema, FdTaskResultFiltersSch
     pass
 
 
+TaskResultOrderingField = StrEnum(
+    "TaskResultOrderingField",
+    {
+        **{item.name: item.value for item in AfdTaskResultOrderingField},
+        **{item.name: item.value for item in FdTaskResultOrderingField},
+    },
+)
+
+
 TaskResultQueryParamsSchema = QueryParamsSchema[
     TaskResultFiltersSchema,
-    Literal[
-        AfdTaskResultOrderingField,
-        FdTaskResultOrderingField,
-    ],
+    TaskResultOrderingField,
 ]
+
+OneOfTaskResultFilter = AfdTaskResultFiltersSchema | FdTaskResultFiltersSchema
+OneOfTaskResultOrderingField = AfdTaskResultOrderingField | FdTaskResultOrderingField

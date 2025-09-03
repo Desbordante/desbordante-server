@@ -2,7 +2,15 @@ from abc import ABC
 from typing import Any, TypedDict, Unpack
 from uuid import UUID
 
-from sqlalchemy import ColumnExpressionArgument, asc, desc, exc, func, select
+from sqlalchemy import (
+    ColumnElement,
+    ColumnExpressionArgument,
+    asc,
+    desc,
+    exc,
+    func,
+    select,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.exceptions import ResourceAlreadyExistsException, ResourceNotFoundException
@@ -58,6 +66,9 @@ class BaseCrud[
     ) -> list[ColumnExpressionArgument[bool] | None]:
         return []
 
+    def _get_ordering_field(self, order_by: str) -> ColumnElement[ModelType]:
+        return getattr(self.model, order_by)
+
     async def get_many(
         self,
         *,
@@ -76,12 +87,12 @@ class BaseCrud[
         query = query.where(*filters)
 
         if query_params.ordering.order_by is not None:
-            order_field = getattr(self.model, query_params.ordering.order_by)
+            ordering_field = self._get_ordering_field(query_params.ordering.order_by)
 
             query = query.order_by(
-                asc(order_field)
+                asc(ordering_field)
                 if query_params.ordering.direction == OrderingDirection.Asc
-                else desc(order_field)
+                else desc(ordering_field)
             )
 
         query = query.limit(pagination.limit).offset(pagination.offset)

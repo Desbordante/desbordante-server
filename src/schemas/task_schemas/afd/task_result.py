@@ -1,4 +1,4 @@
-from typing import Literal
+from enum import StrEnum
 
 from src.schemas.base_schemas import BaseSchema
 
@@ -14,6 +14,8 @@ class AfdTaskResultFiltersSchema(BaseSchema):
     afd_test_filter: bool | None = None
 
 
-AfdTaskResultOrderingField = Literal[
-    "lhs_indices", "lhs_names", "rhs_index", "rhs_name"
-]
+class AfdTaskResultOrderingField(StrEnum):
+    LhsIndices = "lhs_indices"
+    LhsNames = "lhs_names"
+    RhsIndex = "rhs_index"
+    RhsName = "rhs_name"
