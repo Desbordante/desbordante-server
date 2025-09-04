@@ -11,6 +11,7 @@ from src.schemas.base_schemas import (
     BaseSchema,
     FiltersParamsSchema,
     OrderingParamsSchema,
+    PaginatedResponseSchema,
     QueryParamsSchema,
     TaskStatus,
 )
@@ -33,6 +34,7 @@ from src.schemas.task_schemas.fd.task_result import (
     FdTaskResultFiltersSchema,
     FdTaskResultOrderingField,
 )
+from src.schemas.task_schemas.types import PrimitiveName
 
 OneOfTaskParams = Annotated[
     Union[FdTaskParams, AfdTaskParams, AcTaskParams],
@@ -41,6 +43,22 @@ OneOfTaskParams = Annotated[
 
 
 OneOfTaskResult = FdSchema | AfdSchema | AcSchema
+
+
+class PaginatedTaskResponseSchema[T: BaseSchema, P: PrimitiveName](
+    PaginatedResponseSchema[T]
+):
+    primitive_name: P
+
+
+OneOfPaginatedTaskResponseSchema = Annotated[
+    Union[
+        PaginatedTaskResponseSchema[FdSchema, Literal[PrimitiveName.FD]],
+        PaginatedTaskResponseSchema[AfdSchema, Literal[PrimitiveName.AFD]],
+        PaginatedTaskResponseSchema[AcSchema, Literal[PrimitiveName.AC]],
+    ],
+    Field(discriminator="primitive_name"),
+]
 
 
 class TaskSchema(BaseSchema):
