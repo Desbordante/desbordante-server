@@ -1,17 +1,26 @@
 from datetime import datetime
 from enum import StrEnum
+from itertools import chain
 from typing import Annotated, Literal, Union
 from uuid import UUID
 
+from fastapi import Depends
 from pydantic import Field
 
 from src.schemas.base_schemas import (
     BaseSchema,
     FiltersParamsSchema,
+    OrderingParamsSchema,
     QueryParamsSchema,
     TaskStatus,
 )
 from src.schemas.dataset_schemas import DatasetSchema
+from src.schemas.task_schemas.ac.task_params import AcTaskParams
+from src.schemas.task_schemas.ac.task_result import (
+    AcSchema,
+    AcTaskResultFiltersSchema,
+    AcTaskResultOrderingField,
+)
 from src.schemas.task_schemas.afd.task_params import AfdTaskParams
 from src.schemas.task_schemas.afd.task_result import (
     AfdSchema,
@@ -26,12 +35,12 @@ from src.schemas.task_schemas.fd.task_result import (
 )
 
 OneOfTaskParams = Annotated[
-    Union[FdTaskParams, AfdTaskParams],
+    Union[FdTaskParams, AfdTaskParams, AcTaskParams],
     Field(discriminator="primitive_name"),
 ]
 
 
-OneOfTaskResult = FdSchema | AfdSchema
+OneOfTaskResult = FdSchema | AfdSchema | AcSchema
 
 
 class TaskSchema(BaseSchema):
@@ -58,23 +67,39 @@ TaskQueryParamsSchema = QueryParamsSchema[
 ]
 
 
-class TaskResultFiltersSchema(AfdTaskResultFiltersSchema, FdTaskResultFiltersSchema):
-    pass
+class TaskResultFiltersSchema(
+    AfdTaskResultFiltersSchema, FdTaskResultFiltersSchema, AcTaskResultFiltersSchema
+): ...
 
 
-TaskResultOrderingField = StrEnum(
-    "TaskResultOrderingField",
-    {
-        **{item.name: item.value for item in AfdTaskResultOrderingField},
-        **{item.name: item.value for item in FdTaskResultOrderingField},
-    },
-)
+class TaskResultOrderingField(StrEnum):
+    _ignore_ = "member cls"
+    cls = vars()  # type: ignore
+    for member in chain(
+        list(AfdTaskResultOrderingField),
+        list(FdTaskResultOrderingField),
+        list(AcTaskResultOrderingField),
+    ):
+        if member.name not in cls:
+            cls[member.name] = member.value
 
 
-TaskResultQueryParamsSchema = QueryParamsSchema[
-    TaskResultFiltersSchema,
-    TaskResultOrderingField,
+OneOfTaskResultFiltersSchema = Union[
+    Annotated[AfdTaskResultFiltersSchema, Depends()],
+    Annotated[FdTaskResultFiltersSchema, Depends()],
+    Annotated[AcTaskResultFiltersSchema, Depends()],
 ]
 
-OneOfTaskResultFilter = AfdTaskResultFiltersSchema | FdTaskResultFiltersSchema
-OneOfTaskResultOrderingField = AfdTaskResultOrderingField | FdTaskResultOrderingField
+
+class TaskResultQueryParamsSchema[T = OneOfTaskResultFiltersSchema](BaseSchema):
+    filters: T
+
+    ordering: Annotated[
+        OrderingParamsSchema[TaskResultOrderingField],
+        Depends(),
+    ]
+
+
+OneOfTaskResultOrderingField = Union[
+    AfdTaskResultOrderingField, FdTaskResultOrderingField, AcTaskResultOrderingField
+]

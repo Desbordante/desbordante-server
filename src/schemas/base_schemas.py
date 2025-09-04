@@ -146,7 +146,7 @@ class OrderingParamsSchema[T: str](BaseSchema):
 
 
 class FiltersParamsSchema(BaseSchema):
-    search: str | None = None
+    search: str | None = ""
 
 
 class QueryParamsSchema[T: FiltersParamsSchema, U: str](BaseSchema):

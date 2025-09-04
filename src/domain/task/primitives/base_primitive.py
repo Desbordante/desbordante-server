@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from enum import StrEnum
 from typing import Any, Mapping, Protocol
 
-import desbordante
+from desbordante import Algorithm
 from pydantic import TypeAdapter
 
 from src.schemas.base_schemas import BaseSchema
@@ -26,7 +26,7 @@ class BaseParams(Protocol):
 
 
 class BasePrimitive[
-    A: desbordante.Algorithm,
+    A: Algorithm,
     N: StrEnum,
     P: BaseParams,
     R: BaseSchema,

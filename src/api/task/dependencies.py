@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import Depends
+from fastapi import Depends, Request
 
 from src.api.dependencies import (
     AuthorizedUserDep,
@@ -12,9 +12,11 @@ from src.api.dependencies import (
 from src.crud.task_result_crud.task_result_crud import TaskResultCrud
 from src.models.task_models import TaskModel
 from src.schemas.task_schemas.base_schemas import (
+    OneOfTaskResultFiltersSchema,
     TaskQueryParamsSchema,
     TaskResultQueryParamsSchema,
 )
+from src.schemas.task_schemas.utils import get_filters_schema_by_primitive_name
 from src.usecases.task.create_task import CreateTaskUseCase
 from src.usecases.task.get_task import GetTaskUseCase
 from src.usecases.task.get_task_results import GetTaskResultsUseCase
@@ -84,7 +86,25 @@ TaskQueryParamsDep = Annotated[
     Depends(TaskQueryParamsSchema),
 ]
 
+
+def parse_task_result_filters(
+    request: Request,
+    task: TaskDep,
+    filters: OneOfTaskResultFiltersSchema | None = None,
+):
+    if filters:
+        return filters
+
+    query_params = dict(request.query_params)
+
+    return get_filters_schema_by_primitive_name(
+        task.params.primitive_name
+    ).model_validate(query_params)
+
+
 TaskResultQueryParamsDep = Annotated[
-    TaskResultQueryParamsSchema,
-    Depends(TaskResultQueryParamsSchema),
+    TaskResultQueryParamsSchema[
+        Annotated[OneOfTaskResultFiltersSchema, Depends(parse_task_result_filters)]
+    ],
+    Depends(),
 ]

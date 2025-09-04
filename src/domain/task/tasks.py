@@ -43,6 +43,6 @@ def profile_task(self: ProfileTaskTask, task_id: UUID) -> Sequence[OneOfTaskResu
         }
     )
 
-    primitive = primitive_class(algo_name=params.config.algo_name)
+    primitive = primitive_class(algo_name=params.config.algo_name)  # type: ignore
 
-    return primitive.execute(params=params)
+    return primitive.execute(params=params)  # type: ignore
