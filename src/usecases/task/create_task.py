@@ -51,7 +51,7 @@ class CreateTaskUseCase:
             status=TaskStatus.Success,
         )
 
-        if len(datasets) != len(dataset_ids):
+        if len(datasets) != len(set(dataset_ids)):
             raise BadRequestException(
                 "Some datasets were not found or have invalid type"
             )
