@@ -3,6 +3,7 @@ from src.domain.task.primitives.adc import AdcPrimitive
 from src.domain.task.primitives.afd import AfdPrimitive
 from src.domain.task.primitives.afd_verification import AfdVerificationPrimitive
 from src.domain.task.primitives.ar import ArPrimitive
+from src.domain.task.primitives.dd import DdPrimitive
 from src.domain.task.primitives.fd import FdPrimitive
 from src.schemas.task_schemas.types import PrimitiveName
 
@@ -13,4 +14,5 @@ primitives_map = {
     PrimitiveName.ADC: AdcPrimitive,
     PrimitiveName.AFD_VERIFICATION: AfdVerificationPrimitive,
     PrimitiveName.AR: ArPrimitive,
+    PrimitiveName.DD: DdPrimitive,
 }

@@ -33,13 +33,13 @@ class AfdPrimitive(
         dataset = params.datasets.table
         columns = dataset.info.column_names
 
-        self._algo.load_data(table=dataset.df)  # type: ignore
+        self._algo.load_data(table=dataset.df)
 
-        self._algo.execute(  # type: ignore
-            **params.config.model_dump(exclude_unset=True, exclude={"algo_name"})
-        )
+        options = self._get_algo_options(params)
 
-        fds = self._algo.get_fds()  # type: ignore
+        self._algo.execute(**options)
+
+        fds = self._algo.get_fds()
 
         return [
             AfdSchema(

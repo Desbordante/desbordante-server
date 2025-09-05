@@ -36,11 +36,11 @@ class ArPrimitive(
 
         self._algo.load_data(
             table=table, input_format=dataset.params.transactional_params.itemset_format
-        )  # type: ignore
-
-        self._algo.execute(  # type: ignore
-            **params.config.model_dump(exclude_unset=True, exclude={"algo_name"})
         )
+
+        options = self._get_algo_options(params)
+
+        self._algo.execute(**options)
 
         return [
             ArSchema(

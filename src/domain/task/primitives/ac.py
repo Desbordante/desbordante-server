@@ -31,14 +31,14 @@ class AcPrimitive(
         column_names = dataset.info.column_names
         table = dataset.df
 
-        self._algo.load_data(table=table)  # type: ignore
+        self._algo.load_data(table=table)
 
-        self._algo.execute(  # type: ignore
-            **params.config.model_dump(exclude_unset=True, exclude={"algo_name"})
-        )
+        options = self._get_algo_options(params)
 
-        ac_exceptions = self._algo.get_ac_exceptions()  # type: ignore
-        ac_ranges = self._algo.get_ac_ranges()  # type: ignore
+        self._algo.execute(**options)
+
+        ac_exceptions = self._algo.get_ac_exceptions()
+        ac_ranges = self._algo.get_ac_ranges()
         new_exceptions = self._extract_exceptions(ac_exceptions)
 
         return [

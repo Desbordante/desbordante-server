@@ -30,11 +30,11 @@ class AdcPrimitive(
         dataset = params.datasets.table
         table = dataset.df
 
-        self._algo.load_data(table=table)  # type: ignore
+        self._algo.load_data(table=table)
 
-        self._algo.execute(  # type: ignore
-            **params.config.model_dump(exclude_unset=True, exclude={"algo_name"})
-        )
+        options = self._get_algo_options(params)
+
+        self._algo.execute(**options)
 
         return [
             AdcSchema(cojuncts=self._split_result(str(dc)))

@@ -5,6 +5,7 @@ from src.schemas.task_schemas.afd_verification.task_result import (
     AfdVerificationTaskResultFiltersSchema,
 )
 from src.schemas.task_schemas.ar.task_result import ArTaskResultFiltersSchema
+from src.schemas.task_schemas.dd.task_result import DdTaskResultFiltersSchema
 from src.schemas.task_schemas.fd.task_result import FdTaskResultFiltersSchema
 from src.schemas.task_schemas.types import PrimitiveName
 
@@ -15,4 +16,5 @@ filters_schemas_map = {
     PrimitiveName.ADC: AdcTaskResultFiltersSchema,
     PrimitiveName.AFD_VERIFICATION: AfdVerificationTaskResultFiltersSchema,
     PrimitiveName.AR: ArTaskResultFiltersSchema,
+    PrimitiveName.DD: DdTaskResultFiltersSchema,
 }

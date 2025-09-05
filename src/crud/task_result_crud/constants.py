@@ -5,6 +5,7 @@ from src.crud.task_result_crud.query_helpers.afd_verification_query_helper impor
     AfdVerificationQueryHelper,
 )
 from src.crud.task_result_crud.query_helpers.ar_query_helper import ArQueryHelper
+from src.crud.task_result_crud.query_helpers.dd_query_helper import DdQueryHelper
 from src.crud.task_result_crud.query_helpers.fd_query_helper import FdQueryHelper
 from src.schemas.task_schemas.types import PrimitiveName
 
@@ -15,4 +16,5 @@ query_helpers_map = {
     PrimitiveName.ADC: AdcQueryHelper,
     PrimitiveName.AFD_VERIFICATION: AfdVerificationQueryHelper,
     PrimitiveName.AR: ArQueryHelper,
+    PrimitiveName.DD: DdQueryHelper,
 }

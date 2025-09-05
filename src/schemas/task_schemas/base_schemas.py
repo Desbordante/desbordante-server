@@ -48,6 +48,12 @@ from src.schemas.task_schemas.ar.task_result import (
     ArTaskResultFiltersSchema,
     ArTaskResultOrderingField,
 )
+from src.schemas.task_schemas.dd.task_params import DdTaskParams
+from src.schemas.task_schemas.dd.task_result import (
+    DdSchema,
+    DdTaskResultFiltersSchema,
+    DdTaskResultOrderingField,
+)
 from src.schemas.task_schemas.fd.task_params import FdTaskParams
 from src.schemas.task_schemas.fd.task_result import (
     FdSchema,
@@ -64,14 +70,21 @@ OneOfTaskParams = Annotated[
         AdcTaskParams,
         AfdVerificationTaskParams,
         ArTaskParams,
+        DdTaskParams,
     ],
     Field(discriminator="primitive_name"),
 ]
 
 
-OneOfTaskResult = (
-    FdSchema | AfdSchema | AcSchema | AdcSchema | AfdVerificationSchema | ArSchema
-)
+OneOfTaskResult = Union[
+    FdSchema,
+    AfdSchema,
+    AcSchema,
+    AdcSchema,
+    AfdVerificationSchema,
+    ArSchema,
+    DdSchema,
+]
 
 
 class PaginatedTaskResponseSchema[T: BaseSchema, P: PrimitiveName](
@@ -90,6 +103,7 @@ OneOfPaginatedTaskResponseSchema = Annotated[
             AfdVerificationSchema, Literal[PrimitiveName.AFD_VERIFICATION]
         ],
         PaginatedTaskResponseSchema[ArSchema, Literal[PrimitiveName.AR]],
+        PaginatedTaskResponseSchema[DdSchema, Literal[PrimitiveName.DD]],
     ],
     Field(discriminator="primitive_name"),
 ]
@@ -129,6 +143,7 @@ class TaskResultOrderingField(StrEnum):
         list(AdcTaskResultOrderingField),
         list(AfdVerificationTaskResultOrderingField),
         list(ArTaskResultOrderingField),
+        list(DdTaskResultOrderingField),
     ):
         if member.name not in cls:
             cls[member.name] = member.value
@@ -141,6 +156,7 @@ OneOfTaskResultFiltersSchema = Union[
     Annotated[AdcTaskResultFiltersSchema, Depends()],
     Annotated[AfdVerificationTaskResultFiltersSchema, Depends()],
     Annotated[ArTaskResultFiltersSchema, Depends()],
+    Annotated[DdTaskResultFiltersSchema, Depends()],
 ]
 
 
@@ -160,4 +176,5 @@ OneOfTaskResultOrderingField = Union[
     AdcTaskResultOrderingField,
     AfdVerificationTaskResultOrderingField,
     ArTaskResultOrderingField,
+    DdTaskResultOrderingField,
 ]

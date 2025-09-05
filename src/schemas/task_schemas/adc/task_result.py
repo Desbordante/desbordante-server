@@ -19,4 +19,4 @@ class AdcTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
 
 
 class AdcTaskResultOrderingField(StrEnum):
-    Length = "length"
+    NumberOfConjuncts = "number_of_conjuncts"

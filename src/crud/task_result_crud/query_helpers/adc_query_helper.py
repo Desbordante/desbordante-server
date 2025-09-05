@@ -13,7 +13,7 @@ class AdcQueryHelper(
 ):
     def get_ordering_field(self, order_by: AdcTaskResultOrderingField):
         match order_by:
-            case AdcTaskResultOrderingField.Length:
+            case AdcTaskResultOrderingField.NumberOfConjuncts:
                 return func.jsonb_array_length(TaskResultModel.result["cojuncts"])
 
         super().get_ordering_field(order_by)

@@ -13,6 +13,13 @@ class BaseAlgoConfig(Protocol):
     @property
     def algo_name(self) -> StrEnum: ...
 
+    def model_dump(
+        self,
+        *,
+        exclude: set[str] | None = None,
+        exclude_unset: bool = False,
+    ) -> dict[str, Any]: ...
+
 
 class BaseParams(Protocol):
     @property
@@ -47,6 +54,9 @@ class BasePrimitive[
         if algo_class := self._algo_map.get(algo_name):
             return algo_class()
         raise ValueError(f"Algorithm {algo_name} not found")
+
+    def _get_algo_options(self, params: P) -> dict[str, Any]:
+        return params.config.model_dump(exclude_unset=True, exclude={"algo_name"})
 
     @abstractmethod
     def execute(self, params: P) -> list[R]: ...
