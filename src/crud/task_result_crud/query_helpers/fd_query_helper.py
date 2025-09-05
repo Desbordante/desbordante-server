@@ -38,5 +38,27 @@ class FdQueryHelper(
                 ].astext.icontains(filters.search),
             )
             if filters.search
-            else None
+            else None,
+            # lhs indices
+            TaskResultModel.result[FdTaskResultOrderingField.LhsIndices].op("@>")(
+                filters.lhs_indices
+            )
+            if filters.lhs_indices
+            else None,
+            # lhs names
+            TaskResultModel.result[FdTaskResultOrderingField.LhsNames].op("@>")(
+                filters.lhs_names
+            )
+            if filters.lhs_names
+            else None,
+            # rhs index
+            TaskResultModel.result[FdTaskResultOrderingField.RhsIndex].astext
+            == str(filters.rhs_index)
+            if filters.rhs_index is not None
+            else None,
+            # rhs name
+            TaskResultModel.result[FdTaskResultOrderingField.RhsName].astext
+            == filters.rhs_name
+            if filters.rhs_name
+            else None,
         ]
