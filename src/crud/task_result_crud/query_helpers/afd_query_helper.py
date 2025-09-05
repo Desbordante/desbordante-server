@@ -29,6 +29,7 @@ class AfdQueryHelper(
 
     def make_filters(self, filters: AfdTaskResultFiltersSchema):
         return [
+            # search
             or_(
                 TaskResultModel.result[
                     AfdTaskResultOrderingField.LhsNames

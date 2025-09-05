@@ -22,6 +22,12 @@ from src.schemas.task_schemas.ac.task_result import (
     AcTaskResultFiltersSchema,
     AcTaskResultOrderingField,
 )
+from src.schemas.task_schemas.adc.task_params import AdcTaskParams
+from src.schemas.task_schemas.adc.task_result import (
+    AdcSchema,
+    AdcTaskResultFiltersSchema,
+    AdcTaskResultOrderingField,
+)
 from src.schemas.task_schemas.afd.task_params import AfdTaskParams
 from src.schemas.task_schemas.afd.task_result import (
     AfdSchema,
@@ -37,12 +43,12 @@ from src.schemas.task_schemas.fd.task_result import (
 from src.schemas.task_schemas.types import PrimitiveName
 
 OneOfTaskParams = Annotated[
-    Union[FdTaskParams, AfdTaskParams, AcTaskParams],
+    Union[FdTaskParams, AfdTaskParams, AcTaskParams, AdcTaskParams],
     Field(discriminator="primitive_name"),
 ]
 
 
-OneOfTaskResult = FdSchema | AfdSchema | AcSchema
+OneOfTaskResult = FdSchema | AfdSchema | AcSchema | AdcSchema
 
 
 class PaginatedTaskResponseSchema[T: BaseSchema, P: PrimitiveName](
@@ -56,6 +62,7 @@ OneOfPaginatedTaskResponseSchema = Annotated[
         PaginatedTaskResponseSchema[FdSchema, Literal[PrimitiveName.FD]],
         PaginatedTaskResponseSchema[AfdSchema, Literal[PrimitiveName.AFD]],
         PaginatedTaskResponseSchema[AcSchema, Literal[PrimitiveName.AC]],
+        PaginatedTaskResponseSchema[AdcSchema, Literal[PrimitiveName.ADC]],
     ],
     Field(discriminator="primitive_name"),
 ]
@@ -85,11 +92,6 @@ TaskQueryParamsSchema = QueryParamsSchema[
 ]
 
 
-class TaskResultFiltersSchema(
-    AfdTaskResultFiltersSchema, FdTaskResultFiltersSchema, AcTaskResultFiltersSchema
-): ...
-
-
 class TaskResultOrderingField(StrEnum):
     _ignore_ = "member cls"
     cls = vars()  # type: ignore
@@ -106,6 +108,7 @@ OneOfTaskResultFiltersSchema = Union[
     Annotated[AfdTaskResultFiltersSchema, Depends()],
     Annotated[FdTaskResultFiltersSchema, Depends()],
     Annotated[AcTaskResultFiltersSchema, Depends()],
+    Annotated[AdcTaskResultFiltersSchema, Depends()],
 ]
 
 
@@ -119,5 +122,8 @@ class TaskResultQueryParamsSchema[T = OneOfTaskResultFiltersSchema](BaseSchema):
 
 
 OneOfTaskResultOrderingField = Union[
-    AfdTaskResultOrderingField, FdTaskResultOrderingField, AcTaskResultOrderingField
+    AfdTaskResultOrderingField,
+    FdTaskResultOrderingField,
+    AcTaskResultOrderingField,
+    AdcTaskResultOrderingField,
 ]
