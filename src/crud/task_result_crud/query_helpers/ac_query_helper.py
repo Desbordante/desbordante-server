@@ -4,7 +4,6 @@ from sqlalchemy import func
 from src.crud.task_result_crud.query_helpers.base_query_helper import BaseQueryHelper
 from src.models.task_result_models import TaskResultModel
 from src.schemas.task_schemas.ac.task_result import (
-    AcResultType,
     AcTaskResultFiltersSchema,
     AcTaskResultOrderingField,
 )
@@ -27,40 +26,33 @@ class AcQueryHelper(
                 )
             case AcTaskResultOrderingField.RightColumnName:
                 return TaskResultModel.result[order_by].astext
-            case AcTaskResultOrderingField.Ranges:
-                return TaskResultModel.result[order_by].astext
-            case AcTaskResultOrderingField.ColumnPairs:
-                return TaskResultModel.result[order_by].astext
-            case AcTaskResultOrderingField.ColumnPairsNames:
-                return TaskResultModel.result[order_by].astext
-            case AcTaskResultOrderingField.RowIndex:
-                return func.cast(
-                    TaskResultModel.result[order_by].astext, sqlalchemy.Integer
-                )
+            case AcTaskResultOrderingField.NumberOfRanges:
+                return func.jsonb_array_length(TaskResultModel.result["ranges"])
+            case AcTaskResultOrderingField.NumberOfExceptions:
+                return func.jsonb_array_length(TaskResultModel.result["exceptions"])
 
         super().get_ordering_field(order_by)
 
     def make_filters(self, filters: AcTaskResultFiltersSchema):
         return [
-            TaskResultModel.result["type"].astext == filters.type.value,
             # left column index
             TaskResultModel.result[AcTaskResultOrderingField.LeftColumnIndex].astext
             == str(filters.left_column_index)
-            if filters.left_column_index and filters.type == AcResultType.Range
+            if filters.left_column_index is not None
             else None,
             # right column index
             TaskResultModel.result[AcTaskResultOrderingField.RightColumnIndex].astext
             == str(filters.right_column_index)
-            if filters.right_column_index and filters.type == AcResultType.Range
+            if filters.right_column_index is not None
             else None,
             # left column name
             TaskResultModel.result[AcTaskResultOrderingField.LeftColumnName].astext
             == filters.left_column_name
-            if filters.left_column_name and filters.type == AcResultType.Range
+            if filters.left_column_name
             else None,
             # right column name
             TaskResultModel.result[AcTaskResultOrderingField.RightColumnName].astext
             == filters.right_column_name
-            if filters.right_column_name and filters.type == AcResultType.Range
+            if filters.right_column_name
             else None,
         ]

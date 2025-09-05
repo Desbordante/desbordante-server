@@ -1,3 +1,4 @@
+from desbordante.ac import ACException
 from desbordante.ac.algorithms import AcAlgorithm as BHUNT
 
 from src.domain.task.primitives.base_primitive import BasePrimitive
@@ -5,9 +6,6 @@ from src.schemas.dataset_schemas import DatasetType, TabularDownloadedDatasetSch
 from src.schemas.task_schemas.ac.algo_name import AcAlgoName
 from src.schemas.task_schemas.ac.task_params import AcTaskParams
 from src.schemas.task_schemas.ac.task_result import (
-    AcExceptionSchema,
-    AcRangesSchema,
-    AcResultType,
     AcSchema,
 )
 
@@ -43,26 +41,25 @@ class AcPrimitive(
 
         ac_exceptions = self._algo.get_ac_exceptions()  # type: ignore
         ac_ranges = self._algo.get_ac_ranges()  # type: ignore
+        new_exceptions = self._extract_exceptions(ac_exceptions)
 
         return [
-            AcRangesSchema(
-                type=AcResultType.Range,
+            AcSchema(
                 left_column_index=range.column_indices[0],
                 right_column_index=range.column_indices[1],
                 left_column_name=column_names[range.column_indices[0]],
                 right_column_name=column_names[range.column_indices[1]],
                 ranges=range.ranges,
+                exceptions=new_exceptions.setdefault(range.column_indices, []),
             )
             for range in ac_ranges
-        ] + [
-            AcExceptionSchema(
-                type=AcResultType.Exception,
-                column_pairs=exception.column_pairs,
-                column_pairs_names=[
-                    (column_names[pair[0]], column_names[pair[1]])
-                    for pair in exception.column_pairs
-                ],
-                row_index=exception.row_index,
-            )
-            for exception in ac_exceptions
         ]
+
+    def _extract_exceptions(self, exceptions: list[ACException]):
+        columns_dict = dict()
+        for ex in exceptions:
+            for col in ex.column_pairs:
+                if col not in columns_dict:
+                    columns_dict[col] = []
+                columns_dict[col].append(ex.row_index)
+        return columns_dict
