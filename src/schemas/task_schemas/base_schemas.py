@@ -42,6 +42,12 @@ from src.schemas.task_schemas.afd_verification.task_result import (
     AfdVerificationTaskResultFiltersSchema,
     AfdVerificationTaskResultOrderingField,
 )
+from src.schemas.task_schemas.ar.task_params import ArTaskParams
+from src.schemas.task_schemas.ar.task_result import (
+    ArSchema,
+    ArTaskResultFiltersSchema,
+    ArTaskResultOrderingField,
+)
 from src.schemas.task_schemas.fd.task_params import FdTaskParams
 from src.schemas.task_schemas.fd.task_result import (
     FdSchema,
@@ -57,12 +63,15 @@ OneOfTaskParams = Annotated[
         AcTaskParams,
         AdcTaskParams,
         AfdVerificationTaskParams,
+        ArTaskParams,
     ],
     Field(discriminator="primitive_name"),
 ]
 
 
-OneOfTaskResult = FdSchema | AfdSchema | AcSchema | AdcSchema | AfdVerificationSchema
+OneOfTaskResult = (
+    FdSchema | AfdSchema | AcSchema | AdcSchema | AfdVerificationSchema | ArSchema
+)
 
 
 class PaginatedTaskResponseSchema[T: BaseSchema, P: PrimitiveName](
@@ -80,6 +89,7 @@ OneOfPaginatedTaskResponseSchema = Annotated[
         PaginatedTaskResponseSchema[
             AfdVerificationSchema, Literal[PrimitiveName.AFD_VERIFICATION]
         ],
+        PaginatedTaskResponseSchema[ArSchema, Literal[PrimitiveName.AR]],
     ],
     Field(discriminator="primitive_name"),
 ]
@@ -118,6 +128,7 @@ class TaskResultOrderingField(StrEnum):
         list(AcTaskResultOrderingField),
         list(AdcTaskResultOrderingField),
         list(AfdVerificationTaskResultOrderingField),
+        list(ArTaskResultOrderingField),
     ):
         if member.name not in cls:
             cls[member.name] = member.value
@@ -129,6 +140,7 @@ OneOfTaskResultFiltersSchema = Union[
     Annotated[AcTaskResultFiltersSchema, Depends()],
     Annotated[AdcTaskResultFiltersSchema, Depends()],
     Annotated[AfdVerificationTaskResultFiltersSchema, Depends()],
+    Annotated[ArTaskResultFiltersSchema, Depends()],
 ]
 
 
@@ -147,4 +159,5 @@ OneOfTaskResultOrderingField = Union[
     AcTaskResultOrderingField,
     AdcTaskResultOrderingField,
     AfdVerificationTaskResultOrderingField,
+    ArTaskResultOrderingField,
 ]

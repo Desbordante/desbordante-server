@@ -1,5 +1,4 @@
 import json
-from dataclasses import dataclass
 from datetime import datetime
 from enum import StrEnum, auto
 from typing import Annotated, Any, BinaryIO, Literal, Protocol
@@ -114,7 +113,7 @@ class TabularDatasetInfo(BaseSchema):
 
 
 class TransactionalDatasetInfo(TabularDatasetInfo):
-    pass
+    unique_values: list[str]
 
 
 class GraphDatasetInfo(BaseSchema):
@@ -166,7 +165,6 @@ class TabularDownloadedDatasetSchema(BaseSchema):
     info: TabularDatasetInfo
 
 
-@dataclass
 class TransactionalDownloadedDatasetSchema(BaseSchema):
     model_config = ConfigDict(arbitrary_types_allowed=True)
     df: pd.DataFrame
