@@ -34,9 +34,7 @@ class AcPrimitive(
         self._algo.load_data(table=table)  # type: ignore
 
         self._algo.execute(  # type: ignore
-            **params.config.model_dump(
-                exclude_unset=True, exclude={"algo_name", "column_indices"}
-            )
+            **params.config.model_dump(exclude_unset=True, exclude={"algo_name"})
         )
 
         ac_exceptions = self._algo.get_ac_exceptions()  # type: ignore

@@ -34,6 +34,14 @@ from src.schemas.task_schemas.afd.task_result import (
     AfdTaskResultFiltersSchema,
     AfdTaskResultOrderingField,
 )
+from src.schemas.task_schemas.afd_verification.task_params import (
+    AfdVerificationTaskParams,
+)
+from src.schemas.task_schemas.afd_verification.task_result import (
+    AfdVerificationSchema,
+    AfdVerificationTaskResultFiltersSchema,
+    AfdVerificationTaskResultOrderingField,
+)
 from src.schemas.task_schemas.fd.task_params import FdTaskParams
 from src.schemas.task_schemas.fd.task_result import (
     FdSchema,
@@ -43,12 +51,18 @@ from src.schemas.task_schemas.fd.task_result import (
 from src.schemas.task_schemas.types import PrimitiveName
 
 OneOfTaskParams = Annotated[
-    Union[FdTaskParams, AfdTaskParams, AcTaskParams, AdcTaskParams],
+    Union[
+        FdTaskParams,
+        AfdTaskParams,
+        AcTaskParams,
+        AdcTaskParams,
+        AfdVerificationTaskParams,
+    ],
     Field(discriminator="primitive_name"),
 ]
 
 
-OneOfTaskResult = FdSchema | AfdSchema | AcSchema | AdcSchema
+OneOfTaskResult = FdSchema | AfdSchema | AcSchema | AdcSchema | AfdVerificationSchema
 
 
 class PaginatedTaskResponseSchema[T: BaseSchema, P: PrimitiveName](
@@ -63,6 +77,9 @@ OneOfPaginatedTaskResponseSchema = Annotated[
         PaginatedTaskResponseSchema[AfdSchema, Literal[PrimitiveName.AFD]],
         PaginatedTaskResponseSchema[AcSchema, Literal[PrimitiveName.AC]],
         PaginatedTaskResponseSchema[AdcSchema, Literal[PrimitiveName.ADC]],
+        PaginatedTaskResponseSchema[
+            AfdVerificationSchema, Literal[PrimitiveName.AFD_VERIFICATION]
+        ],
     ],
     Field(discriminator="primitive_name"),
 ]
@@ -99,6 +116,8 @@ class TaskResultOrderingField(StrEnum):
         list(AfdTaskResultOrderingField),
         list(FdTaskResultOrderingField),
         list(AcTaskResultOrderingField),
+        list(AdcTaskResultOrderingField),
+        list(AfdVerificationTaskResultOrderingField),
     ):
         if member.name not in cls:
             cls[member.name] = member.value
@@ -109,6 +128,7 @@ OneOfTaskResultFiltersSchema = Union[
     Annotated[FdTaskResultFiltersSchema, Depends()],
     Annotated[AcTaskResultFiltersSchema, Depends()],
     Annotated[AdcTaskResultFiltersSchema, Depends()],
+    Annotated[AfdVerificationTaskResultFiltersSchema, Depends()],
 ]
 
 
@@ -126,4 +146,5 @@ OneOfTaskResultOrderingField = Union[
     FdTaskResultOrderingField,
     AcTaskResultOrderingField,
     AdcTaskResultOrderingField,
+    AfdVerificationTaskResultOrderingField,
 ]
