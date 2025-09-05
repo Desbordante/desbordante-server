@@ -58,7 +58,7 @@ def get_transactional_info(
         header=0 if params.has_header else None,
     )
 
-    unique_values = df.stack().unique()
+    unique_values = df.select_dtypes(include=["object"]).stack().unique()
 
     return TransactionalDatasetInfo(
         number_of_columns=df.shape[1],
