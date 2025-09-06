@@ -66,6 +66,14 @@ from src.schemas.task_schemas.md.task_result import (
     MdTaskResultFiltersSchema,
     MdTaskResultOrderingField,
 )
+from src.schemas.task_schemas.mfd_verification.task_params import (
+    MfdVerificationTaskParams,
+)
+from src.schemas.task_schemas.mfd_verification.task_result import (
+    MfdVerificationSchema,
+    MfdVerificationTaskResultsFiltersSchema,
+    MfdVerificationTaskResultsOrderingField,
+)
 from src.schemas.task_schemas.types import PrimitiveName
 
 OneOfTaskParams = Annotated[
@@ -78,6 +86,7 @@ OneOfTaskParams = Annotated[
         ArTaskParams,
         DdTaskParams,
         MdTaskParams,
+        MfdVerificationTaskParams,
     ],
     Field(discriminator="primitive_name"),
 ]
@@ -92,6 +101,7 @@ OneOfTaskResult = Union[
     ArSchema,
     DdSchema,
     MdSchema,
+    MfdVerificationSchema,
 ]
 
 
@@ -113,6 +123,9 @@ OneOfPaginatedTaskResponseSchema = Annotated[
         PaginatedTaskResponseSchema[ArSchema, Literal[PrimitiveName.AR]],
         PaginatedTaskResponseSchema[DdSchema, Literal[PrimitiveName.DD]],
         PaginatedTaskResponseSchema[MdSchema, Literal[PrimitiveName.MD]],
+        PaginatedTaskResponseSchema[
+            MfdVerificationSchema, Literal[PrimitiveName.MFD_VERIFICATION]
+        ],
     ],
     Field(discriminator="primitive_name"),
 ]
@@ -154,6 +167,7 @@ class TaskResultOrderingField(StrEnum):
         list(ArTaskResultOrderingField),
         list(DdTaskResultOrderingField),
         list(MdTaskResultOrderingField),
+        list(MfdVerificationTaskResultsOrderingField),
     ):
         if member.name not in cls:
             cls[member.name] = member.value
@@ -168,6 +182,7 @@ OneOfTaskResultFiltersSchema = Union[
     Annotated[ArTaskResultFiltersSchema, Depends()],
     Annotated[DdTaskResultFiltersSchema, Depends()],
     Annotated[MdTaskResultFiltersSchema, Depends()],
+    Annotated[MfdVerificationTaskResultsFiltersSchema, Depends()],
 ]
 
 
@@ -189,4 +204,5 @@ OneOfTaskResultOrderingField = Union[
     ArTaskResultOrderingField,
     DdTaskResultOrderingField,
     MdTaskResultOrderingField,
+    MfdVerificationTaskResultsOrderingField,
 ]
