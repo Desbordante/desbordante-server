@@ -79,9 +79,6 @@ class MdPrimitive(
 
         options = self._get_algo_options(params)
 
-        if options["max_cardinality"] == -1:
-            del options["max_cardinality"]
-
         self._algo.execute(**{**options, "column_matches": column_matches})
 
         return [

@@ -75,7 +75,7 @@ class HyMDConfig(BaseSchema):
         "cardinality", description=LEVEL_DEFINITION
     )
     prune_nondisjoint: bool = Field(True, description=PRUNE_NONDISJOINT)
-    max_cardinality: int = Field(-1, description=MAX_CARDINALITY)
+    max_cardinality: int | None = Field(None, description=MAX_CARDINALITY)
     threads: int = Field(0, ge=0, le=65536, description=THREADS)
 
 

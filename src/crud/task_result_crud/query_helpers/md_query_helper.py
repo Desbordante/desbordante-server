@@ -51,6 +51,6 @@ class MdQueryHelper(
                     TaskResultModel.result[MdTaskResultOrderingField.Lhs]
                 )["boundary"].op(">")(0)
             )
-            if filters.show_zeroes
+            if not filters.show_zeroes
             else None,
         ]
