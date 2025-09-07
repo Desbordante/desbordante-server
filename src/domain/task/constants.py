@@ -7,6 +7,7 @@ from src.domain.task.primitives.dd import DdPrimitive
 from src.domain.task.primitives.fd import FdPrimitive
 from src.domain.task.primitives.md import MdPrimitive
 from src.domain.task.primitives.mfd_verification import MfdVerificationPrimitive
+from src.domain.task.primitives.nar import NarPrimitive
 from src.schemas.task_schemas.types import PrimitiveName
 
 primitives_map = {
@@ -19,4 +20,5 @@ primitives_map = {
     PrimitiveName.DD: DdPrimitive,
     PrimitiveName.MD: MdPrimitive,
     PrimitiveName.MFD_VERIFICATION: MfdVerificationPrimitive,
+    PrimitiveName.NAR: NarPrimitive,
 }

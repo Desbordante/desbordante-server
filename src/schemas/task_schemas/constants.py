@@ -9,8 +9,9 @@ from src.schemas.task_schemas.dd.task_result import DdTaskResultFiltersSchema
 from src.schemas.task_schemas.fd.task_result import FdTaskResultFiltersSchema
 from src.schemas.task_schemas.md.task_result import MdTaskResultFiltersSchema
 from src.schemas.task_schemas.mfd_verification.task_result import (
-    MfdVerificationTaskResultsFiltersSchema,
+    MfdVerificationTaskResultFiltersSchema,
 )
+from src.schemas.task_schemas.nar.task_result import NarTaskResultFiltersSchema
 from src.schemas.task_schemas.types import PrimitiveName
 
 filters_schemas_map = {
@@ -22,5 +23,6 @@ filters_schemas_map = {
     PrimitiveName.AR: ArTaskResultFiltersSchema,
     PrimitiveName.DD: DdTaskResultFiltersSchema,
     PrimitiveName.MD: MdTaskResultFiltersSchema,
-    PrimitiveName.MFD_VERIFICATION: MfdVerificationTaskResultsFiltersSchema,
+    PrimitiveName.MFD_VERIFICATION: MfdVerificationTaskResultFiltersSchema,
+    PrimitiveName.NAR: NarTaskResultFiltersSchema,
 }

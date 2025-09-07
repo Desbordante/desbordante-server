@@ -22,7 +22,7 @@ Q = ""
 
 
 class BaseMfdVerificationConfig(BaseSchema):
-    algo_name: Literal[MfdVerificationAlgoName.MetricVerification]
+    algo_name: Literal[MfdVerificationAlgoName.MetricVerifier]
     lhs_indices: list[int] = Field(..., description=LHS_INDICES)
     rhs_indices: list[int] = Field(..., description=RHS_INDICES)
     parameter: float = Field(1, ge=0, description="Parameter for the metric algorithm")

@@ -40,7 +40,7 @@ MfdVerificationSchema = Annotated[
 ]
 
 
-class MfdVerificationTaskResultsFiltersSchema(FiltersParamsSchema, OptionalSchema):
+class MfdVerificationTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
     cluster_indices: list[int]
 
     @field_validator("cluster_indices", mode="before")
@@ -49,7 +49,7 @@ class MfdVerificationTaskResultsFiltersSchema(FiltersParamsSchema, OptionalSchem
         return json.loads(value) if isinstance(value, str) else value
 
 
-class MfdVerificationTaskResultsOrderingField(StrEnum):
+class MfdVerificationTaskResultOrderingField(StrEnum):
     DataIndex = "data_index"
     FarthestDataIndex = "farthest_data_index"
     MaxDistance = "max_distance"

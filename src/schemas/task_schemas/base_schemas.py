@@ -71,8 +71,14 @@ from src.schemas.task_schemas.mfd_verification.task_params import (
 )
 from src.schemas.task_schemas.mfd_verification.task_result import (
     MfdVerificationSchema,
-    MfdVerificationTaskResultsFiltersSchema,
-    MfdVerificationTaskResultsOrderingField,
+    MfdVerificationTaskResultFiltersSchema,
+    MfdVerificationTaskResultOrderingField,
+)
+from src.schemas.task_schemas.nar.task_params import NarTaskParams
+from src.schemas.task_schemas.nar.task_result import (
+    NarSchema,
+    NarTaskResultFiltersSchema,
+    NarTaskResultOrderingField,
 )
 from src.schemas.task_schemas.types import PrimitiveName
 
@@ -87,6 +93,7 @@ OneOfTaskParams = Annotated[
         DdTaskParams,
         MdTaskParams,
         MfdVerificationTaskParams,
+        NarTaskParams,
     ],
     Field(discriminator="primitive_name"),
 ]
@@ -102,6 +109,7 @@ OneOfTaskResult = Union[
     DdSchema,
     MdSchema,
     MfdVerificationSchema,
+    NarSchema,
 ]
 
 
@@ -126,6 +134,7 @@ OneOfPaginatedTaskResponseSchema = Annotated[
         PaginatedTaskResponseSchema[
             MfdVerificationSchema, Literal[PrimitiveName.MFD_VERIFICATION]
         ],
+        PaginatedTaskResponseSchema[NarSchema, Literal[PrimitiveName.NAR]],
     ],
     Field(discriminator="primitive_name"),
 ]
@@ -167,7 +176,8 @@ class TaskResultOrderingField(StrEnum):
         list(ArTaskResultOrderingField),
         list(DdTaskResultOrderingField),
         list(MdTaskResultOrderingField),
-        list(MfdVerificationTaskResultsOrderingField),
+        list(MfdVerificationTaskResultOrderingField),
+        list(NarTaskResultOrderingField),
     ):
         if member.name not in cls:
             cls[member.name] = member.value
@@ -182,7 +192,8 @@ OneOfTaskResultFiltersSchema = Union[
     Annotated[ArTaskResultFiltersSchema, Depends()],
     Annotated[DdTaskResultFiltersSchema, Depends()],
     Annotated[MdTaskResultFiltersSchema, Depends()],
-    Annotated[MfdVerificationTaskResultsFiltersSchema, Depends()],
+    Annotated[MfdVerificationTaskResultFiltersSchema, Depends()],
+    Annotated[NarTaskResultFiltersSchema, Depends()],
 ]
 
 
@@ -204,5 +215,6 @@ OneOfTaskResultOrderingField = Union[
     ArTaskResultOrderingField,
     DdTaskResultOrderingField,
     MdTaskResultOrderingField,
-    MfdVerificationTaskResultsOrderingField,
+    MfdVerificationTaskResultOrderingField,
+    NarTaskResultOrderingField,
 ]
