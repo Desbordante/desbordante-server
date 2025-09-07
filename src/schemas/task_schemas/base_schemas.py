@@ -80,6 +80,12 @@ from src.schemas.task_schemas.nar.task_result import (
     NarTaskResultFiltersSchema,
     NarTaskResultOrderingField,
 )
+from src.schemas.task_schemas.pfd.task_params import PfdTaskParams
+from src.schemas.task_schemas.pfd.task_result import (
+    PfdSchema,
+    PfdTaskResultFiltersSchema,
+    PfdTaskResultOrderingField,
+)
 from src.schemas.task_schemas.types import PrimitiveName
 
 OneOfTaskParams = Annotated[
@@ -94,6 +100,7 @@ OneOfTaskParams = Annotated[
         MdTaskParams,
         MfdVerificationTaskParams,
         NarTaskParams,
+        PfdTaskParams,
     ],
     Field(discriminator="primitive_name"),
 ]
@@ -110,6 +117,7 @@ OneOfTaskResult = Union[
     MdSchema,
     MfdVerificationSchema,
     NarSchema,
+    PfdSchema,
 ]
 
 
@@ -135,6 +143,7 @@ OneOfPaginatedTaskResponseSchema = Annotated[
             MfdVerificationSchema, Literal[PrimitiveName.MFD_VERIFICATION]
         ],
         PaginatedTaskResponseSchema[NarSchema, Literal[PrimitiveName.NAR]],
+        PaginatedTaskResponseSchema[PfdSchema, Literal[PrimitiveName.PFD]],
     ],
     Field(discriminator="primitive_name"),
 ]
@@ -178,6 +187,7 @@ class TaskResultOrderingField(StrEnum):
         list(MdTaskResultOrderingField),
         list(MfdVerificationTaskResultOrderingField),
         list(NarTaskResultOrderingField),
+        list(PfdTaskResultOrderingField),
     ):
         if member.name not in cls:
             cls[member.name] = member.value
@@ -194,6 +204,7 @@ OneOfTaskResultFiltersSchema = Union[
     Annotated[MdTaskResultFiltersSchema, Depends()],
     Annotated[MfdVerificationTaskResultFiltersSchema, Depends()],
     Annotated[NarTaskResultFiltersSchema, Depends()],
+    Annotated[PfdTaskResultFiltersSchema, Depends()],
 ]
 
 
@@ -217,4 +228,5 @@ OneOfTaskResultOrderingField = Union[
     MdTaskResultOrderingField,
     MfdVerificationTaskResultOrderingField,
     NarTaskResultOrderingField,
+    PfdTaskResultOrderingField,
 ]

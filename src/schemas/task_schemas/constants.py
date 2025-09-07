@@ -12,6 +12,7 @@ from src.schemas.task_schemas.mfd_verification.task_result import (
     MfdVerificationTaskResultFiltersSchema,
 )
 from src.schemas.task_schemas.nar.task_result import NarTaskResultFiltersSchema
+from src.schemas.task_schemas.pfd.task_result import PfdTaskResultFiltersSchema
 from src.schemas.task_schemas.types import PrimitiveName
 
 filters_schemas_map = {
@@ -25,4 +26,5 @@ filters_schemas_map = {
     PrimitiveName.MD: MdTaskResultFiltersSchema,
     PrimitiveName.MFD_VERIFICATION: MfdVerificationTaskResultFiltersSchema,
     PrimitiveName.NAR: NarTaskResultFiltersSchema,
+    PrimitiveName.PFD: PfdTaskResultFiltersSchema,
 }

@@ -9,6 +9,7 @@ from src.crud.task_result_crud.query_helpers.dd_query_helper import DdQueryHelpe
 from src.crud.task_result_crud.query_helpers.fd_query_helper import FdQueryHelper
 from src.crud.task_result_crud.query_helpers.md_query_helper import MdQueryHelper
 from src.crud.task_result_crud.query_helpers.nar_query_helper import NarQueryHelper
+from src.crud.task_result_crud.query_helpers.pfd_query_helper import PfdQueryHelper
 from src.schemas.task_schemas.types import PrimitiveName
 
 query_helpers_map = {
@@ -21,4 +22,5 @@ query_helpers_map = {
     PrimitiveName.DD: DdQueryHelper,
     PrimitiveName.MD: MdQueryHelper,
     PrimitiveName.NAR: NarQueryHelper,
+    PrimitiveName.PFD: PfdQueryHelper,
 }
