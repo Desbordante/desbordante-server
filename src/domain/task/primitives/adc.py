@@ -2,12 +2,14 @@ from desbordante.dc.algorithms import FastADC
 
 from src.domain.task.primitives.base_primitive import BasePrimitive
 from src.schemas.dataset_schemas import DatasetType, TabularDownloadedDatasetSchema
-from src.schemas.task_schemas.adc.algo_name import AdcAlgoName
-from src.schemas.task_schemas.adc.task_params import AdcTaskParams
-from src.schemas.task_schemas.adc.task_result import (
+from src.schemas.task_schemas.primitives.adc.algo_name import AdcAlgoName
+from src.schemas.task_schemas.primitives.adc.task_params import AdcTaskParams
+from src.schemas.task_schemas.primitives.adc.task_result import (
     AdcItemSchema,
-    AdcSchema,
+    AdcTaskResultItemSchema,
+    AdcTaskResultSchema,
 )
+from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
 
 
 class AdcPrimitive(
@@ -15,7 +17,7 @@ class AdcPrimitive(
         FastADC,
         AdcAlgoName,
         AdcTaskParams[TabularDownloadedDatasetSchema],
-        AdcSchema,
+        PrimitiveResultSchema[AdcTaskResultSchema, AdcTaskResultItemSchema],
     ]
 ):
     _algo_map = {
@@ -36,10 +38,15 @@ class AdcPrimitive(
 
         self._algo.execute(**options)
 
-        return [
-            AdcSchema(cojuncts=self._split_result(str(dc)))
-            for dc in self._algo.get_dcs()
-        ]
+        return PrimitiveResultSchema[AdcTaskResultSchema, AdcTaskResultItemSchema](
+            result=AdcTaskResultSchema(
+                total_count=len(self._algo.get_dcs()),
+            ),
+            items=[
+                AdcTaskResultItemSchema(cojuncts=self._split_result(str(dc)))
+                for dc in self._algo.get_dcs()
+            ],
+        )
 
     def _split_result(self, row: str) -> list[AdcItemSchema]:
         row_len = len(row)

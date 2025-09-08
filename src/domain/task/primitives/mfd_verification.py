@@ -7,15 +7,19 @@ from src.schemas.dataset_schemas import (
     DatasetType,
     TabularDownloadedDatasetSchema,
 )
-from src.schemas.task_schemas.mfd_verification.algo_name import MfdVerificationAlgoName
-from src.schemas.task_schemas.mfd_verification.task_params import (
+from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
+from src.schemas.task_schemas.primitives.mfd_verification.algo_name import (
+    MfdVerificationAlgoName,
+)
+from src.schemas.task_schemas.primitives.mfd_verification.task_params import (
     MfdVerificationTaskParams,
 )
-from src.schemas.task_schemas.mfd_verification.task_result import (
+from src.schemas.task_schemas.primitives.mfd_verification.task_result import (
     HighlightSchema,
     HighlightsClusterSchema,
     HoldsMfdVerificationSchema,
-    MfdVerificationSchema,
+    MfdVerificationTaskResultItemSchema,
+    MfdVerificationTaskResultSchema,
     NotHoldsMfdVerificationSchema,
 )
 
@@ -25,7 +29,9 @@ class MfdVerificationPrimitive(
         MetricVerifier,
         MfdVerificationAlgoName,
         MfdVerificationTaskParams[TabularDownloadedDatasetSchema],
-        MfdVerificationSchema,
+        PrimitiveResultSchema[
+            MfdVerificationTaskResultSchema, MfdVerificationTaskResultItemSchema
+        ],
     ]
 ):
     _algo_map = {
@@ -112,4 +118,11 @@ class MfdVerificationPrimitive(
                 highlights_clusters=hidhlights_clusters,
             )
 
-        return [result]
+        return PrimitiveResultSchema[
+            MfdVerificationTaskResultSchema, MfdVerificationTaskResultItemSchema
+        ](
+            result=MfdVerificationTaskResultSchema(
+                total_count=1,
+            ),
+            items=[result],
+        )

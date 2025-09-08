@@ -5,13 +5,15 @@ from src.schemas.dataset_schemas import (
     DatasetType,
     TabularDownloadedDatasetSchema,
 )
-from src.schemas.task_schemas.nar.algo_name import NarAlgoName
-from src.schemas.task_schemas.nar.task_params import (
+from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
+from src.schemas.task_schemas.primitives.nar.algo_name import NarAlgoName
+from src.schemas.task_schemas.primitives.nar.task_params import (
     NarTaskParams,
 )
-from src.schemas.task_schemas.nar.task_result import (
-    NarSchema,
+from src.schemas.task_schemas.primitives.nar.task_result import (
     NarSideItemSchema,
+    NarTaskResultItemSchema,
+    NarTaskResultSchema,
 )
 
 
@@ -20,7 +22,7 @@ class NarPrimitive(
         DES,
         NarAlgoName,
         NarTaskParams[TabularDownloadedDatasetSchema],
-        NarSchema,
+        PrimitiveResultSchema[NarTaskResultSchema, NarTaskResultItemSchema],
     ]
 ):
     _algo_map = {
@@ -42,15 +44,20 @@ class NarPrimitive(
 
         self._algo.execute(**options)
 
-        return [
-            NarSchema(
-                confidence=nar.confidence,
-                support=nar.support,
-                lhs=self._extract_side(nar.ante.items(), columns),
-                rhs=self._extract_side(nar.cons.items(), columns),
-            )
-            for nar in self._algo.get_nars()
-        ]
+        return PrimitiveResultSchema[NarTaskResultSchema, NarTaskResultItemSchema](
+            result=NarTaskResultSchema(
+                total_count=len(self._algo.get_nars()),
+            ),
+            items=[
+                NarTaskResultItemSchema(
+                    confidence=nar.confidence,
+                    support=nar.support,
+                    lhs=self._extract_side(nar.ante.items(), columns),
+                    rhs=self._extract_side(nar.cons.items(), columns),
+                )
+                for nar in self._algo.get_nars()
+            ],
+        )
 
     def _extract_side(self, side, columns) -> list[NarSideItemSchema]:
         return [

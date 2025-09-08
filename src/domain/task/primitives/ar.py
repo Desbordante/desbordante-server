@@ -5,13 +5,15 @@ from src.schemas.dataset_schemas import (
     DatasetType,
     TransactionalDownloadedDatasetSchema,
 )
-from src.schemas.task_schemas.ar.algo_name import ArAlgoName
-from src.schemas.task_schemas.ar.task_params import (
+from src.schemas.task_schemas.primitives.ar.algo_name import ArAlgoName
+from src.schemas.task_schemas.primitives.ar.task_params import (
     ArTaskParams,
 )
-from src.schemas.task_schemas.ar.task_result import (
-    ArSchema,
+from src.schemas.task_schemas.primitives.ar.task_result import (
+    ArTaskResultItemSchema,
+    ArTaskResultSchema,
 )
+from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
 
 
 class ArPrimitive(
@@ -19,7 +21,7 @@ class ArPrimitive(
         Apriori,
         ArAlgoName,
         ArTaskParams[TransactionalDownloadedDatasetSchema],
-        ArSchema,
+        PrimitiveResultSchema[ArTaskResultSchema, ArTaskResultItemSchema],
     ]
 ):
     _algo_map = {
@@ -42,12 +44,17 @@ class ArPrimitive(
 
         self._algo.execute(**options)
 
-        return [
-            ArSchema(
-                left=ar.left,
-                right=ar.right,
-                support=ar.support,
-                confidence=ar.confidence,
-            )
-            for ar in self._algo.get_ars()
-        ]
+        return PrimitiveResultSchema[ArTaskResultSchema, ArTaskResultItemSchema](
+            result=ArTaskResultSchema(
+                total_count=len(self._algo.get_ars()),
+            ),
+            items=[
+                ArTaskResultItemSchema(
+                    left=ar.left,
+                    right=ar.right,
+                    support=ar.support,
+                    confidence=ar.confidence,
+                )
+                for ar in self._algo.get_ars()
+            ],
+        )

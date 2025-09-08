@@ -5,13 +5,15 @@ from src.schemas.dataset_schemas import (
     DatasetType,
     TabularDownloadedDatasetSchema,
 )
-from src.schemas.task_schemas.dd.algo_name import DdAlgoName
-from src.schemas.task_schemas.dd.task_params import (
+from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
+from src.schemas.task_schemas.primitives.dd.algo_name import DdAlgoName
+from src.schemas.task_schemas.primitives.dd.task_params import (
     DdTaskParams,
 )
-from src.schemas.task_schemas.dd.task_result import (
-    DdSchema,
+from src.schemas.task_schemas.primitives.dd.task_result import (
     DdSideItemSchema,
+    DdTaskResultItemSchema,
+    DdTaskResultSchema,
 )
 
 
@@ -20,7 +22,7 @@ class DdPrimitive(
         Split,
         DdAlgoName,
         DdTaskParams[TabularDownloadedDatasetSchema],
-        DdSchema,
+        PrimitiveResultSchema[DdTaskResultSchema, DdTaskResultItemSchema],
     ]
 ):
     _algo_map = {
@@ -42,7 +44,12 @@ class DdPrimitive(
 
         self._algo.execute(**options, difference_table=difference_table)
 
-        return [self._split_result(str(dd)) for dd in self._algo.get_dds()]
+        return PrimitiveResultSchema[DdTaskResultSchema, DdTaskResultItemSchema](
+            result=DdTaskResultSchema(
+                total_count=len(self._algo.get_dds()),
+            ),
+            items=[self._split_result(str(dd)) for dd in self._algo.get_dds()],
+        )
 
     def _split_side(self, raw: list[str]) -> list[DdSideItemSchema]:
         ans = []
@@ -52,9 +59,9 @@ class DdPrimitive(
             ans.append(DdSideItemSchema(name=name, values=value))
         return ans
 
-    def _split_result(self, row: str) -> DdSchema:
+    def _split_result(self, row: str) -> DdTaskResultItemSchema:
         lhs_rawraw, rhs_raw = row.split(" -> ")
         lhs_raw = lhs_rawraw.split(" ; ")
         lhs_ans = self._split_side(lhs_raw)
         rhs_ans = self._split_side([rhs_raw])
-        return DdSchema(lhs=lhs_ans, rhs=rhs_ans)
+        return DdTaskResultItemSchema(lhs=lhs_ans, rhs=rhs_ans)

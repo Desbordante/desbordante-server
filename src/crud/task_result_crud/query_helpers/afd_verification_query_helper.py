@@ -1,5 +1,5 @@
 from src.crud.task_result_crud.query_helpers.base_query_helper import BaseQueryHelper
-from src.schemas.task_schemas.afd_verification.task_result import (
+from src.schemas.task_schemas.primitives.afd_verification.task_result import (
     AfdVerificationTaskResultFiltersSchema,
     AfdVerificationTaskResultOrderingField,
 )

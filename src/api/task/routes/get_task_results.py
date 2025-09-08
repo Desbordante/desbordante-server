@@ -44,6 +44,7 @@ async def get_task_results(
 
     return PaginatedTaskResponseSchema(
         primitive_name=task.params.primitive_name,
+        result=task.result,
         items=[r.result for r in results.items],
         total_count=results.total_count,
         limit=results.limit,

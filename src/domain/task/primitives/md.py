@@ -21,15 +21,17 @@ from src.schemas.dataset_schemas import (
     DatasetType,
     TabularDownloadedDatasetSchema,
 )
-from src.schemas.task_schemas.md.algo_name import MdAlgoName
-from src.schemas.task_schemas.md.task_params import (
+from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
+from src.schemas.task_schemas.primitives.md.algo_name import MdAlgoName
+from src.schemas.task_schemas.primitives.md.task_params import (
     MdTaskParams,
 )
-from src.schemas.task_schemas.md.task_result import (
-    MdSchema,
+from src.schemas.task_schemas.primitives.md.task_result import (
     MdSideItemSchema,
+    MdTaskResultItemSchema,
+    MdTaskResultSchema,
 )
-from src.schemas.task_schemas.md.types import ColumnMatchMetrics
+from src.schemas.task_schemas.primitives.md.types import ColumnMatchMetrics
 
 
 class MdPrimitive(
@@ -37,7 +39,7 @@ class MdPrimitive(
         MdAlgorithm,
         MdAlgoName,
         MdTaskParams[TabularDownloadedDatasetSchema],
-        MdSchema,
+        PrimitiveResultSchema[MdTaskResultSchema, MdTaskResultItemSchema],
     ]
 ):
     _algo_map = {
@@ -81,13 +83,18 @@ class MdPrimitive(
 
         self._algo.execute(**{**options, "column_matches": column_matches})
 
-        return [
-            MdSchema(
-                lhs=self._extract_side(md.get_description().lhs),
-                rhs=self._extract_side([md.get_description().rhs]),
-            )
-            for md in self._algo.get_mds()
-        ]
+        return PrimitiveResultSchema[MdTaskResultSchema, MdTaskResultItemSchema](
+            result=MdTaskResultSchema(
+                total_count=len(self._algo.get_mds()),
+            ),
+            items=[
+                MdTaskResultItemSchema(
+                    lhs=self._extract_side(md.get_description().lhs),
+                    rhs=self._extract_side([md.get_description().rhs]),
+                )
+                for md in self._algo.get_mds()
+            ],
+        )
 
     def _extract_side(
         self,

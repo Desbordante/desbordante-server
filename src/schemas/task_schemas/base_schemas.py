@@ -13,78 +13,91 @@ from src.schemas.base_schemas import (
     OrderingParamsSchema,
     PaginatedResponseSchema,
     QueryParamsSchema,
+    TaskErrorSchema,
     TaskStatus,
 )
 from src.schemas.dataset_schemas import DatasetSchema
-from src.schemas.task_schemas.ac.task_params import AcTaskParams
-from src.schemas.task_schemas.ac.task_result import (
-    AcSchema,
+from src.schemas.task_schemas.primitives.ac.task_params import AcTaskParams
+from src.schemas.task_schemas.primitives.ac.task_result import (
     AcTaskResultFiltersSchema,
+    AcTaskResultItemSchema,
     AcTaskResultOrderingField,
+    AcTaskResultSchema,
 )
-from src.schemas.task_schemas.adc.task_params import AdcTaskParams
-from src.schemas.task_schemas.adc.task_result import (
-    AdcSchema,
+from src.schemas.task_schemas.primitives.adc.task_params import AdcTaskParams
+from src.schemas.task_schemas.primitives.adc.task_result import (
     AdcTaskResultFiltersSchema,
+    AdcTaskResultItemSchema,
     AdcTaskResultOrderingField,
+    AdcTaskResultSchema,
 )
-from src.schemas.task_schemas.afd.task_params import AfdTaskParams
-from src.schemas.task_schemas.afd.task_result import (
-    AfdSchema,
+from src.schemas.task_schemas.primitives.afd.task_params import AfdTaskParams
+from src.schemas.task_schemas.primitives.afd.task_result import (
     AfdTaskResultFiltersSchema,
+    AfdTaskResultItemSchema,
     AfdTaskResultOrderingField,
+    AfdTaskResultSchema,
 )
-from src.schemas.task_schemas.afd_verification.task_params import (
+from src.schemas.task_schemas.primitives.afd_verification.task_params import (
     AfdVerificationTaskParams,
 )
-from src.schemas.task_schemas.afd_verification.task_result import (
-    AfdVerificationSchema,
+from src.schemas.task_schemas.primitives.afd_verification.task_result import (
     AfdVerificationTaskResultFiltersSchema,
+    AfdVerificationTaskResultItemSchema,
     AfdVerificationTaskResultOrderingField,
+    AfdVerificationTaskResultSchema,
 )
-from src.schemas.task_schemas.ar.task_params import ArTaskParams
-from src.schemas.task_schemas.ar.task_result import (
-    ArSchema,
+from src.schemas.task_schemas.primitives.ar.task_params import ArTaskParams
+from src.schemas.task_schemas.primitives.ar.task_result import (
     ArTaskResultFiltersSchema,
+    ArTaskResultItemSchema,
     ArTaskResultOrderingField,
+    ArTaskResultSchema,
 )
-from src.schemas.task_schemas.dd.task_params import DdTaskParams
-from src.schemas.task_schemas.dd.task_result import (
-    DdSchema,
+from src.schemas.task_schemas.primitives.base_schemas import BaseTaskResultSchema
+from src.schemas.task_schemas.primitives.dd.task_params import DdTaskParams
+from src.schemas.task_schemas.primitives.dd.task_result import (
     DdTaskResultFiltersSchema,
+    DdTaskResultItemSchema,
     DdTaskResultOrderingField,
+    DdTaskResultSchema,
 )
-from src.schemas.task_schemas.fd.task_params import FdTaskParams
-from src.schemas.task_schemas.fd.task_result import (
-    FdSchema,
+from src.schemas.task_schemas.primitives.fd.task_params import FdTaskParams
+from src.schemas.task_schemas.primitives.fd.task_result import (
     FdTaskResultFiltersSchema,
+    FdTaskResultItemSchema,
     FdTaskResultOrderingField,
+    FdTaskResultSchema,
 )
-from src.schemas.task_schemas.md.task_params import MdTaskParams
-from src.schemas.task_schemas.md.task_result import (
-    MdSchema,
+from src.schemas.task_schemas.primitives.md.task_params import MdTaskParams
+from src.schemas.task_schemas.primitives.md.task_result import (
     MdTaskResultFiltersSchema,
+    MdTaskResultItemSchema,
     MdTaskResultOrderingField,
+    MdTaskResultSchema,
 )
-from src.schemas.task_schemas.mfd_verification.task_params import (
+from src.schemas.task_schemas.primitives.mfd_verification.task_params import (
     MfdVerificationTaskParams,
 )
-from src.schemas.task_schemas.mfd_verification.task_result import (
-    MfdVerificationSchema,
+from src.schemas.task_schemas.primitives.mfd_verification.task_result import (
     MfdVerificationTaskResultFiltersSchema,
+    MfdVerificationTaskResultItemSchema,
     MfdVerificationTaskResultOrderingField,
+    MfdVerificationTaskResultSchema,
 )
-from src.schemas.task_schemas.nar.task_params import NarTaskParams
-from src.schemas.task_schemas.nar.task_result import (
-    NarSchema,
+from src.schemas.task_schemas.primitives.nar.task_params import NarTaskParams
+from src.schemas.task_schemas.primitives.nar.task_result import (
     NarTaskResultFiltersSchema,
+    NarTaskResultItemSchema,
     NarTaskResultOrderingField,
+    NarTaskResultSchema,
 )
-from src.schemas.task_schemas.pfd.task_params import PfdTaskParams
-from src.schemas.task_schemas.pfd.task_result import (
-    PfdSchema,
+from src.schemas.task_schemas.primitives.pfd.task_params import PfdTaskParams
+from src.schemas.task_schemas.primitives.pfd.task_result import (
     PfdTaskResultFiltersSchema,
+    PfdTaskResultItemSchema,
     PfdTaskResultOrderingField,
+    PfdTaskResultSchema,
 )
 from src.schemas.task_schemas.types import PrimitiveName
 
@@ -106,60 +119,133 @@ OneOfTaskParams = Annotated[
 ]
 
 
-OneOfTaskResult = Union[
-    FdSchema,
-    AfdSchema,
-    AcSchema,
-    AdcSchema,
-    AfdVerificationSchema,
-    ArSchema,
-    DdSchema,
-    MdSchema,
-    MfdVerificationSchema,
-    NarSchema,
-    PfdSchema,
+OneOfTaskResultItemSchema = Union[
+    FdTaskResultItemSchema,
+    AfdTaskResultItemSchema,
+    AcTaskResultItemSchema,
+    AdcTaskResultItemSchema,
+    AfdVerificationTaskResultItemSchema,
+    ArTaskResultItemSchema,
+    DdTaskResultItemSchema,
+    MdTaskResultItemSchema,
+    MfdVerificationTaskResultItemSchema,
+    NarTaskResultItemSchema,
+    PfdTaskResultItemSchema,
+]
+
+OneOfTaskResultSchema = Union[
+    FdTaskResultSchema,
+    AfdTaskResultSchema,
+    AcTaskResultSchema,
+    AdcTaskResultSchema,
+    AfdVerificationTaskResultSchema,
+    ArTaskResultSchema,
+    DdTaskResultSchema,
+    MdTaskResultSchema,
+    MfdVerificationTaskResultSchema,
+    NarTaskResultSchema,
+    PfdTaskResultSchema,
 ]
 
 
-class PaginatedTaskResponseSchema[T: BaseSchema, P: PrimitiveName](
-    PaginatedResponseSchema[T]
-):
+class PaginatedTaskResponseSchema[
+    I: BaseSchema,
+    R: BaseTaskResultSchema,
+    P: PrimitiveName,
+](PaginatedResponseSchema[I]):
     primitive_name: P
+    result: R | TaskErrorSchema | None
 
 
 OneOfPaginatedTaskResponseSchema = Annotated[
     Union[
-        PaginatedTaskResponseSchema[FdSchema, Literal[PrimitiveName.FD]],
-        PaginatedTaskResponseSchema[AfdSchema, Literal[PrimitiveName.AFD]],
-        PaginatedTaskResponseSchema[AcSchema, Literal[PrimitiveName.AC]],
-        PaginatedTaskResponseSchema[AdcSchema, Literal[PrimitiveName.ADC]],
         PaginatedTaskResponseSchema[
-            AfdVerificationSchema, Literal[PrimitiveName.AFD_VERIFICATION]
+            FdTaskResultItemSchema,
+            FdTaskResultSchema,
+            Literal[PrimitiveName.FD],
         ],
-        PaginatedTaskResponseSchema[ArSchema, Literal[PrimitiveName.AR]],
-        PaginatedTaskResponseSchema[DdSchema, Literal[PrimitiveName.DD]],
-        PaginatedTaskResponseSchema[MdSchema, Literal[PrimitiveName.MD]],
         PaginatedTaskResponseSchema[
-            MfdVerificationSchema, Literal[PrimitiveName.MFD_VERIFICATION]
+            AfdTaskResultItemSchema,
+            AfdTaskResultSchema,
+            Literal[PrimitiveName.AFD],
         ],
-        PaginatedTaskResponseSchema[NarSchema, Literal[PrimitiveName.NAR]],
-        PaginatedTaskResponseSchema[PfdSchema, Literal[PrimitiveName.PFD]],
+        PaginatedTaskResponseSchema[
+            AcTaskResultItemSchema,
+            AcTaskResultSchema,
+            Literal[PrimitiveName.AC],
+        ],
+        PaginatedTaskResponseSchema[
+            AdcTaskResultItemSchema,
+            AdcTaskResultSchema,
+            Literal[PrimitiveName.ADC],
+        ],
+        PaginatedTaskResponseSchema[
+            AfdVerificationTaskResultItemSchema,
+            AfdVerificationTaskResultSchema,
+            Literal[PrimitiveName.AFD_VERIFICATION],
+        ],
+        PaginatedTaskResponseSchema[
+            ArTaskResultItemSchema,
+            ArTaskResultSchema,
+            Literal[PrimitiveName.AR],
+        ],
+        PaginatedTaskResponseSchema[
+            DdTaskResultItemSchema,
+            DdTaskResultSchema,
+            Literal[PrimitiveName.DD],
+        ],
+        PaginatedTaskResponseSchema[
+            MdTaskResultItemSchema,
+            MdTaskResultSchema,
+            Literal[PrimitiveName.MD],
+        ],
+        PaginatedTaskResponseSchema[
+            MfdVerificationTaskResultItemSchema,
+            MfdVerificationTaskResultSchema,
+            Literal[PrimitiveName.MFD_VERIFICATION],
+        ],
+        PaginatedTaskResponseSchema[
+            NarTaskResultItemSchema,
+            NarTaskResultSchema,
+            Literal[PrimitiveName.NAR],
+        ],
+        PaginatedTaskResponseSchema[
+            PfdTaskResultItemSchema,
+            PfdTaskResultSchema,
+            Literal[PrimitiveName.PFD],
+        ],
     ],
     Field(discriminator="primitive_name"),
 ]
 
 
-class TaskSchema(BaseSchema):
+class BaseTaskSchema(BaseSchema):
     id: UUID
-
     params: OneOfTaskParams
-
-    status: TaskStatus
-
     datasets: list[DatasetSchema]
-
     created_at: datetime
     updated_at: datetime
+
+
+class ProcessingTaskSchema(BaseTaskSchema):
+    status: Literal[TaskStatus.Pending] | Literal[TaskStatus.Processing]
+    result: None
+
+
+class FailedTaskSchema(BaseTaskSchema):
+    status: Literal[TaskStatus.Failed]
+    result: TaskErrorSchema
+
+
+class SuccessTaskSchema(BaseTaskSchema):
+    status: Literal[TaskStatus.Success]
+    result: OneOfTaskResultSchema
+
+
+TaskSchema = Annotated[
+    Union[ProcessingTaskSchema, FailedTaskSchema, SuccessTaskSchema],
+    Field(discriminator="status"),
+]
 
 
 class TaskFiltersSchema(FiltersParamsSchema):

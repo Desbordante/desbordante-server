@@ -5,12 +5,14 @@ from src.schemas.dataset_schemas import (
     DatasetType,
     TabularDownloadedDatasetSchema,
 )
-from src.schemas.task_schemas.pfd.algo_name import PfdAlgoName
-from src.schemas.task_schemas.pfd.task_params import (
+from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
+from src.schemas.task_schemas.primitives.pfd.algo_name import PfdAlgoName
+from src.schemas.task_schemas.primitives.pfd.task_params import (
     PfdTaskParams,
 )
-from src.schemas.task_schemas.pfd.task_result import (
-    PfdSchema,
+from src.schemas.task_schemas.primitives.pfd.task_result import (
+    PfdTaskResultItemSchema,
+    PfdTaskResultSchema,
 )
 
 
@@ -19,7 +21,7 @@ class PfdPrimitive(
         PFDTane,
         PfdAlgoName,
         PfdTaskParams[TabularDownloadedDatasetSchema],
-        PfdSchema,
+        PrimitiveResultSchema[PfdTaskResultSchema, PfdTaskResultItemSchema],
     ]
 ):
     _algo_map = {
@@ -41,10 +43,15 @@ class PfdPrimitive(
 
         self._algo.execute(**options)
 
-        return [
-            PfdSchema(
-                lhs=[columns[index] for index in fd.lhs_indices],
-                rhs=[columns[fd.rhs_index]],
-            )
-            for fd in self._algo.get_fds()
-        ]
+        return PrimitiveResultSchema[PfdTaskResultSchema, PfdTaskResultItemSchema](
+            result=PfdTaskResultSchema(
+                total_count=len(self._algo.get_fds()),
+            ),
+            items=[
+                PfdTaskResultItemSchema(
+                    lhs=[columns[index] for index in fd.lhs_indices],
+                    rhs=[columns[fd.rhs_index]],
+                )
+                for fd in self._algo.get_fds()
+            ],
+        )

@@ -3,7 +3,7 @@ from sqlalchemy import func, or_
 
 from src.crud.task_result_crud.query_helpers.base_query_helper import BaseQueryHelper
 from src.models.task_result_models import TaskResultModel
-from src.schemas.task_schemas.fd.task_result import (
+from src.schemas.task_schemas.primitives.fd.task_result import (
     FdTaskResultFiltersSchema,
     FdTaskResultOrderingField,
 )

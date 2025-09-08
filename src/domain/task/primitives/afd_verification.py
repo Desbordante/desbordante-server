@@ -4,14 +4,18 @@ from desbordante.fd_verification.algorithms import FDVerifier
 
 from src.domain.task.primitives.base_primitive import BasePrimitive
 from src.schemas.dataset_schemas import DatasetType, TabularDownloadedDatasetSchema
-from src.schemas.task_schemas.afd_verification.algo_name import AfdVerificationAlgoName
-from src.schemas.task_schemas.afd_verification.task_params import (
+from src.schemas.task_schemas.primitives.afd_verification.algo_name import (
+    AfdVerificationAlgoName,
+)
+from src.schemas.task_schemas.primitives.afd_verification.task_params import (
     AfdVerificationTaskParams,
 )
-from src.schemas.task_schemas.afd_verification.task_result import (
+from src.schemas.task_schemas.primitives.afd_verification.task_result import (
     AfdClusterSchema,
-    AfdVerificationSchema,
+    AfdVerificationTaskResultItemSchema,
+    AfdVerificationTaskResultSchema,
 )
+from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
 
 
 class AfdVerificationPrimitive(
@@ -19,7 +23,10 @@ class AfdVerificationPrimitive(
         FDVerifier,
         AfdVerificationAlgoName,
         AfdVerificationTaskParams[TabularDownloadedDatasetSchema],
-        AfdVerificationSchema,
+        PrimitiveResultSchema[
+            AfdVerificationTaskResultSchema,
+            AfdVerificationTaskResultItemSchema,
+        ],
     ]
 ):
     _algo_map = {
@@ -42,19 +49,28 @@ class AfdVerificationPrimitive(
 
         self._algo.execute(**options)
 
-        return [
-            AfdVerificationSchema(
-                error=self._algo.get_error(),
-                num_error_clusters=self._algo.get_num_error_clusters(),
-                num_error_rows=self._algo.get_num_error_rows(),
-                clusters=[
-                    self._extract_cluster(highlight, table)
-                    for highlight in self._algo.get_highlights()
-                ],
-                table_header=dataset.info.column_names,
-                lhs_rhs_indices=params.config.lhs_indices + params.config.rhs_indices,
+        return PrimitiveResultSchema[
+            AfdVerificationTaskResultSchema,
+            AfdVerificationTaskResultItemSchema,
+        ](
+            result=AfdVerificationTaskResultSchema(
+                total_count=1,
             ),
-        ]
+            items=[
+                AfdVerificationTaskResultItemSchema(
+                    error=self._algo.get_error(),
+                    num_error_clusters=self._algo.get_num_error_clusters(),
+                    num_error_rows=self._algo.get_num_error_rows(),
+                    clusters=[
+                        self._extract_cluster(highlight, table)
+                        for highlight in self._algo.get_highlights()
+                    ],
+                    table_header=dataset.info.column_names,
+                    lhs_rhs_indices=params.config.lhs_indices
+                    + params.config.rhs_indices,
+                ),
+            ],
+        )
 
     def _extract_cluster(
         self, highlight: Highlight, table: pd.DataFrame

@@ -7,6 +7,7 @@ from pydantic import TypeAdapter
 
 from src.schemas.base_schemas import BaseSchema
 from src.schemas.dataset_schemas import DatasetType
+from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
 
 
 class BaseAlgoConfig(Protocol):
@@ -36,7 +37,7 @@ class BasePrimitive[
     A: Algorithm,
     N: StrEnum,
     P: BaseParams,
-    R: BaseSchema,
+    R: PrimitiveResultSchema,
 ](ABC):
     _algo: A
     _algo_map: Mapping[N, type[A]]
@@ -59,4 +60,4 @@ class BasePrimitive[
         return params.config.model_dump(exclude_unset=True, exclude={"algo_name"})
 
     @abstractmethod
-    def execute(self, params: P) -> list[R]: ...
+    def execute(self, params: P) -> R: ...

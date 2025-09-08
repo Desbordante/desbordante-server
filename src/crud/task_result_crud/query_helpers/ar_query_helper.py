@@ -2,7 +2,7 @@ import sqlalchemy
 
 from src.crud.task_result_crud.query_helpers.base_query_helper import BaseQueryHelper
 from src.models.task_result_models import TaskResultModel
-from src.schemas.task_schemas.ar.task_result import (
+from src.schemas.task_schemas.primitives.ar.task_result import (
     ArTaskResultFiltersSchema,
     ArTaskResultOrderingField,
 )

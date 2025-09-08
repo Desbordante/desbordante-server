@@ -8,7 +8,7 @@ from src.models.base_models import BaseModel
 from src.models.links import TaskDatasetLink
 from src.models.user_models import UserModel
 from src.schemas.base_schemas import PydanticType, TaskErrorSchema, TaskStatus
-from src.schemas.task_schemas.base_schemas import OneOfTaskParams
+from src.schemas.task_schemas.base_schemas import OneOfTaskParams, OneOfTaskResultSchema
 
 if TYPE_CHECKING:
     from src.models.dataset_models import DatasetModel
@@ -21,8 +21,8 @@ class TaskModel(BaseModel):
     params: Mapped[OneOfTaskParams] = mapped_column(PydanticType(OneOfTaskParams))
 
     status: Mapped[TaskStatus] = mapped_column(default=TaskStatus.Pending)
-    info: Mapped[TaskErrorSchema | None] = mapped_column(
-        PydanticType(TaskErrorSchema | None), default=None
+    result: Mapped[OneOfTaskResultSchema | TaskErrorSchema | None] = mapped_column(
+        PydanticType(OneOfTaskResultSchema | TaskErrorSchema | None), default=None
     )
 
     results: Mapped[list["TaskResultModel"]] = relationship(back_populates="task")
