@@ -1,8 +1,8 @@
 import json
 from enum import StrEnum
-from typing import Annotated, Any, Literal, Union
+from typing import Any
 
-from pydantic import Field, field_validator
+from pydantic import field_validator
 
 from src.schemas.base_schemas import BaseSchema, FiltersParamsSchema, OptionalSchema
 from src.schemas.task_schemas.primitives.base_schemas import BaseTaskResultSchema
@@ -17,7 +17,7 @@ class HighlightSchema(BaseSchema):
     value: list[str]
 
 
-class HighlightsClusterSchema(BaseSchema):
+class MfdVerificationTaskResultItemSchema(BaseSchema):
     cluster_index: int
     cluster_name: list[str]
     max_distance: float
@@ -25,24 +25,8 @@ class HighlightsClusterSchema(BaseSchema):
     highlights: list[HighlightSchema]
 
 
-class HoldsMfdVerificationSchema(BaseSchema):
-    mfd_holds: Literal[True]
-
-
-class NotHoldsMfdVerificationSchema(BaseSchema):
-    mfd_holds: Literal[False]
-    cluster_count: int
-    highlights_clusters: list[HighlightsClusterSchema]
-
-
-MfdVerificationTaskResultItemSchema = Annotated[
-    Union[HoldsMfdVerificationSchema, NotHoldsMfdVerificationSchema],
-    Field(discriminator="mfd_holds"),
-]
-
-
 class MfdVerificationTaskResultSchema(BaseTaskResultSchema):
-    pass
+    mfd_holds: bool
 
 
 class MfdVerificationTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):

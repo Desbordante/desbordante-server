@@ -16,11 +16,8 @@ from src.schemas.task_schemas.primitives.mfd_verification.task_params import (
 )
 from src.schemas.task_schemas.primitives.mfd_verification.task_result import (
     HighlightSchema,
-    HighlightsClusterSchema,
-    HoldsMfdVerificationSchema,
     MfdVerificationTaskResultItemSchema,
     MfdVerificationTaskResultSchema,
-    NotHoldsMfdVerificationSchema,
 )
 
 
@@ -55,9 +52,15 @@ class MfdVerificationPrimitive(
         self._algo.execute(**options)
 
         if self._algo.mfd_holds():
-            result = HoldsMfdVerificationSchema(mfd_holds=True)
+            return PrimitiveResultSchema(
+                result=MfdVerificationTaskResultSchema(
+                    total_count=0,
+                    mfd_holds=True,
+                ),
+                items=[],
+            )
         else:
-            hidhlights_clusters: list[HighlightsClusterSchema] = []
+            hidhlights_clusters: list[MfdVerificationTaskResultItemSchema] = []
             highlights_list = self._algo.get_highlights()
             for cluster_index, cluster in enumerate(highlights_list):
                 # get lhs values of the first row of the cluster
@@ -103,7 +106,7 @@ class MfdVerificationPrimitive(
                         )
                     )
                 hidhlights_clusters.append(
-                    HighlightsClusterSchema(
+                    MfdVerificationTaskResultItemSchema(
                         cluster_index=cluster_index,
                         cluster_name=cluster_name,
                         max_distance=max_distance,
@@ -112,17 +115,10 @@ class MfdVerificationPrimitive(
                     )
                 )
 
-            result = NotHoldsMfdVerificationSchema(
-                mfd_holds=False,
-                cluster_count=len(hidhlights_clusters),
-                highlights_clusters=hidhlights_clusters,
+            return PrimitiveResultSchema(
+                result=MfdVerificationTaskResultSchema(
+                    total_count=len(hidhlights_clusters),
+                    mfd_holds=False,
+                ),
+                items=hidhlights_clusters,
             )
-
-        return PrimitiveResultSchema[
-            MfdVerificationTaskResultSchema, MfdVerificationTaskResultItemSchema
-        ](
-            result=MfdVerificationTaskResultSchema(
-                total_count=1,
-            ),
-            items=[result],
-        )

@@ -11,7 +11,6 @@ from src.schemas.task_schemas.primitives.afd_verification.task_params import (
     AfdVerificationTaskParams,
 )
 from src.schemas.task_schemas.primitives.afd_verification.task_result import (
-    AfdClusterSchema,
     AfdVerificationTaskResultItemSchema,
     AfdVerificationTaskResultSchema,
 )
@@ -49,33 +48,25 @@ class AfdVerificationPrimitive(
 
         self._algo.execute(**options)
 
-        return PrimitiveResultSchema[
-            AfdVerificationTaskResultSchema,
-            AfdVerificationTaskResultItemSchema,
-        ](
+        clusters = [
+            self._extract_cluster(highlight, table)
+            for highlight in self._algo.get_highlights()
+        ]
+
+        return PrimitiveResultSchema(
             result=AfdVerificationTaskResultSchema(
-                total_count=1,
+                total_count=len(clusters),
+                error=self._algo.get_error(),
+                num_error_clusters=self._algo.get_num_error_clusters(),
+                num_error_rows=self._algo.get_num_error_rows(),
             ),
-            items=[
-                AfdVerificationTaskResultItemSchema(
-                    error=self._algo.get_error(),
-                    num_error_clusters=self._algo.get_num_error_clusters(),
-                    num_error_rows=self._algo.get_num_error_rows(),
-                    clusters=[
-                        self._extract_cluster(highlight, table)
-                        for highlight in self._algo.get_highlights()
-                    ],
-                    table_header=dataset.info.column_names,
-                    lhs_rhs_indices=params.config.lhs_indices
-                    + params.config.rhs_indices,
-                ),
-            ],
+            items=clusters,
         )
 
     def _extract_cluster(
         self, highlight: Highlight, table: pd.DataFrame
-    ) -> AfdClusterSchema:
-        return AfdClusterSchema(
+    ) -> AfdVerificationTaskResultItemSchema:
+        return AfdVerificationTaskResultItemSchema(
             num_distinct_rhs_values=highlight.num_distinct_rhs_values,
             most_frequent_rhs_value_proportion=highlight.most_frequent_rhs_value_proportion,
             rows=[

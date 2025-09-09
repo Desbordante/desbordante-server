@@ -42,7 +42,7 @@ class MfdVerificationEuclideanConfig(BaseMfdVerificationConfig):
 
 class MfdVerificationCosineConfig(BaseMfdVerificationConfig):
     metric: Literal[MfdVerificationMetrics.Cosine] = Field(..., description=METRIC)
-    q: float = Field(1, ge=0, description=Q)
+    # q: float = Field(1, ge=0, description=Q)
 
 
 class MfdVerificationLevenshteinConfig(BaseMfdVerificationConfig):
