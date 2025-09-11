@@ -11,7 +11,7 @@ class AfdVerificationTaskResultItemSchema(BaseSchema):
 
 
 class AfdVerificationTaskResultSchema(BaseTaskResultSchema):
-    error: float  # threshold
+    error: float
     num_error_clusters: int
     num_error_rows: int
 
