@@ -38,13 +38,15 @@ class AdcPrimitive(
 
         self._algo.execute(**options)
 
+        dcs = self._algo.get_dcs()
+
         return PrimitiveResultSchema[AdcTaskResultSchema, AdcTaskResultItemSchema](
             result=AdcTaskResultSchema(
-                total_count=len(self._algo.get_dcs()),
+                total_count=len(dcs),
             ),
             items=[
                 AdcTaskResultItemSchema(cojuncts=self._split_result(str(dc)))
-                for dc in self._algo.get_dcs()
+                for dc in dcs
             ],
         )
 
