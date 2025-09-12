@@ -1,4 +1,7 @@
+import re
+
 from desbordante.dc.algorithms import FastADC
+from pydantic import TypeAdapter
 
 from src.domain.task.primitives.base_primitive import BasePrimitive
 from src.schemas.dataset_schemas import DatasetType, TabularDownloadedDatasetSchema
@@ -9,6 +12,7 @@ from src.schemas.task_schemas.primitives.adc.task_result import (
     AdcTaskResultItemSchema,
     AdcTaskResultSchema,
 )
+from src.schemas.task_schemas.primitives.adc.types import Operator
 from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
 
 
@@ -44,20 +48,42 @@ class AdcPrimitive(
             result=AdcTaskResultSchema(
                 total_count=len(dcs),
             ),
-            items=[
-                AdcTaskResultItemSchema(cojuncts=self._split_result(str(dc)))
-                for dc in dcs
-            ],
+            items=[self._extract_result(str(dc)) for dc in dcs],
         )
 
-    def _split_result(self, row: str) -> list[AdcItemSchema]:
-        row_len = len(row)
-        row = row[2 : row_len - 1]
-        conjuncts = row.split("∧")
-        result = []
-        for con in conjuncts:
-            left_item, sign, right_item = con.split()
-            result.append(
-                AdcItemSchema(left_item=left_item, sign=sign, right_item=right_item)  # type: ignore
+    def _extract_result(self, dc: str) -> AdcTaskResultItemSchema:
+        dc_clean = re.sub(r"^¬\{\s*|\s*\}$", "", dc.strip())
+        conjuncts = re.split(r"\s*∧\s*", dc_clean)
+
+        cojuncts = []
+        left_columns = set()
+        right_columns = set()
+        for conjunct in conjuncts:
+            match = re.match(
+                r"([ts])\.(\w+)\s*(<=|>=|<|>|==|!=)\s*([ts])\.(\w+)", conjunct.strip()
             )
-        return result
+
+            if not match:
+                continue
+
+            left_prefix, left_column, operator, right_prefix, right_column = (
+                match.groups()
+            )
+
+            cojuncts.append(
+                AdcItemSchema(
+                    left_prefix=left_prefix,
+                    left_column=left_column,
+                    right_prefix=right_prefix,
+                    right_column=right_column,
+                    operator=TypeAdapter(Operator).validate_python(operator),
+                )
+            )
+            left_columns.add(left_column)
+            right_columns.add(right_column)
+
+        return AdcTaskResultItemSchema(
+            cojuncts=cojuncts,
+            left_columns=sorted(left_columns),
+            right_columns=sorted(right_columns),
+        )
