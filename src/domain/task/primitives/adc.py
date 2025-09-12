@@ -35,6 +35,7 @@ class AdcPrimitive(
     def execute(self, params: AdcTaskParams[TabularDownloadedDatasetSchema]):
         dataset = params.datasets.table
         table = dataset.df
+        column_names = dataset.info.column_names
 
         self._algo.load_data(table=table)
 
@@ -48,16 +49,20 @@ class AdcPrimitive(
             result=AdcTaskResultSchema(
                 total_count=len(dcs),
             ),
-            items=[self._extract_result(str(dc)) for dc in dcs],
+            items=[self._extract_result(str(dc), column_names) for dc in dcs],
         )
 
-    def _extract_result(self, dc: str) -> AdcTaskResultItemSchema:
+    def _extract_result(
+        self, dc: str, column_names: list[str]
+    ) -> AdcTaskResultItemSchema:
         dc_clean = re.sub(r"^¬\{\s*|\s*\}$", "", dc.strip())
         conjuncts = re.split(r"\s*∧\s*", dc_clean)
 
         cojuncts = []
         left_columns = set()
         right_columns = set()
+        left_indices = set()
+        right_indices = set()
         for conjunct in conjuncts:
             match = re.match(
                 r"([ts])\.(\w+)\s*(<=|>=|<|>|==|!=)\s*([ts])\.(\w+)", conjunct.strip()
@@ -70,10 +75,15 @@ class AdcPrimitive(
                 match.groups()
             )
 
+            left_index = column_names.index(left_column)
+            right_index = column_names.index(right_column)
+
             cojuncts.append(
                 AdcItemSchema(
                     left_prefix=left_prefix,
                     left_column=left_column,
+                    left_index=left_index,
+                    right_index=right_index,
                     right_prefix=right_prefix,
                     right_column=right_column,
                     operator=TypeAdapter(Operator).validate_python(operator),
@@ -86,4 +96,6 @@ class AdcPrimitive(
             cojuncts=cojuncts,
             left_columns=sorted(left_columns),
             right_columns=sorted(right_columns),
+            left_indices=sorted(left_indices),
+            right_indices=sorted(right_indices),
         )

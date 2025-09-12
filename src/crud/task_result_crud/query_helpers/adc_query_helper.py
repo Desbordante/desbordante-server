@@ -21,6 +21,12 @@ class AdcQueryHelper(
                 return TaskResultModel.result[
                     AdcTaskResultItemField.RightColumns
                 ].astext
+            case AdcTaskResultOrderingField.LeftIndices:
+                return TaskResultModel.result[AdcTaskResultItemField.LeftIndices].astext
+            case AdcTaskResultOrderingField.RightIndices:
+                return TaskResultModel.result[
+                    AdcTaskResultItemField.RightIndices
+                ].astext
             case AdcTaskResultOrderingField.NumberOfConjuncts:
                 return func.jsonb_array_length(
                     TaskResultModel.result[AdcTaskResultItemField.Cojuncts]
@@ -47,5 +53,17 @@ class AdcQueryHelper(
                 cast(filters.right_columns, JSONB)
             )
             if filters.right_columns
+            else None,
+            # left_indices
+            TaskResultModel.result[AdcTaskResultItemField.LeftIndices].op("<@")(
+                cast(filters.left_indices, JSONB)
+            )
+            if filters.left_indices
+            else None,
+            # right_indices
+            TaskResultModel.result[AdcTaskResultItemField.RightIndices].op("<@")(
+                cast(filters.right_indices, JSONB)
+            )
+            if filters.right_indices
             else None,
         ]
