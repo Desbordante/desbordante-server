@@ -83,16 +83,18 @@ class MdPrimitive(
 
         self._algo.execute(**{**options, "column_matches": column_matches})
 
+        mds = self._algo.get_mds()
+
         return PrimitiveResultSchema[MdTaskResultSchema, MdTaskResultItemSchema](
             result=MdTaskResultSchema(
-                total_count=len(self._algo.get_mds()),
+                total_count=len(mds),
             ),
             items=[
                 MdTaskResultItemSchema(
                     lhs=self._extract_side(md.get_description().lhs),
                     rhs=self._extract_side([md.get_description().rhs]),
                 )
-                for md in self._algo.get_mds()
+                for md in mds
             ],
         )
 

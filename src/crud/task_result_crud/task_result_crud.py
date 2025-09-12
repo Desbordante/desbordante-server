@@ -1,8 +1,9 @@
 from typing import Sequence, TypedDict, Unpack
 from uuid import UUID
 
-from sqlalchemy import ColumnElement, ColumnExpressionArgument
+from sqlalchemy import ColumnElement, ColumnExpressionArgument, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Bundle
 
 from src.crud.base_crud import BaseCrud
 from src.crud.task_result_crud.query_helpers.base_query_helper import BaseQueryHelper
@@ -55,9 +56,37 @@ class TaskResultCrud(BaseCrud[TaskResultModel, UUID]):
         query_params: TaskResultQueryParamsSchema,
         **kwargs: Unpack[TaskResultFindProps],
     ) -> PaginatedResult[TaskResultModel]:
-        return await super().get_many(
+        filtered_result_column = self._query_helper.get_filtered_result_column(
+            query_params.filters
+        )
+
+        cte = (
+            select(
+                TaskResultModel.id,
+                filtered_result_column.label("result"),
+                TaskResultModel.task_id,
+                TaskResultModel.created_at,
+                TaskResultModel.updated_at,
+            )
+            .filter_by(**kwargs)
+            .cte("filtered_results")
+        )
+
+        query = select(
+            Bundle(
+                "TaskResultModel",
+                cte.c.id,
+                cte.c.result,
+                cte.c.task_id,
+                cte.c.created_at,
+                cte.c.updated_at,
+            )
+        )
+
+        return await super()._get_many(
             pagination=pagination,
             query_params=query_params,
+            query=query,
             **kwargs,
         )
 

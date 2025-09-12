@@ -5,6 +5,7 @@ from uuid import UUID
 from sqlalchemy import (
     ColumnElement,
     ColumnExpressionArgument,
+    Select,
     asc,
     desc,
     exc,
@@ -76,10 +77,22 @@ class BaseCrud[
         query_params: Any,
         **kwargs: Unpack[BaseFindProps[IdType]],
     ) -> PaginatedResult[ModelType]:
-        query = select(
-            self.model,
-            func.count().over().label("total_count"),
-        ).filter_by(**kwargs)
+        return await self._get_many(
+            pagination=pagination, query_params=query_params, **kwargs
+        )
+
+    async def _get_many(
+        self,
+        *,
+        pagination: PaginationParamsSchema,
+        query_params: Any,
+        query: Select[tuple[ModelType]] | None = None,
+        **kwargs: Unpack[BaseFindProps[IdType]],
+    ) -> PaginatedResult[ModelType]:
+        query = select(self.model) if query is None else query
+
+        query = query.add_columns(func.count().over().label("total_count"))
+        query = query.filter_by(**kwargs)
 
         filters = [
             filter

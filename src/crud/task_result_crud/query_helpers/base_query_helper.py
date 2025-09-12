@@ -16,3 +16,6 @@ class BaseQueryHelper[O = Any, F = Any](ABC):
         self, filters: F
     ) -> Sequence[ColumnExpressionArgument[bool] | None]:
         return []
+
+    def get_filtered_result_column(self, filters: F) -> Any:
+        return TaskResultModel.result

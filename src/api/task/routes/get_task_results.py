@@ -2,6 +2,7 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, status
+from pydantic import TypeAdapter
 
 from src.api.dependencies import PaginationParamsDep
 from src.api.task.dependencies import (
@@ -12,6 +13,7 @@ from src.api.task.dependencies import (
 from src.schemas.base_schemas import ApiErrorSchema
 from src.schemas.task_schemas.base_schemas import (
     OneOfPaginatedTaskResponseSchema,
+    OneOfTaskResultItemSchema,
     PaginatedTaskResponseSchema,
 )
 
@@ -45,7 +47,10 @@ async def get_task_results(
     return PaginatedTaskResponseSchema(
         primitive_name=task.params.primitive_name,
         result=task.result,
-        items=[r.result for r in results.items],
+        items=[
+            TypeAdapter(OneOfTaskResultItemSchema).validate_python(r.result)
+            for r in results.items
+        ],
         total_count=results.total_count,
         limit=results.limit,
         offset=results.offset,
