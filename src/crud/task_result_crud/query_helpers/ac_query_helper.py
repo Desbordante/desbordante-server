@@ -1,3 +1,4 @@
+import sqlalchemy as sa
 from sqlalchemy import func
 
 from src.crud.task_result_crud.query_helpers.base_query_helper import BaseQueryHelper
@@ -14,6 +15,15 @@ class AcQueryHelper(
 ):
     def get_ordering_field(self, order_by: AcTaskResultOrderingField):
         match order_by:
+            case AcTaskResultOrderingField.LeftIndex:
+                return func.cast(
+                    TaskResultModel.result[AcTaskResultField.LeftIndex], sa.Integer
+                )
+            case AcTaskResultOrderingField.RightIndex:
+                return func.cast(
+                    TaskResultModel.result[AcTaskResultField.RightIndex],
+                    sa.Integer,
+                )
             case AcTaskResultOrderingField.LeftColumn:
                 return TaskResultModel.result[AcTaskResultField.LeftColumn].astext
             case AcTaskResultOrderingField.RightColumn:
@@ -34,6 +44,18 @@ class AcQueryHelper(
             # search
             TaskResultModel.result.astext.icontains(filters.search)
             if filters.search
+            else None,
+            # left index
+            func.cast(
+                TaskResultModel.result[AcTaskResultField.LeftIndex], sa.Integer
+            ).in_(filters.left_indices)
+            if filters.left_indices
+            else None,
+            # right index
+            func.cast(
+                TaskResultModel.result[AcTaskResultField.RightIndex], sa.Integer
+            ).in_(filters.right_indices)
+            if filters.right_indices
             else None,
             # left column
             TaskResultModel.result[AcTaskResultField.LeftColumn].astext.in_(

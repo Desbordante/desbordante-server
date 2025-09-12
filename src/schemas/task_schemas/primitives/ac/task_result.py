@@ -12,6 +12,8 @@ class AcExceptionSchema(BaseSchema):
 
 
 class AcTaskResultField(StrEnum):
+    LeftIndex = "left_index"
+    RightIndex = "right_index"
     LeftColumn = "left_column"
     RightColumn = "right_column"
     Ranges = "ranges"
@@ -19,8 +21,11 @@ class AcTaskResultField(StrEnum):
 
 
 class AcTaskResultItemSchema(BaseSchema):
+    left_index: int
+    right_index: int
     left_column: str
     right_column: str
+
     ranges: list[tuple[float, float]]
     exceptions: list[AcExceptionSchema]
 
@@ -32,10 +37,14 @@ class AcTaskResultSchema(BaseTaskResultSchema):
 class AcTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
     left_columns: list[str]
     right_columns: list[str]
+    left_indices: list[int]
+    right_indices: list[int]
 
 
 class AcTaskResultOrderingField(StrEnum):
     LeftColumn = "left_column"
     RightColumn = "right_column"
+    LeftIndex = "left_index"
+    RightIndex = "right_index"
     NumberOfRanges = "number_of_ranges"
     NumberOfExceptions = "number_of_exceptions"
