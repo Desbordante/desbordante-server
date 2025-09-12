@@ -13,8 +13,8 @@ NULL_EQUAL_DESC = "Whether two NULL values should be considered equal"
 
 class FDVerifierConfig(BaseSchema):
     algo_name: Literal[AfdVerificationAlgoName.FDVerifier]
-    lhs_indices: list[int] = Field(..., description=LHS_INDICES)
-    rhs_indices: list[int] = Field(..., description=RHS_INDICES)
+    lhs_indices: list[int] = Field(default=[0], description=LHS_INDICES)
+    rhs_indices: list[int] = Field(default=[1], description=RHS_INDICES)
     is_null_equal_null: bool = Field(False, description=NULL_EQUAL_DESC)
 
 
