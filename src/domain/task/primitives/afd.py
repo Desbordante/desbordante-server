@@ -1,4 +1,3 @@
-import desbordante.afd
 import desbordante.fd
 from desbordante.afd.algorithms import (
     Pyro,
@@ -51,10 +50,10 @@ class AfdPrimitive(
             ),
             items=[
                 AfdTaskResultItemSchema(
-                    lhs_indices=fd.lhs_indices,
-                    lhs_names=[columns[index] for index in fd.lhs_indices],
-                    rhs_index=fd.rhs_index,
-                    rhs_name=columns[fd.rhs_index],
+                    left_indices=fd.lhs_indices,
+                    left_columns=[columns[index] for index in fd.lhs_indices],
+                    right_index=fd.rhs_index,
+                    right_column=columns[fd.rhs_index],
                 )
                 for fd in fds
             ],

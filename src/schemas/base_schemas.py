@@ -5,7 +5,7 @@ from typing import Annotated, Any
 
 from fastapi import Depends
 from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, model_validator
 from sqlalchemy import JSON, Dialect, TypeDecorator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql.type_api import TypeEngine
@@ -147,6 +147,23 @@ class OrderingParamsSchema[T: str](BaseSchema):
 
 class FiltersParamsSchema(BaseSchema):
     search: str | None = ""
+
+    @model_validator(mode="before")
+    @classmethod
+    def parse_json_strings(cls, values: Any) -> Any:
+        if not isinstance(values, dict):
+            return values
+
+        for field_name, value in values.items():
+            if isinstance(value, str) and value.startswith("["):
+                try:
+                    parsed = json.loads(value)
+                    if isinstance(parsed, list):
+                        values[field_name] = parsed
+                except (json.JSONDecodeError, TypeError):
+                    pass
+
+        return values
 
 
 class QueryParamsSchema[T: FiltersParamsSchema, U: str](BaseSchema):

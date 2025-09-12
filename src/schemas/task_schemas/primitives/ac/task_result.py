@@ -11,7 +11,7 @@ class AcExceptionSchema(BaseSchema):
     right_value: float
 
 
-class AcTaskResultField(StrEnum):
+class AcTaskResultItemField(StrEnum):
     LeftIndex = "left_index"
     RightIndex = "right_index"
     LeftColumn = "left_column"

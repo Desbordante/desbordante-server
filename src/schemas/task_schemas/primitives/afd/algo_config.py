@@ -24,7 +24,7 @@ class BaseAfdConfig(BaseSchema):
 
 class AFDPyroConfig(BaseAfdConfig):
     algo_name: Literal[AfdAlgoName.Pyro]
-    threads: int = Field(default=0, ge=0, description=THREADS_DESC)
+    # threads: int = Field(default=0, ge=0, description=THREADS_DESC)
     seed: int = Field(default=0, description=SEED_DESC)
 
 

@@ -17,7 +17,7 @@ class AdcTaskResultSchema(BaseTaskResultSchema):
     pass
 
 
-class AdcTaskResultField(StrEnum):
+class AdcTaskResultItemField(StrEnum):
     Cojuncts = "cojuncts"
     LeftColumns = "left_columns"
     RightColumns = "right_columns"
