@@ -3,6 +3,7 @@ from typing import Annotated, Literal
 from pydantic import Field
 
 from src.schemas.base_schemas import BaseSchema
+from src.schemas.task_schemas.primitives.ac.types import BinOperation
 
 from .algo_name import AcAlgoName
 
@@ -17,13 +18,14 @@ BIN_OPERATION = "one of available operations: /, *, +, -"
 
 class BHUNTConfig(BaseSchema):
     algo_name: Literal[AcAlgoName.BHUNT]
-    bumps_limit: int = Field(0, ge=0, description=BUMPS_LIMIT)
-    ac_seed: int = Field(11, ge=0, description=AC_SEED)
-    iterations_limit: int = Field(4, ge=1, description=ITERATION_LIMIT)
-    fuzziness: float = Field(0.2, ge=0, le=1, description=FUZZINESS)
-    p_fuzz: float = Field(0.85, gt=0, le=1, description=P_FUZZ)
-    weight: float = Field(0.1, gt=0, le=1, description=WEIGHT)
-    bin_operation: Literal["+", "-", "*", "/"] = Field("-", description=BIN_OPERATION)
+
+    weight: float = Field(default=0.1, gt=0, le=1, description=WEIGHT)
+    bumps_limit: int = Field(default=0, ge=0, description=BUMPS_LIMIT)
+    ac_seed: int = Field(default=11, ge=0, description=AC_SEED)
+    iterations_limit: int = Field(default=4, ge=1, description=ITERATION_LIMIT)
+    fuzziness: float = Field(default=0.2, ge=0, le=1, description=FUZZINESS)
+    p_fuzz: float = Field(default=0.85, gt=0, le=1, description=P_FUZZ)
+    bin_operation: BinOperation = Field(default="-", description=BIN_OPERATION)
 
 
 OneOfAcAlgoConfig = Annotated[

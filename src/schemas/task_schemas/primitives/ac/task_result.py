@@ -1,33 +1,41 @@
 from enum import StrEnum
 
 from src.schemas.base_schemas import BaseSchema, FiltersParamsSchema, OptionalSchema
+from src.schemas.task_schemas.primitives.ac.types import BinOperation
 from src.schemas.task_schemas.primitives.base_schemas import BaseTaskResultSchema
 
 
+class AcExceptionSchema(BaseSchema):
+    row_index: int
+    left_value: float
+    right_value: float
+
+
+class AcTaskResultField(StrEnum):
+    LeftColumn = "left_column"
+    RightColumn = "right_column"
+    Ranges = "ranges"
+    Exceptions = "exceptions"
+
+
 class AcTaskResultItemSchema(BaseSchema):
-    left_column_index: int
-    right_column_index: int
-    left_column_name: str
-    right_column_name: str
+    left_column: str
+    right_column: str
     ranges: list[tuple[float, float]]
-    exceptions: list[int]
+    exceptions: list[AcExceptionSchema]
 
 
 class AcTaskResultSchema(BaseTaskResultSchema):
-    pass
+    bin_operation: BinOperation
 
 
 class AcTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
-    left_column_index: int
-    right_column_index: int
-    left_column_name: str
-    right_column_name: str
+    left_columns: list[str]
+    right_columns: list[str]
 
 
 class AcTaskResultOrderingField(StrEnum):
-    LeftColumnIndex = "left_column_index"
-    RightColumnIndex = "right_column_index"
-    LeftColumnName = "left_column_name"
-    RightColumnName = "right_column_name"
+    LeftColumn = "left_column"
+    RightColumn = "right_column"
     NumberOfRanges = "number_of_ranges"
     NumberOfExceptions = "number_of_exceptions"

@@ -1,3 +1,4 @@
+import pandas as pd
 from desbordante.ac import ACException
 from desbordante.ac.algorithms import AcAlgorithm as BHUNT
 
@@ -6,6 +7,7 @@ from src.schemas.dataset_schemas import DatasetType, TabularDownloadedDatasetSch
 from src.schemas.task_schemas.primitives.ac.algo_name import AcAlgoName
 from src.schemas.task_schemas.primitives.ac.task_params import AcTaskParams
 from src.schemas.task_schemas.primitives.ac.task_result import (
+    AcExceptionSchema,
     AcTaskResultItemSchema,
     AcTaskResultSchema,
 )
@@ -41,30 +43,37 @@ class AcPrimitive(
 
         ac_exceptions = self._algo.get_ac_exceptions()
         ac_ranges = self._algo.get_ac_ranges()
-        new_exceptions = self._extract_exceptions(ac_exceptions)
+        exceptions = self._extract_exceptions(ac_exceptions, table)
 
         return PrimitiveResultSchema[AcTaskResultSchema, AcTaskResultItemSchema](
             result=AcTaskResultSchema(
                 total_count=len(ac_ranges),
+                bin_operation=params.config.bin_operation,
             ),
             items=[
                 AcTaskResultItemSchema(
-                    left_column_index=range.column_indices[0],
-                    right_column_index=range.column_indices[1],
-                    left_column_name=column_names[range.column_indices[0]],
-                    right_column_name=column_names[range.column_indices[1]],
+                    left_column=column_names[range.column_indices[0]],
+                    right_column=column_names[range.column_indices[1]],
                     ranges=range.ranges,
-                    exceptions=new_exceptions.setdefault(range.column_indices, []),
+                    exceptions=exceptions.setdefault(range.column_indices, []),
                 )
                 for range in ac_ranges
             ],
         )
 
-    def _extract_exceptions(self, exceptions: list[ACException]):
-        columns_dict = dict()
-        for ex in exceptions:
-            for col in ex.column_pairs:
-                if col not in columns_dict:
-                    columns_dict[col] = []
-                columns_dict[col].append(ex.row_index)
+    def _extract_exceptions(
+        self, exceptions: list[ACException], table: pd.DataFrame
+    ) -> dict[tuple[int, int], list[AcExceptionSchema]]:
+        columns_dict = {}
+        for e in exceptions:
+            for col in e.column_pairs:
+                row = table.iloc[e.row_index]
+
+                columns_dict.setdefault(col, []).append(
+                    AcExceptionSchema(
+                        row_index=e.row_index,
+                        left_value=row[col[0]],
+                        right_value=row[col[1]],
+                    )
+                )
         return columns_dict
