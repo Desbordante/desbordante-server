@@ -60,16 +60,16 @@ class FdPrimitive(
 
         fds = self._algo.get_fds()
 
-        return PrimitiveResultSchema[FdTaskResultSchema, FdTaskResultItemSchema](
+        return PrimitiveResultSchema(
             result=FdTaskResultSchema(
                 total_count=len(fds),
             ),
             items=[
                 FdTaskResultItemSchema(
-                    lhs_indices=fd.lhs_indices,
-                    lhs_names=[columns[index] for index in fd.lhs_indices],
-                    rhs_index=fd.rhs_index,
-                    rhs_name=columns[fd.rhs_index],
+                    left_indices=fd.lhs_indices,
+                    left_columns=[columns[index] for index in fd.lhs_indices],
+                    right_index=fd.rhs_index,
+                    right_column=columns[fd.rhs_index],
                 )
                 for fd in fds
             ],

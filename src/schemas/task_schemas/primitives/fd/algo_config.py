@@ -31,7 +31,7 @@ class AidConfig(BaseFdConfig):
 
 class DFDConfig(BaseFdConfig):
     algo_name: Literal[FdAlgoName.DFD]
-    threads: int = Field(default=0, ge=0, le=8, description=THREADS_DESC)
+    # threads: int = Field(default=0, ge=0, le=8, description=THREADS_DESC)
     is_null_equal_null: bool = Field(default=False, description=NULL_EQUAL_DESC)
 
 
@@ -57,7 +57,7 @@ class FUNConfig(BaseFdConfig):
 
 class FastFDsConfig(BaseFdConfig):
     algo_name: Literal[FdAlgoName.FastFDs]
-    threads: int = Field(default=0, ge=0, description=THREADS_DESC)
+    # threads: int = Field(default=0, ge=0, description=THREADS_DESC)
     is_null_equal_null: bool = Field(default=False, description=NULL_EQUAL_DESC)
 
 
@@ -68,13 +68,13 @@ class FdMineConfig(BaseFdConfig):
 
 class HyFDConfig(BaseFdConfig):
     algo_name: Literal[FdAlgoName.HyFD]
-    threads: int = Field(default=0, ge=0, description=THREADS_DESC)
+    # threads: int = Field(default=0, ge=0, description=THREADS_DESC)
     is_null_equal_null: bool = Field(default=False, description=NULL_EQUAL_DESC)
 
 
 class PyroConfig(BaseFdConfig):
     algo_name: Literal[FdAlgoName.Pyro]
-    threads: int = Field(default=0, ge=0, description=THREADS_DESC)
+    # threads: int = Field(default=0, ge=0, description=THREADS_DESC)
     is_null_equal_null: bool = Field(default=False, description=NULL_EQUAL_DESC)
     seed: int = Field(default=0, description=SEED_DESC)
 

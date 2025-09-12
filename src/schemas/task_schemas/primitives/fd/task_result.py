@@ -1,18 +1,22 @@
-import json
 from enum import StrEnum
-from typing import Any
 
-from pydantic import field_validator
 
 from src.schemas.base_schemas import BaseSchema, FiltersParamsSchema, OptionalSchema
 from src.schemas.task_schemas.primitives.base_schemas import BaseTaskResultSchema
 
 
 class FdTaskResultItemSchema(BaseSchema):
-    lhs_indices: list[int]
-    lhs_names: list[str]
-    rhs_index: int
-    rhs_name: str
+    left_indices: list[int]
+    left_columns: list[str]
+    right_index: int
+    right_column: str
+
+
+class FdTaskResultItemField(StrEnum):
+    LeftIndices = "left_indices"
+    LeftColumns = "left_columns"
+    RightIndex = "right_index"
+    RightColumn = "right_column"
 
 
 class FdTaskResultSchema(BaseTaskResultSchema):
@@ -20,19 +24,15 @@ class FdTaskResultSchema(BaseTaskResultSchema):
 
 
 class FdTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
-    lhs_indices: list[int]
-    lhs_names: list[str]
-    rhs_index: int
-    rhs_name: str
-
-    @field_validator("lhs_indices", "lhs_names", mode="before")
-    @classmethod
-    def parse_json_arrays(cls, value: Any) -> list:
-        return json.loads(value) if isinstance(value, str) else value
+    left_indices: list[int]
+    left_columns: list[str]
+    right_index: int
+    right_column: str
 
 
 class FdTaskResultOrderingField(StrEnum):
-    LhsIndices = "lhs_indices"
-    LhsNames = "lhs_names"
-    RhsIndex = "rhs_index"
-    RhsName = "rhs_name"
+    LeftIndices = "left_indices"
+    LeftColumns = "left_columns"
+    RightIndex = "right_index"
+    RightColumn = "right_column"
+    NumberOfLeftColumns = "number_of_left_columns"

@@ -44,7 +44,7 @@ class AfdPrimitive(
 
         fds = self._algo.get_fds()
 
-        return PrimitiveResultSchema[AfdTaskResultSchema, AfdTaskResultItemSchema](
+        return PrimitiveResultSchema(
             result=AfdTaskResultSchema(
                 total_count=len(fds),
             ),
