@@ -69,8 +69,8 @@ class DdPrimitive(
 
         lhs_items = [
             DdSideItemSchema(
-                column_name=name,
-                column_index=column_names.index(name),
+                name=name,
+                index=column_names.index(name),
                 distance_interval=(int(start), int(end)),
             )
             for name, start, end in re.findall(item_pattern, lhs_part)
@@ -82,8 +82,8 @@ class DdPrimitive(
 
         rhs_name, rhs_start, rhs_end = rhs_match.groups()
         rhs_item = DdSideItemSchema(
-            column_name=rhs_name,
-            column_index=column_names.index(rhs_name),
+            name=rhs_name,
+            index=column_names.index(rhs_name),
             distance_interval=(int(rhs_start), int(rhs_end)),
         )
 
