@@ -26,31 +26,31 @@ class FullColumnMatch(BaseColumnMatch):
 
 
 class EqualityConfig(BaseColumnMatch):
-    metric: Literal[ColumnMatchMetric.Equality]
+    metric: Literal[ColumnMatchMetric.EQUALITY]
 
 
 class JaccardConfig(FullColumnMatch):
-    metric: Literal[ColumnMatchMetric.Jaccard]
+    metric: Literal[ColumnMatchMetric.JACCARD]
 
 
 class LevenshteinConfig(FullColumnMatch):
-    metric: Literal[ColumnMatchMetric.Levenshtein]
+    metric: Literal[ColumnMatchMetric.LEVENSHTEIN]
 
 
 class MongeElkanConfig(FullColumnMatch):
-    metric: Literal[ColumnMatchMetric.Monge_Elkan]
+    metric: Literal[ColumnMatchMetric.MONGE_ELKAN]
 
 
 class LcsConfig(FullColumnMatch):
-    metric: Literal[ColumnMatchMetric.Lcs]
+    metric: Literal[ColumnMatchMetric.LCS]
 
 
 class LVNormNumberDistanceConfig(FullColumnMatch):
-    metric: Literal[ColumnMatchMetric.Number_Difference]
+    metric: Literal[ColumnMatchMetric.NUMBER_DIFFERENCE]
 
 
 class LVNormDateDistanceConfig(FullColumnMatch):
-    metric: Literal[ColumnMatchMetric.Date_Difference]
+    metric: Literal[ColumnMatchMetric.DATE_DIFFERENCE]
 
 
 OneOfColumnMatchesConfig = Annotated[
@@ -68,7 +68,7 @@ OneOfColumnMatchesConfig = Annotated[
 
 
 class HyMDConfig(BaseSchema):
-    algo_name: Literal[MdAlgoName.HyMD]
+    algo_name: Literal[MdAlgoName.HY_MD]
     min_support: int | None = Field(default=None, ge=0, description=MIN_SUPPORT)
     column_matches: list[OneOfColumnMatchesConfig]
     level_definition: Literal["cardinality", "lattice"] = Field(

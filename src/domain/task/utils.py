@@ -33,7 +33,7 @@ def download_dataset(dataset: DatasetModel) -> OneOfDownloadedDatasetSchema:
     data = storage.download_file_sync(path=dataset.path)
 
     match dataset.type:
-        case DatasetType.Tabular:
+        case DatasetType.TABULAR:
             params = TabularDatasetParams.model_validate(dataset.params)
             info = TabularDatasetInfo.model_validate(dataset.info)
             df = pd.read_csv(  # type: ignore
@@ -42,7 +42,7 @@ def download_dataset(dataset: DatasetModel) -> OneOfDownloadedDatasetSchema:
                 header=0 if params.has_header else None,
             )
             return TabularDownloadedDatasetSchema(df=df, params=params, info=info)
-        case DatasetType.Transactional:
+        case DatasetType.TRANSACTIONAL:
             params = TransactionalDatasetParams.model_validate(dataset.params)
             info = TransactionalDatasetInfo.model_validate(dataset.info)
             df = pd.read_csv(  # type: ignore
@@ -52,7 +52,7 @@ def download_dataset(dataset: DatasetModel) -> OneOfDownloadedDatasetSchema:
             )
             return TransactionalDownloadedDatasetSchema(df=df, params=params, info=info)
 
-        case DatasetType.Graph:
+        case DatasetType.GRAPH:
             graph = nx.Graph(nx_pydot.read_dot(BytesIO(data)))  # type: ignore
             params = GraphDatasetParams.model_validate(dataset.params)
             info = GraphDatasetInfo.model_validate(dataset.info)

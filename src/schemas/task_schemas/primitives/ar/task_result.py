@@ -8,10 +8,10 @@ from src.schemas.task_schemas.primitives.base_schemas import BaseTaskResultSchem
 
 
 class ArTaskResultItemField(StrEnum):
-    LhsValues = "lhs_values"
-    RhsValues = "rhs_values"
-    Support = "support"
-    Confidence = "confidence"
+    LHS_VALUES = "lhs_values"
+    RHS_VALUES = "rhs_values"
+    SUPPORT = "support"
+    CONFIDENCE = "confidence"
 
 
 class ArTaskResultItemSchema(BaseSchema):
@@ -50,7 +50,7 @@ class ArTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
 
 
 class ArTaskResultOrderingField(StrEnum):
-    LhsValues = "lhs_values"
-    RhsValues = "rhs_values"
-    Support = "support"
-    Confidence = "confidence"
+    LHS_VALUES = "lhs_values"
+    RHS_VALUES = "rhs_values"
+    SUPPORT = "support"
+    CONFIDENCE = "confidence"

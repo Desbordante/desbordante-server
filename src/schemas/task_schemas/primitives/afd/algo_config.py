@@ -23,12 +23,12 @@ class BaseAfdConfig(BaseSchema):
 
 
 class AFDPyroConfig(BaseAfdConfig):
-    algo_name: Literal[AfdAlgoName.Pyro]
+    algo_name: Literal[AfdAlgoName.PYRO]
     seed: int | None = Field(default=None, description=SEED_DESC)
 
 
 class AFDTaneConfig(BaseAfdConfig):
-    algo_name: Literal[AfdAlgoName.Tane]
+    algo_name: Literal[AfdAlgoName.TANE]
     afd_error_measure: Literal["g1", "pdep", "tau", "mu_plus", "rho"] = Field(
         default="g1", description=AFD_ERROR_DESC
     )

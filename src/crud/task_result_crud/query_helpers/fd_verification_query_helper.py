@@ -17,23 +17,25 @@ class FdVerificationQueryHelper(
 ):
     def get_ordering_field(self, order_by: FdVerificationTaskResultOrderingField):
         match order_by:
-            case FdVerificationTaskResultOrderingField.NumberOfDistinctRhsValues:
+            case FdVerificationTaskResultOrderingField.NUMBER_OF_DISTINCT_RHS_VALUES:
                 return func.cast(
                     TaskResultModel.result[
-                        FdVerificationTaskResultItemField.NumberOfDistinctRhsValues
+                        FdVerificationTaskResultItemField.NUMBER_OF_DISTINCT_RHS_VALUES
                     ],
                     sa.Integer,
                 )
-            case FdVerificationTaskResultOrderingField.MostFrequentRhsValueProportion:
+            case (
+                FdVerificationTaskResultOrderingField.MOST_FREQUENT_RHS_VALUE_PROPORTION
+            ):
                 return func.cast(
                     TaskResultModel.result[
-                        FdVerificationTaskResultItemField.MostFrequentRhsValueProportion
+                        FdVerificationTaskResultItemField.MOST_FREQUENT_RHS_VALUE_PROPORTION
                     ],
                     sa.Float,
                 )
-            case FdVerificationTaskResultOrderingField.NumberOfRows:
+            case FdVerificationTaskResultOrderingField.NUMBER_OF_ROWS:
                 return func.jsonb_array_length(
-                    TaskResultModel.result[FdVerificationTaskResultItemField.Rows]
+                    TaskResultModel.result[FdVerificationTaskResultItemField.ROWS]
                 )
 
         super().get_ordering_field(order_by)
@@ -47,7 +49,7 @@ class FdVerificationQueryHelper(
             # min_number_of_distinct_rhs_values
             func.cast(
                 TaskResultModel.result[
-                    FdVerificationTaskResultItemField.NumberOfDistinctRhsValues
+                    FdVerificationTaskResultItemField.NUMBER_OF_DISTINCT_RHS_VALUES
                 ],
                 sa.Integer,
             )
@@ -57,7 +59,7 @@ class FdVerificationQueryHelper(
             # max_number_of_distinct_rhs_values
             func.cast(
                 TaskResultModel.result[
-                    FdVerificationTaskResultItemField.NumberOfDistinctRhsValues
+                    FdVerificationTaskResultItemField.NUMBER_OF_DISTINCT_RHS_VALUES
                 ],
                 sa.Integer,
             )
@@ -67,7 +69,7 @@ class FdVerificationQueryHelper(
             # min_most_frequent_rhs_value_proportion
             func.cast(
                 TaskResultModel.result[
-                    FdVerificationTaskResultItemField.MostFrequentRhsValueProportion
+                    FdVerificationTaskResultItemField.MOST_FREQUENT_RHS_VALUE_PROPORTION
                 ],
                 sa.Float,
             )
@@ -77,7 +79,7 @@ class FdVerificationQueryHelper(
             # max_most_frequent_rhs_value_proportion
             func.cast(
                 TaskResultModel.result[
-                    FdVerificationTaskResultItemField.MostFrequentRhsValueProportion
+                    FdVerificationTaskResultItemField.MOST_FREQUENT_RHS_VALUE_PROPORTION
                 ],
                 sa.Float,
             )

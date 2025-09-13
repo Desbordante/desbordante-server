@@ -13,7 +13,7 @@ PFD_ERROR_DESC = "PFD error measure to use"
 
 
 class PfdTaneConfig(BaseSchema):
-    algo_name: Literal[PfdAlgoName.PFDTane]
+    algo_name: Literal[PfdAlgoName.PFD_TANE]
     max_lhs: int | None = Field(default=None, ge=0, description=MAX_LHS_DESC)
     error: float = Field(default=0, ge=0, le=1, description=ERROR_DESC)
     is_null_equal_null: bool | None = Field(default=None, description=NULL_EQUAL_DESC)

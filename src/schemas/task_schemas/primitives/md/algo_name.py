@@ -2,4 +2,4 @@ from enum import StrEnum, auto
 
 
 class MdAlgoName(StrEnum):
-    HyMD = auto()
+    HY_MD = auto()

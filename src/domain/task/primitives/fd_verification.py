@@ -43,12 +43,12 @@ class FdVerificationPrimitive(
     ]
 ):
     _algo_map = {
-        FdVerificationAlgoName.FdVerifier: FdVerifier,
+        FdVerificationAlgoName.FD_VERIFIER: FdVerifier,
     }
 
     _params_schema_class = FdVerificationTaskParams[TabularDownloadedDatasetSchema]
 
-    allowed_dataset_type = DatasetType.Tabular
+    allowed_dataset_type = DatasetType.TABULAR
 
     def execute(
         self, params: FdVerificationTaskParams[TabularDownloadedDatasetSchema]

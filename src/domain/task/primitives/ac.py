@@ -31,7 +31,7 @@ class AcPrimitive(
 
     _params_schema_class = AcTaskParams[TabularDownloadedDatasetSchema]
 
-    allowed_dataset_type = DatasetType.Tabular
+    allowed_dataset_type = DatasetType.TABULAR
 
     def execute(self, params: AcTaskParams[TabularDownloadedDatasetSchema]):
         dataset = params.datasets.table

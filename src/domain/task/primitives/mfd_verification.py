@@ -32,12 +32,12 @@ class MfdVerificationPrimitive(
     ]
 ):
     _algo_map = {
-        MfdVerificationAlgoName.MetricVerifier: MetricVerifier,
+        MfdVerificationAlgoName.METRIC_VERIFIER: MetricVerifier,
     }
 
     _params_schema_class = MfdVerificationTaskParams[TabularDownloadedDatasetSchema]
 
-    allowed_dataset_type = DatasetType.Tabular
+    allowed_dataset_type = DatasetType.TABULAR
 
     def execute(
         self, params: MfdVerificationTaskParams[TabularDownloadedDatasetSchema]

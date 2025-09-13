@@ -16,28 +16,28 @@ class DdQueryHelper(
 ):
     def get_ordering_field(self, order_by: DdTaskResultOrderingField):
         match order_by:
-            case DdTaskResultOrderingField.NumberOfLhsItems:
+            case DdTaskResultOrderingField.NUMBER_OF_LHS_ITEMS:
                 return func.jsonb_array_length(
-                    TaskResultModel.result[DdTaskResultItemField.LhsItems]
+                    TaskResultModel.result[DdTaskResultItemField.LHS_ITEMS]
                 )
-            case DdTaskResultOrderingField.LhsItemsNames:
+            case DdTaskResultOrderingField.LHS_ITEMS_NAMES:
                 return func.jsonb_path_query_array(
                     TaskResultModel.result,
-                    f"$.{DdTaskResultItemField.LhsItems}[*].{ColumnField.Name}",
+                    f"$.{DdTaskResultItemField.LHS_ITEMS}[*].{ColumnField.NAME}",
                 )
-            case DdTaskResultOrderingField.LhsItemsIndices:
+            case DdTaskResultOrderingField.LHS_ITEMS_INDICES:
                 return func.jsonb_path_query_array(
                     TaskResultModel.result,
-                    f"$.{DdTaskResultItemField.LhsItems}[*].{ColumnField.Index}",
+                    f"$.{DdTaskResultItemField.LHS_ITEMS}[*].{ColumnField.INDEX}",
                 )
-            case DdTaskResultOrderingField.RhsItemNames:
-                return TaskResultModel.result[DdTaskResultItemField.RhsItem][
-                    ColumnField.Name
+            case DdTaskResultOrderingField.RHS_ITEM_NAMES:
+                return TaskResultModel.result[DdTaskResultItemField.RHS_ITEM][
+                    ColumnField.NAME
                 ].astext
-            case DdTaskResultOrderingField.RhsItemIndices:
+            case DdTaskResultOrderingField.RHS_ITEM_INDICES:
                 return func.cast(
-                    TaskResultModel.result[DdTaskResultItemField.RhsItem][
-                        ColumnField.Index
+                    TaskResultModel.result[DdTaskResultItemField.RHS_ITEM][
+                        ColumnField.INDEX
                     ],
                     sa.Integer,
                 )
@@ -53,27 +53,27 @@ class DdQueryHelper(
             # lhs_column_names
             func.jsonb_path_query_array(
                 TaskResultModel.result,
-                f"$.{DdTaskResultItemField.LhsItems}[*].{ColumnField.Name}",
+                f"$.{DdTaskResultItemField.LHS_ITEMS}[*].{ColumnField.NAME}",
             ).op("<@")(filters.lhs_items_names)
             if filters.lhs_items_names
             else None,
             # lhs_column_indices
             func.jsonb_path_query_array(
                 TaskResultModel.result,
-                f"$.{DdTaskResultItemField.LhsItems}[*].{ColumnField.Index}",
+                f"$.{DdTaskResultItemField.LHS_ITEMS}[*].{ColumnField.INDEX}",
             ).op("<@")(filters.lhs_items_indices)
             if filters.lhs_items_indices
             else None,
             # rhs_column_names
-            TaskResultModel.result[DdTaskResultItemField.RhsItem][
-                ColumnField.Name
+            TaskResultModel.result[DdTaskResultItemField.RHS_ITEM][
+                ColumnField.NAME
             ].astext.in_(filters.rhs_item_names)
             if filters.rhs_item_names
             else None,
             # rhs_column_indices
             func.jsonb_path_query_array(
                 TaskResultModel.result,
-                f"$.{DdTaskResultItemField.RhsItem}[*].{ColumnField.Index}",
+                f"$.{DdTaskResultItemField.RHS_ITEM}[*].{ColumnField.INDEX}",
             ).op("<@")(filters.rhs_item_indices)
             if filters.rhs_item_indices
             else None,

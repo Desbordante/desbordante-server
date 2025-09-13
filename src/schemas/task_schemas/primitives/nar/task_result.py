@@ -32,11 +32,11 @@ NarSideItemSchema = Annotated[
 
 
 class NarTaskResultItemField(StrEnum):
-    LhsItems = "lhs_items"
-    RhsItems = "rhs_items"
-    Confidence = "confidence"
-    Support = "support"
-    Fitness = "fitness"
+    LHS_ITEMS = "lhs_items"
+    RHS_ITEMS = "rhs_items"
+    CONFIDENCE = "confidence"
+    SUPPORT = "support"
+    FITNESS = "fitness"
 
 
 class NarTaskResultItemSchema(BaseSchema):
@@ -65,12 +65,12 @@ class NarTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
 
 
 class NarTaskResultOrderingField(StrEnum):
-    NumberOfLhsItems = "number_of_lhs_items"
-    NumberOfRhsItems = "number_of_rhs_items"
-    LhsItemsNames = "lhs_items_names"
-    LhsItemsIndices = "lhs_items_indices"
-    RhsItemsNames = "rhs_items_names"
-    RhsItemsIndices = "rhs_items_indices"
-    Confidence = "confidence"
-    Support = "support"
-    Fitness = "fitness"
+    NUMBER_OF_LHS_ITEMS = "number_of_lhs_items"
+    NUMBER_OF_RHS_ITEMS = "number_of_rhs_items"
+    LHS_ITEMS_NAMES = "lhs_items_names"
+    LHS_ITEMS_INDICES = "lhs_items_indices"
+    RHS_ITEMS_NAMES = "rhs_items_names"
+    RHS_ITEMS_INDICES = "rhs_items_indices"
+    CONFIDENCE = "confidence"
+    SUPPORT = "support"
+    FITNESS = "fitness"

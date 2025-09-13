@@ -24,7 +24,7 @@ class AdcTaskResultSchema(BaseTaskResultSchema):
 
 
 class AdcTaskResultItemField(StrEnum):
-    Conjuncts = "conjuncts"
+    CONJUNCTS = "conjuncts"
 
 
 class AdcTaskResultItemSchema(BaseSchema):
@@ -39,8 +39,8 @@ class AdcTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
 
 
 class AdcTaskResultOrderingField(StrEnum):
-    LhsItemNames = "lhs_item_names"
-    RhsItemNames = "rhs_item_names"
-    LhsItemIndices = "lhs_item_indices"
-    RhsItemIndices = "rhs_item_indices"
-    NumberOfConjuncts = "number_of_conjuncts"
+    LHS_ITEM_NAMES = "lhs_item_names"
+    RHS_ITEM_NAMES = "rhs_item_names"
+    LHS_ITEM_INDICES = "lhs_item_indices"
+    RHS_ITEM_INDICES = "rhs_item_indices"
+    NUMBER_OF_CONJUNCTS = "number_of_conjuncts"

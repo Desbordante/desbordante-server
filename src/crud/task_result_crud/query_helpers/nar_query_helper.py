@@ -16,43 +16,43 @@ class NarQueryHelper(
 ):
     def get_ordering_field(self, order_by: NarTaskResultOrderingField):
         match order_by:
-            case NarTaskResultOrderingField.NumberOfLhsItems:
-                return func.jsonb_array_length(NarTaskResultItemField.LhsItems)
-            case NarTaskResultOrderingField.NumberOfRhsItems:
-                return func.jsonb_array_length(NarTaskResultItemField.RhsItems)
-            case NarTaskResultOrderingField.LhsItemsNames:
+            case NarTaskResultOrderingField.NUMBER_OF_LHS_ITEMS:
+                return func.jsonb_array_length(NarTaskResultItemField.LHS_ITEMS)
+            case NarTaskResultOrderingField.NUMBER_OF_RHS_ITEMS:
+                return func.jsonb_array_length(NarTaskResultItemField.RHS_ITEMS)
+            case NarTaskResultOrderingField.LHS_ITEMS_NAMES:
                 return func.jsonb_path_query_array(
-                    TaskResultModel.result[NarTaskResultItemField.LhsItems],
-                    f"$[*].{ColumnField.Name}",
+                    TaskResultModel.result[NarTaskResultItemField.LHS_ITEMS],
+                    f"$[*].{ColumnField.NAME}",
                 )
-            case NarTaskResultOrderingField.LhsItemsIndices:
+            case NarTaskResultOrderingField.LHS_ITEMS_INDICES:
                 return func.jsonb_path_query_array(
-                    TaskResultModel.result[NarTaskResultItemField.LhsItems],
-                    f"$[*].{ColumnField.Index}",
+                    TaskResultModel.result[NarTaskResultItemField.LHS_ITEMS],
+                    f"$[*].{ColumnField.INDEX}",
                 )
-            case NarTaskResultOrderingField.RhsItemsNames:
+            case NarTaskResultOrderingField.RHS_ITEMS_NAMES:
                 return func.jsonb_path_query_array(
-                    TaskResultModel.result[NarTaskResultItemField.RhsItems],
-                    f"$[*].{ColumnField.Name}",
+                    TaskResultModel.result[NarTaskResultItemField.RHS_ITEMS],
+                    f"$[*].{ColumnField.NAME}",
                 )
-            case NarTaskResultOrderingField.RhsItemsIndices:
+            case NarTaskResultOrderingField.RHS_ITEMS_INDICES:
                 return func.jsonb_path_query_array(
-                    TaskResultModel.result[NarTaskResultItemField.RhsItems],
-                    f"$[*].{ColumnField.Index}",
+                    TaskResultModel.result[NarTaskResultItemField.RHS_ITEMS],
+                    f"$[*].{ColumnField.INDEX}",
                 )
-            case NarTaskResultOrderingField.Confidence:
+            case NarTaskResultOrderingField.CONFIDENCE:
                 return func.cast(
-                    TaskResultModel.result[NarTaskResultItemField.Confidence],
+                    TaskResultModel.result[NarTaskResultItemField.CONFIDENCE],
                     sqlalchemy.Float,
                 )
-            case NarTaskResultOrderingField.Support:
+            case NarTaskResultOrderingField.SUPPORT:
                 return func.cast(
-                    TaskResultModel.result[NarTaskResultItemField.Support],
+                    TaskResultModel.result[NarTaskResultItemField.SUPPORT],
                     sqlalchemy.Float,
                 )
-            case NarTaskResultOrderingField.Fitness:
+            case NarTaskResultOrderingField.FITNESS:
                 return func.cast(
-                    TaskResultModel.result[NarTaskResultItemField.Fitness],
+                    TaskResultModel.result[NarTaskResultItemField.FITNESS],
                     sqlalchemy.Float,
                 )
 
@@ -66,7 +66,7 @@ class NarQueryHelper(
             else None,
             # min_confidence
             func.cast(
-                TaskResultModel.result[NarTaskResultItemField.Confidence],
+                TaskResultModel.result[NarTaskResultItemField.CONFIDENCE],
                 sqlalchemy.Float,
             )
             >= filters.min_confidence
@@ -74,7 +74,7 @@ class NarQueryHelper(
             else None,
             # max_confidence
             func.cast(
-                TaskResultModel.result[NarTaskResultItemField.Confidence],
+                TaskResultModel.result[NarTaskResultItemField.CONFIDENCE],
                 sqlalchemy.Float,
             )
             <= filters.max_confidence
@@ -82,7 +82,7 @@ class NarQueryHelper(
             else None,
             # min_support
             func.cast(
-                TaskResultModel.result[NarTaskResultItemField.Support],
+                TaskResultModel.result[NarTaskResultItemField.SUPPORT],
                 sqlalchemy.Float,
             )
             >= filters.min_support
@@ -90,7 +90,7 @@ class NarQueryHelper(
             else None,
             # max_support
             func.cast(
-                TaskResultModel.result[NarTaskResultItemField.Support],
+                TaskResultModel.result[NarTaskResultItemField.SUPPORT],
                 sqlalchemy.Float,
             )
             <= filters.max_support
@@ -98,7 +98,7 @@ class NarQueryHelper(
             else None,
             # min_fitness
             func.cast(
-                TaskResultModel.result[NarTaskResultItemField.Fitness],
+                TaskResultModel.result[NarTaskResultItemField.FITNESS],
                 sqlalchemy.Float,
             )
             >= filters.min_fitness
@@ -106,7 +106,7 @@ class NarQueryHelper(
             else None,
             # max_fitness
             func.cast(
-                TaskResultModel.result[NarTaskResultItemField.Fitness],
+                TaskResultModel.result[NarTaskResultItemField.FITNESS],
                 sqlalchemy.Float,
             )
             <= filters.max_fitness
@@ -114,29 +114,29 @@ class NarQueryHelper(
             else None,
             # lhs_items_names
             func.jsonb_path_query_array(
-                TaskResultModel.result[NarTaskResultItemField.LhsItems],
-                f"$[*].{ColumnField.Name}",
+                TaskResultModel.result[NarTaskResultItemField.LHS_ITEMS],
+                f"$[*].{ColumnField.NAME}",
             ).op("<@")(filters.lhs_items_names)
             if filters.lhs_items_names
             else None,
             # lhs_items_indices
             func.jsonb_path_query_array(
-                TaskResultModel.result[NarTaskResultItemField.LhsItems],
-                f"$[*].{ColumnField.Index}",
+                TaskResultModel.result[NarTaskResultItemField.LHS_ITEMS],
+                f"$[*].{ColumnField.INDEX}",
             ).op("<@")(filters.lhs_items_indices)
             if filters.lhs_items_indices
             else None,
             # rhs_items_names
             func.jsonb_path_query_array(
-                TaskResultModel.result[NarTaskResultItemField.RhsItems],
-                f"$[*].{ColumnField.Name}",
+                TaskResultModel.result[NarTaskResultItemField.RHS_ITEMS],
+                f"$[*].{ColumnField.NAME}",
             ).op("<@")(filters.rhs_items_names)
             if filters.rhs_items_names
             else None,
             # rhs_items_indices
             func.jsonb_path_query_array(
-                TaskResultModel.result[NarTaskResultItemField.RhsItems],
-                f"$[*].{ColumnField.Index}",
+                TaskResultModel.result[NarTaskResultItemField.RHS_ITEMS],
+                f"$[*].{ColumnField.INDEX}",
             ).op("<@")(filters.rhs_items_indices)
             if filters.rhs_items_indices
             else None,

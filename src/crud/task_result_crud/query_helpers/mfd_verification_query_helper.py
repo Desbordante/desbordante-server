@@ -18,37 +18,39 @@ class MfdVerificationQueryHelper(
 ):
     def get_ordering_field(self, order_by: MfdVerificationTaskResultOrderingField):
         match order_by:
-            case MfdVerificationTaskResultOrderingField.LhsValues:
+            case MfdVerificationTaskResultOrderingField.LHS_VALUES:
                 return TaskResultModel.result[
-                    MfdVerificationTaskResultItemField.LhsValues
+                    MfdVerificationTaskResultItemField.LHS_VALUES
                 ].astext
-            case MfdVerificationTaskResultOrderingField.MaxDistance:
+            case MfdVerificationTaskResultOrderingField.MAX_DISTANCE:
                 return func.cast(
                     TaskResultModel.result[
-                        MfdVerificationTaskResultItemField.MaxDistance
+                        MfdVerificationTaskResultItemField.MAX_DISTANCE
                     ],
                     sa.Float,
                 )
-            case MfdVerificationTaskResultOrderingField.ClusterIndex:
+            case MfdVerificationTaskResultOrderingField.CLUSTER_INDEX:
                 return func.cast(
                     TaskResultModel.result[
-                        MfdVerificationTaskResultItemField.ClusterIndex
+                        MfdVerificationTaskResultItemField.CLUSTER_INDEX
                     ],
                     sa.Integer,
                 )
-            case MfdVerificationTaskResultOrderingField.HighlightsDataIndices:
+            case MfdVerificationTaskResultOrderingField.HIGHLIGHTS_DATA_INDICES:
                 return func.jsonb_path_query_array(
                     TaskResultModel.result[
-                        MfdVerificationTaskResultItemField.Highlights
+                        MfdVerificationTaskResultItemField.HIGHLIGHTS
                     ],
-                    f"$[*].{MfdVerificationHighlightField.DataIndex}",
+                    f"$[*].{MfdVerificationHighlightField.DATA_INDEX}",
                 )
-            case MfdVerificationTaskResultOrderingField.HighlightsFurthestDataIndices:
+            case (
+                MfdVerificationTaskResultOrderingField.HIGHLIGHTS_FURTHEST_DATA_INDICES
+            ):
                 return func.jsonb_path_query_array(
                     TaskResultModel.result[
-                        MfdVerificationTaskResultItemField.Highlights
+                        MfdVerificationTaskResultItemField.HIGHLIGHTS
                     ],
-                    f"$[*].{MfdVerificationHighlightField.FurthestDataIndex}",
+                    f"$[*].{MfdVerificationHighlightField.FURTHEST_DATA_INDEX}",
                 )
 
         return super().get_ordering_field(order_by)
@@ -60,9 +62,9 @@ class MfdVerificationQueryHelper(
             if filters.search
             else None,
             # cluster_indices
-            TaskResultModel.result[MfdVerificationTaskResultItemField.ClusterIndex].in_(
-                filters.cluster_indices
-            )
+            TaskResultModel.result[
+                MfdVerificationTaskResultItemField.CLUSTER_INDEX
+            ].in_(filters.cluster_indices)
             if filters.cluster_indices
             else None,
         ]

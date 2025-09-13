@@ -136,13 +136,13 @@ class PaginationParamsSchema(BaseSchema):
 
 
 class OrderingDirection(StrEnum):
-    Asc = auto()
-    Desc = auto()
+    ASC = auto()
+    DESC = auto()
 
 
 class OrderingParamsSchema[T: str](BaseSchema):
     order_by: T | None = None
-    direction: OrderingDirection = OrderingDirection.Desc
+    direction: OrderingDirection = OrderingDirection.DESC
 
 
 class FiltersParamsSchema(BaseSchema):
@@ -172,10 +172,10 @@ class QueryParamsSchema[T: FiltersParamsSchema, U: str](BaseSchema):
 
 
 class TaskStatus(StrEnum):
-    Pending = auto()
-    Processing = auto()
-    Success = auto()
-    Failed = auto()
+    PENDING = auto()
+    PROCESSING = auto()
+    SUCCESS = auto()
+    FAILED = auto()
 
 
 class TaskErrorSchema(BaseSchema):

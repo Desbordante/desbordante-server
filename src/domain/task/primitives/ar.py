@@ -27,12 +27,12 @@ class ArPrimitive(
     ]
 ):
     _algo_map = {
-        ArAlgoName.Apriori: Apriori,
+        ArAlgoName.APRIORI: Apriori,
     }
 
     _params_schema_class = ArTaskParams[TransactionalDownloadedDatasetSchema]
 
-    allowed_dataset_type = DatasetType.Transactional
+    allowed_dataset_type = DatasetType.TRANSACTIONAL
 
     def execute(
         self, params: ArTaskParams[TransactionalDownloadedDatasetSchema]

@@ -33,7 +33,7 @@ class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type:
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         id = args[0]
         self.entity = self._update_object_sync(
-            id, **{self.status_field: TaskStatus.Processing}
+            id, **{self.status_field: TaskStatus.PROCESSING}
         )
         return self.run(*args, **kwargs)  # type: ignore
 
@@ -45,7 +45,7 @@ class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type:
         self._update_object_sync(
             id,
             **{
-                self.status_field: TaskStatus.Success,
+                self.status_field: TaskStatus.SUCCESS,
                 self.result_field: self.create_result_object(id, retval),
             },
         )
@@ -63,7 +63,7 @@ class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type:
         self._update_object_sync(
             id,
             **{
-                self.status_field: TaskStatus.Failed,
+                self.status_field: TaskStatus.FAILED,
                 self.error_field: self.create_error_object(id, exc),
             },
         )

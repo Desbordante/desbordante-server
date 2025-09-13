@@ -28,7 +28,7 @@ class DatasetModel(BaseModel):
     path: Mapped[str_non_nullable]
     params: Mapped[OneOfDatasetParams] = mapped_column(JSONB)
 
-    status: Mapped[TaskStatus] = mapped_column(default=TaskStatus.Pending)
+    status: Mapped[TaskStatus] = mapped_column(default=TaskStatus.PENDING)
     info: Mapped[OneOfDatasetInfo | TaskErrorSchema | None] = mapped_column(
         JSONB, default=None
     )

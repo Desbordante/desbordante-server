@@ -16,36 +16,36 @@ class AcQueryHelper(
 ):
     def get_ordering_field(self, order_by: AcTaskResultOrderingField):
         match order_by:
-            case AcTaskResultOrderingField.LhsColumnIndex:
+            case AcTaskResultOrderingField.LHS_COLUMN_INDEX:
                 return func.cast(
-                    TaskResultModel.result[AcTaskResultItemField.LhsColumn][
-                        ColumnField.Index
+                    TaskResultModel.result[AcTaskResultItemField.LHS_COLUMN][
+                        ColumnField.INDEX
                     ],
                     sa.Integer,
                 )
-            case AcTaskResultOrderingField.RhsColumnIndex:
+            case AcTaskResultOrderingField.RHS_COLUMN_INDEX:
                 return func.cast(
-                    TaskResultModel.result[AcTaskResultItemField.RhsColumn][
-                        ColumnField.Index
+                    TaskResultModel.result[AcTaskResultItemField.RHS_COLUMN][
+                        ColumnField.INDEX
                     ],
                     sa.Integer,
                 )
-            case AcTaskResultOrderingField.LhsColumnName:
-                return TaskResultModel.result[AcTaskResultItemField.LhsColumn][
-                    ColumnField.Name
+            case AcTaskResultOrderingField.LHS_COLUMN_NAME:
+                return TaskResultModel.result[AcTaskResultItemField.LHS_COLUMN][
+                    ColumnField.NAME
                 ].astext
-            case AcTaskResultOrderingField.RhsColumnName:
-                return TaskResultModel.result[AcTaskResultItemField.RhsColumn][
-                    ColumnField.Name
+            case AcTaskResultOrderingField.RHS_COLUMN_NAME:
+                return TaskResultModel.result[AcTaskResultItemField.RHS_COLUMN][
+                    ColumnField.NAME
                 ].astext
 
-            case AcTaskResultOrderingField.NumberOfRanges:
+            case AcTaskResultOrderingField.NUMBER_OF_RANGES:
                 return func.jsonb_array_length(
-                    TaskResultModel.result[AcTaskResultItemField.Ranges]
+                    TaskResultModel.result[AcTaskResultItemField.RANGES]
                 )
-            case AcTaskResultOrderingField.NumberOfExceptions:
+            case AcTaskResultOrderingField.NUMBER_OF_EXCEPTIONS:
                 return func.jsonb_array_length(
-                    TaskResultModel.result[AcTaskResultItemField.Exceptions]
+                    TaskResultModel.result[AcTaskResultItemField.EXCEPTIONS]
                 )
 
         super().get_ordering_field(order_by)
@@ -58,8 +58,8 @@ class AcQueryHelper(
             else None,
             # lhs_column_indices
             func.cast(
-                TaskResultModel.result[AcTaskResultItemField.LhsColumn][
-                    ColumnField.Index
+                TaskResultModel.result[AcTaskResultItemField.LHS_COLUMN][
+                    ColumnField.INDEX
                 ],
                 sa.Integer,
             ).in_(filters.lhs_column_indices)
@@ -67,22 +67,22 @@ class AcQueryHelper(
             else None,
             # rhs_column_indices
             func.cast(
-                TaskResultModel.result[AcTaskResultItemField.RhsColumn][
-                    ColumnField.Index
+                TaskResultModel.result[AcTaskResultItemField.RHS_COLUMN][
+                    ColumnField.INDEX
                 ],
                 sa.Integer,
             ).in_(filters.rhs_column_indices)
             if filters.rhs_column_indices
             else None,
             # lhs_column_names
-            TaskResultModel.result[AcTaskResultItemField.LhsColumn][
-                ColumnField.Name
+            TaskResultModel.result[AcTaskResultItemField.LHS_COLUMN][
+                ColumnField.NAME
             ].astext.in_(filters.lhs_column_names)
             if filters.lhs_column_names
             else None,
             # rhs_column_names
-            TaskResultModel.result[AcTaskResultItemField.RhsColumn][
-                ColumnField.Name
+            TaskResultModel.result[AcTaskResultItemField.RHS_COLUMN][
+                ColumnField.NAME
             ].astext.in_(filters.rhs_column_names)
             if filters.rhs_column_names
             else None,

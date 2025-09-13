@@ -245,17 +245,17 @@ class BaseTaskSchema(BaseSchema):
 
 
 class ProcessingTaskSchema(BaseTaskSchema):
-    status: Literal[TaskStatus.Pending] | Literal[TaskStatus.Processing]
+    status: Literal[TaskStatus.PENDING] | Literal[TaskStatus.PROCESSING]
     result: None
 
 
 class FailedTaskSchema(BaseTaskSchema):
-    status: Literal[TaskStatus.Failed]
+    status: Literal[TaskStatus.FAILED]
     result: TaskErrorSchema
 
 
 class SuccessTaskSchema(BaseTaskSchema):
-    status: Literal[TaskStatus.Success]
+    status: Literal[TaskStatus.SUCCESS]
     result: OneOfTaskResultSchema
 
 

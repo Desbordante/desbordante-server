@@ -12,8 +12,8 @@ class DdSideItemSchema(ColumnSchema):
 
 
 class DdTaskResultItemField(StrEnum):
-    LhsItems = "lhs_items"
-    RhsItem = "rhs_item"
+    LHS_ITEMS = "lhs_items"
+    RHS_ITEM = "rhs_item"
 
 
 class DdTaskResultItemSchema(BaseSchema):
@@ -33,8 +33,8 @@ class DdTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
 
 
 class DdTaskResultOrderingField(StrEnum):
-    NumberOfLhsItems = "number_of_lhs_items"
-    LhsItemsNames = "lhs_items_names"
-    LhsItemsIndices = "lhs_items_indices"
-    RhsItemNames = "rhs_item_names"
-    RhsItemIndices = "rhs_item_indices"
+    NUMBER_OF_LHS_ITEMS = "number_of_lhs_items"
+    LHS_ITEMS_NAMES = "lhs_items_names"
+    LHS_ITEMS_INDICES = "lhs_items_indices"
+    RHS_ITEM_NAMES = "rhs_item_names"
+    RHS_ITEM_INDICES = "rhs_item_indices"

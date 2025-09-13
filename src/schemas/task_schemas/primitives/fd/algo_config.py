@@ -26,7 +26,7 @@ class BaseFdConfig(BaseSchema):
 
 
 class AidConfig(BaseFdConfig):
-    algo_name: Literal[FdAlgoName.Aid]
+    algo_name: Literal[FdAlgoName.AID]
 
 
 class DFDConfig(BaseFdConfig):
@@ -36,18 +36,18 @@ class DFDConfig(BaseFdConfig):
 
 
 class DepminerConfig(BaseFdConfig):
-    algo_name: Literal[FdAlgoName.Depminer]
+    algo_name: Literal[FdAlgoName.DEPMINER]
     is_null_equal_null: bool | None = Field(default=None, description=NULL_EQUAL_DESC)
 
 
 class EulerFDConfig(BaseFdConfig):
-    algo_name: Literal[FdAlgoName.EulerFD]
+    algo_name: Literal[FdAlgoName.EULER_FD]
     custom_random_seed: int = Field(default=0, description=CUSTOM_SEED_DESC)
     is_null_equal_null: bool | None = Field(default=None, description=NULL_EQUAL_DESC)
 
 
 class FDepConfig(BaseFdConfig):
-    algo_name: Literal[FdAlgoName.FDep]
+    algo_name: Literal[FdAlgoName.FDEP]
 
 
 class FUNConfig(BaseFdConfig):
@@ -56,36 +56,36 @@ class FUNConfig(BaseFdConfig):
 
 
 class FastFDsConfig(BaseFdConfig):
-    algo_name: Literal[FdAlgoName.FastFDs]
+    algo_name: Literal[FdAlgoName.FAST_FDS]
     # threads: int = Field(default=0, ge=0, description=THREADS_DESC)
     is_null_equal_null: bool | None = Field(default=None, description=NULL_EQUAL_DESC)
 
 
 class FdMineConfig(BaseFdConfig):
-    algo_name: Literal[FdAlgoName.FdMine]
+    algo_name: Literal[FdAlgoName.FD_MINE]
     is_null_equal_null: bool | None = Field(default=None, description=NULL_EQUAL_DESC)
 
 
 class HyFDConfig(BaseFdConfig):
-    algo_name: Literal[FdAlgoName.HyFD]
+    algo_name: Literal[FdAlgoName.HY_FD]
     # threads: int = Field(default=0, ge=0, description=THREADS_DESC)
     is_null_equal_null: bool | None = Field(default=None, description=NULL_EQUAL_DESC)
 
 
 class PyroConfig(BaseFdConfig):
-    algo_name: Literal[FdAlgoName.Pyro]
+    algo_name: Literal[FdAlgoName.PYRO]
     # threads: int = Field(default=0, ge=0, description=THREADS_DESC)
     is_null_equal_null: bool | None = Field(default=None, description=NULL_EQUAL_DESC)
     seed: int = Field(default=0, description=SEED_DESC)
 
 
 class TaneConfig(BaseFdConfig):
-    algo_name: Literal[FdAlgoName.Tane]
+    algo_name: Literal[FdAlgoName.TANE]
     is_null_equal_null: bool | None = Field(default=None, description=NULL_EQUAL_DESC)
 
 
 # class PFDTaneConfig(BaseFdConfig):
-#     algo_name: Literal[FdAlgoName.PFDTane]
+#     algo_name: Literal[FdAlgoName.PFD_TANE]
 #     error: float = Field(default=0, ge=0, le=1, description=ERROR_DESC)
 #     is_null_equal_null: bool | None = Field(default=None, description=NULL_EQUAL_DESC)
 #     pfd_error_measure: Literal["per_tuple", "per_value"] = Field(

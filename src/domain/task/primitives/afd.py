@@ -27,13 +27,13 @@ class AfdPrimitive(
     ]
 ):
     _algo_map = {
-        AfdAlgoName.Pyro: Pyro,
-        AfdAlgoName.Tane: Tane,
+        AfdAlgoName.PYRO: Pyro,
+        AfdAlgoName.TANE: Tane,
     }
 
     _params_schema_class = AfdTaskParams[TabularDownloadedDatasetSchema]
 
-    allowed_dataset_type = DatasetType.Tabular
+    allowed_dataset_type = DatasetType.TABULAR
 
     def execute(self, params: AfdTaskParams[TabularDownloadedDatasetSchema]):
         dataset = params.datasets.table

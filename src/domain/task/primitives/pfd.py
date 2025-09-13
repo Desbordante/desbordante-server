@@ -28,12 +28,12 @@ class PfdPrimitive(
     ],
 ):
     _algo_map = {
-        PfdAlgoName.PFDTane: PFDTane,
+        PfdAlgoName.PFD_TANE: PFDTane,
     }
 
     _params_schema_class = PfdTaskParams[TabularDownloadedDatasetSchema]
 
-    allowed_dataset_type = DatasetType.Tabular
+    allowed_dataset_type = DatasetType.TABULAR
 
     def execute(self, params: PfdTaskParams[TabularDownloadedDatasetSchema]):
         dataset = params.datasets.table

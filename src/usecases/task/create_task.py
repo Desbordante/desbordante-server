@@ -48,7 +48,7 @@ class CreateTaskUseCase:
             ids=dataset_ids,
             owner_id=self.user.id,
             type=primitive_class.allowed_dataset_type,
-            status=TaskStatus.Success,
+            status=TaskStatus.SUCCESS,
         )
 
         if len(datasets) != len(set(dataset_ids)):

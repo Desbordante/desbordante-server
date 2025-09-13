@@ -106,7 +106,7 @@ class BaseCrud[
 
             query = query.order_by(
                 asc(ordering_field)
-                if query_params.ordering.direction == OrderingDirection.Asc
+                if query_params.ordering.direction == OrderingDirection.ASC
                 else desc(ordering_field)
             )
 

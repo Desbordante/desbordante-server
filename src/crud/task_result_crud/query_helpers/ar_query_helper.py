@@ -14,18 +14,18 @@ class ArQueryHelper(
 ):
     def get_ordering_field(self, order_by: ArTaskResultOrderingField):
         match order_by:
-            case ArTaskResultOrderingField.LhsValues:
-                return TaskResultModel.result[ArTaskResultItemField.LhsValues].astext
-            case ArTaskResultOrderingField.RhsValues:
-                return TaskResultModel.result[ArTaskResultItemField.RhsValues].astext
-            case ArTaskResultOrderingField.Support:
+            case ArTaskResultOrderingField.LHS_VALUES:
+                return TaskResultModel.result[ArTaskResultItemField.LHS_VALUES].astext
+            case ArTaskResultOrderingField.RHS_VALUES:
+                return TaskResultModel.result[ArTaskResultItemField.RHS_VALUES].astext
+            case ArTaskResultOrderingField.SUPPORT:
                 return sqlalchemy.func.cast(
-                    TaskResultModel.result[ArTaskResultItemField.Support],
+                    TaskResultModel.result[ArTaskResultItemField.SUPPORT],
                     sqlalchemy.Float,
                 )
-            case ArTaskResultOrderingField.Confidence:
+            case ArTaskResultOrderingField.CONFIDENCE:
                 return sqlalchemy.func.cast(
-                    TaskResultModel.result[ArTaskResultItemField.Confidence],
+                    TaskResultModel.result[ArTaskResultItemField.CONFIDENCE],
                     sqlalchemy.Float,
                 )
         super().get_ordering_field(order_by)
@@ -37,20 +37,20 @@ class ArQueryHelper(
             if filters.search
             else None,
             # lhs_values
-            TaskResultModel.result[ArTaskResultItemField.LhsValues].op("<@")(
+            TaskResultModel.result[ArTaskResultItemField.LHS_VALUES].op("<@")(
                 filters.lhs_values
             )
             if filters.lhs_values
             else None,
             # rhs_values
-            TaskResultModel.result[ArTaskResultItemField.RhsValues].op("<@")(
+            TaskResultModel.result[ArTaskResultItemField.RHS_VALUES].op("<@")(
                 filters.rhs_values
             )
             if filters.rhs_values
             else None,
             # min_support
             sqlalchemy.cast(
-                TaskResultModel.result[ArTaskResultItemField.Support],
+                TaskResultModel.result[ArTaskResultItemField.SUPPORT],
                 sqlalchemy.Float,
             )
             >= filters.min_support
@@ -58,7 +58,7 @@ class ArQueryHelper(
             else None,
             # max_support
             sqlalchemy.cast(
-                TaskResultModel.result[ArTaskResultItemField.Support],
+                TaskResultModel.result[ArTaskResultItemField.SUPPORT],
                 sqlalchemy.Float,
             )
             <= filters.max_support
@@ -66,7 +66,7 @@ class ArQueryHelper(
             else None,
             # min_confidence
             sqlalchemy.cast(
-                TaskResultModel.result[ArTaskResultItemField.Confidence],
+                TaskResultModel.result[ArTaskResultItemField.CONFIDENCE],
                 sqlalchemy.Float,
             )
             >= filters.min_confidence
@@ -74,7 +74,7 @@ class ArQueryHelper(
             else None,
             # max_confidence
             sqlalchemy.cast(
-                TaskResultModel.result[ArTaskResultItemField.Confidence],
+                TaskResultModel.result[ArTaskResultItemField.CONFIDENCE],
                 sqlalchemy.Float,
             )
             <= filters.max_confidence

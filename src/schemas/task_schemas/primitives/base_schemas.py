@@ -18,5 +18,5 @@ class ColumnSchema(BaseSchema):
 
 
 class ColumnField(StrEnum):
-    Name = auto()
-    Index = auto()
+    NAME = auto()
+    INDEX = auto()

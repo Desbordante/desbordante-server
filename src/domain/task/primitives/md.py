@@ -49,22 +49,22 @@ class MdPrimitive(
     ]
 ):
     _algo_map = {
-        MdAlgoName.HyMD: HyMD,
+        MdAlgoName.HY_MD: HyMD,
     }
 
     _metrics_map = {
-        ColumnMatchMetric.Equality: Equality,
-        ColumnMatchMetric.Jaccard: Jaccard,
-        ColumnMatchMetric.Number_Difference: LVNormNumberDistance,
-        ColumnMatchMetric.Date_Difference: LVNormDateDistance,
-        ColumnMatchMetric.Lcs: Lcs,
-        ColumnMatchMetric.Monge_Elkan: MongeElkan,
-        ColumnMatchMetric.Levenshtein: Levenshtein,
+        ColumnMatchMetric.EQUALITY: Equality,
+        ColumnMatchMetric.JACCARD: Jaccard,
+        ColumnMatchMetric.NUMBER_DIFFERENCE: LVNormNumberDistance,
+        ColumnMatchMetric.DATE_DIFFERENCE: LVNormDateDistance,
+        ColumnMatchMetric.LCS: Lcs,
+        ColumnMatchMetric.MONGE_ELKAN: MongeElkan,
+        ColumnMatchMetric.LEVENSHTEIN: Levenshtein,
     }
 
     _params_schema_class = MdTaskParams[TabularDownloadedDatasetSchema]
 
-    allowed_dataset_type = DatasetType.Tabular
+    allowed_dataset_type = DatasetType.TABULAR
 
     def _match_metrics_class_by_name(self, metrics: ColumnMatchMetric):
         if metrics_class := self._metrics_map.get(metrics):

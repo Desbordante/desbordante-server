@@ -40,7 +40,7 @@ class NarPrimitive(
 
     _params_schema_class = NarTaskParams[TabularDownloadedDatasetSchema]
 
-    allowed_dataset_type = DatasetType.Tabular
+    allowed_dataset_type = DatasetType.TABULAR
 
     def execute(self, params: NarTaskParams[TabularDownloadedDatasetSchema]):
         dataset = params.datasets.table

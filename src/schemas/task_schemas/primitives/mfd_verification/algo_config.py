@@ -22,7 +22,7 @@ Q = ""
 
 
 class MetricVerifierConfig(BaseSchema):
-    algo_name: Literal[MfdVerificationAlgoName.MetricVerifier]
+    algo_name: Literal[MfdVerificationAlgoName.METRIC_VERIFIER]
     lhs_indices: list[int] = Field(default=[0], description=LHS_INDICES)
     rhs_indices: list[int] = Field(default=[1], description=RHS_INDICES)
     parameter: float = Field(
@@ -34,10 +34,10 @@ class MetricVerifierConfig(BaseSchema):
     )
     is_null_equal_null: bool | None = Field(default=None, description=NULL_EQUAL_DESC)
     metric_algorithm: MfdVerificationMetricAlgorithm = Field(
-        default=MfdVerificationMetricAlgorithm.Brute, description=METRIC_ALGORITHM
+        default=MfdVerificationMetricAlgorithm.BRUTE, description=METRIC_ALGORITHM
     )
-    metric: Literal[MfdVerificationMetric.Euclidean] = Field(
-        default=MfdVerificationMetric.Euclidean, description=METRIC
+    metric: Literal[MfdVerificationMetric.EUCLIDEAN] = Field(
+        default=MfdVerificationMetric.EUCLIDEAN, description=METRIC
     )
 
 

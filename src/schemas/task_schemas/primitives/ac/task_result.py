@@ -15,10 +15,10 @@ class AcExceptionSchema(BaseSchema):
 
 
 class AcTaskResultItemField(StrEnum):
-    LhsColumn = "lhs_column"
-    RhsColumn = "rhs_column"
-    Ranges = "ranges"
-    Exceptions = "exceptions"
+    LHS_COLUMN = "lhs_column"
+    RHS_COLUMN = "rhs_column"
+    RANGES = "ranges"
+    EXCEPTIONS = "exceptions"
 
 
 class AcTaskResultItemSchema(BaseSchema):
@@ -41,9 +41,9 @@ class AcTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
 
 
 class AcTaskResultOrderingField(StrEnum):
-    LhsColumnName = "lhs_column_name"
-    RhsColumnName = "rhs_column_name"
-    LhsColumnIndex = "lhs_column_index"
-    RhsColumnIndex = "rhs_column_index"
-    NumberOfRanges = "number_of_ranges"
-    NumberOfExceptions = "number_of_exceptions"
+    LHS_COLUMN_NAME = "lhs_column_name"
+    RHS_COLUMN_NAME = "rhs_column_name"
+    LHS_COLUMN_INDEX = "lhs_column_index"
+    RHS_COLUMN_INDEX = "rhs_column_index"
+    NUMBER_OF_RANGES = "number_of_ranges"
+    NUMBER_OF_EXCEPTIONS = "number_of_exceptions"

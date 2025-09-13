@@ -13,8 +13,8 @@ class FdTaskResultItemSchema(BaseSchema):
 
 
 class FdTaskResultItemField(StrEnum):
-    LhsColumns = "lhs_columns"
-    RhsColumn = "rhs_column"
+    LHS_COLUMNS = "lhs_columns"
+    RHS_COLUMN = "rhs_column"
 
 
 class FdTaskResultSchema(BaseTaskResultSchema):
@@ -29,8 +29,8 @@ class FdTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
 
 
 class FdTaskResultOrderingField(StrEnum):
-    LhsColumnsIndices = "lhs_columns_indices"
-    LhsColumnsNames = "lhs_columns_names"
-    RhsColumnIndex = "rhs_column_index"
-    RhsColumnName = "rhs_column_name"
-    NumberOfLhsColumns = "number_of_lhs_columns"
+    LHS_COLUMNS_INDICES = "lhs_columns_indices"
+    LHS_COLUMNS_NAMES = "lhs_columns_names"
+    RHS_COLUMN_INDEX = "rhs_column_index"
+    RHS_COLUMN_NAME = "rhs_column_name"
+    NUMBER_OF_LHS_COLUMNS = "number_of_lhs_columns"

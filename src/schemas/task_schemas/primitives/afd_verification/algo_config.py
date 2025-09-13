@@ -12,7 +12,7 @@ NULL_EQUAL_DESC = "Whether two NULL values should be considered equal"
 
 
 class AfdVerifierConfig(BaseSchema):
-    algo_name: Literal[AfdVerificationAlgoName.AfdVerifier]
+    algo_name: Literal[AfdVerificationAlgoName.AFD_VERIFIER]
     lhs_indices: list[int] = Field(default=[0], description=LHS_INDICES)
     rhs_indices: list[int] = Field(default=[1], description=RHS_INDICES)
     is_null_equal_null: bool = Field(default=False, description=NULL_EQUAL_DESC)

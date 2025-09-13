@@ -12,7 +12,7 @@ NUM_COLUMNS = "Use only first N columns of the table"
 
 
 class SplitConfig(BaseSchema):
-    algo_name: Literal[DdAlgoName.Split]
+    algo_name: Literal[DdAlgoName.SPLIT]
     num_rows: int | None = Field(default=None, ge=1, description=NUW_ROWS)
     num_columns: int | None = Field(default=None, ge=1, description=NUM_COLUMNS)
 

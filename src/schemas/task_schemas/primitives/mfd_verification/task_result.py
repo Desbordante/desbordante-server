@@ -1,16 +1,15 @@
 from enum import StrEnum
 
-
 from src.schemas.base_schemas import BaseSchema, FiltersParamsSchema, OptionalSchema
 from src.schemas.task_schemas.primitives.base_schemas import BaseTaskResultSchema
 
 
 class MfdVerificationHighlightField(StrEnum):
-    DataIndex = "data_index"
-    FurthestDataIndex = "furthest_data_index"
-    MaxDistance = "max_distance"
-    RhsValues = "rhs_values"
-    WithinLimit = "within_limit"
+    DATA_INDEX = "data_index"
+    FURTHEST_DATA_INDEX = "furthest_data_index"
+    MAX_DISTANCE = "max_distance"
+    RHS_VALUES = "rhs_values"
+    WITHIN_LIMIT = "within_limit"
 
 
 class MfdVerificationHighlightSchema(BaseSchema):
@@ -22,10 +21,10 @@ class MfdVerificationHighlightSchema(BaseSchema):
 
 
 class MfdVerificationTaskResultItemField(StrEnum):
-    MaxDistance = "max_distance"
-    Highlights = "highlights"
-    ClusterIndex = "cluster_index"
-    LhsValues = "lhs_values"
+    MAX_DISTANCE = "max_distance"
+    HIGHLIGHTS = "highlights"
+    CLUSTER_INDEX = "cluster_index"
+    LHS_VALUES = "lhs_values"
 
 
 class MfdVerificationTaskResultItemSchema(BaseSchema):
@@ -44,8 +43,8 @@ class MfdVerificationTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema
 
 
 class MfdVerificationTaskResultOrderingField(StrEnum):
-    LhsValues = "lhs_values"
-    HighlightsDataIndices = "highlights_data_indices"
-    HighlightsFurthestDataIndices = "highlights_furthest_data_indices"
-    MaxDistance = "max_distance"
-    ClusterIndex = "cluster_index"
+    LHS_VALUES = "lhs_values"
+    HIGHLIGHTS_DATA_INDICES = "highlights_data_indices"
+    HIGHLIGHTS_FURTHEST_DATA_INDICES = "highlights_furthest_data_indices"
+    MAX_DISTANCE = "max_distance"
+    CLUSTER_INDEX = "cluster_index"

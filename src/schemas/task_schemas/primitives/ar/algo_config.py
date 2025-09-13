@@ -8,7 +8,7 @@ from .algo_name import ArAlgoName
 
 
 class AprioriConfig(BaseSchema):
-    algo_name: Literal[ArAlgoName.Apriori]
+    algo_name: Literal[ArAlgoName.APRIORI]
     minconf: float | None = Field(
         default=None, ge=0, le=1, description="Minimum confidence"
     )

@@ -26,12 +26,12 @@ class AdcPrimitive(
     ]
 ):
     _algo_map = {
-        AdcAlgoName.FastADC: FastADC,
+        AdcAlgoName.FAST_ADC: FastADC,
     }
 
     _params_schema_class = AdcTaskParams[TabularDownloadedDatasetSchema]
 
-    allowed_dataset_type = DatasetType.Tabular
+    allowed_dataset_type = DatasetType.TABULAR
 
     def execute(self, params: AdcTaskParams[TabularDownloadedDatasetSchema]):
         dataset = params.datasets.table

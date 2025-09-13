@@ -13,9 +13,9 @@ class FdVerificationRowSchema(BaseSchema):
 
 
 class FdVerificationTaskResultItemField(StrEnum):
-    NumberOfDistinctRhsValues = "number_of_distinct_rhs_values"
-    MostFrequentRhsValueProportion = "most_frequent_rhs_value_proportion"
-    Rows = "rows"
+    NUMBER_OF_DISTINCT_RHS_VALUES = "number_of_distinct_rhs_values"
+    MOST_FREQUENT_RHS_VALUE_PROPORTION = "most_frequent_rhs_value_proportion"
+    ROWS = "rows"
 
 
 class FdVerificationTaskResultItemSchema(BaseSchema):
@@ -65,6 +65,6 @@ class FdVerificationTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema)
 
 
 class FdVerificationTaskResultOrderingField(StrEnum):
-    NumberOfDistinctRhsValues = "number_of_distinct_rhs_values"
-    MostFrequentRhsValueProportion = "most_frequent_rhs_value_proportion"
-    NumberOfRows = "number_of_rows"
+    NUMBER_OF_DISTINCT_RHS_VALUES = "number_of_distinct_rhs_values"
+    MOST_FREQUENT_RHS_VALUE_PROPORTION = "most_frequent_rhs_value_proportion"
+    NUMBER_OF_ROWS = "number_of_rows"

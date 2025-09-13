@@ -16,7 +16,7 @@ EVIDENCE_THRESHOLD = "Denotes the maximum fraction of evidence violations allowe
 
 
 class FastAdcConfig(BaseSchema):
-    algo_name: Literal[AdcAlgoName.FastADC]
+    algo_name: Literal[AdcAlgoName.FAST_ADC]
     shard_length: int = Field(default=0, ge=0, description=SHARD_LEHGTH)
     minimum_shared_value: int | None = Field(
         default=None, ge=0, le=1, description=MIN_SHARED_VALUE

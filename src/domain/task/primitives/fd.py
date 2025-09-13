@@ -35,21 +35,21 @@ class FdPrimitive(
     ]
 ):
     _algo_map = {
-        FdAlgoName.Aid: Aid,
+        FdAlgoName.AID: Aid,
         FdAlgoName.DFD: DFD,
-        FdAlgoName.Depminer: Depminer,
-        FdAlgoName.FDep: FDep,
+        FdAlgoName.DEPMINER: Depminer,
+        FdAlgoName.FDEP: FDep,
         FdAlgoName.FUN: FUN,
-        FdAlgoName.FastFDs: FastFDs,
-        FdAlgoName.FdMine: FdMine,
-        FdAlgoName.HyFD: HyFD,
-        FdAlgoName.Pyro: Pyro,
-        FdAlgoName.Tane: Tane,
+        FdAlgoName.FAST_FDS: FastFDs,
+        FdAlgoName.FD_MINE: FdMine,
+        FdAlgoName.HY_FD: HyFD,
+        FdAlgoName.PYRO: Pyro,
+        FdAlgoName.TANE: Tane,
     }
 
     _params_schema_class = FdTaskParams[TabularDownloadedDatasetSchema]
 
-    allowed_dataset_type = DatasetType.Tabular
+    allowed_dataset_type = DatasetType.TABULAR
 
     def execute(self, params: FdTaskParams[TabularDownloadedDatasetSchema]):
         dataset = params.datasets.table

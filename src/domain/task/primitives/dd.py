@@ -28,12 +28,12 @@ class DdPrimitive(
     ]
 ):
     _algo_map = {
-        DdAlgoName.Split: Split,
+        DdAlgoName.SPLIT: Split,
     }
 
     _params_schema_class = DdTaskParams[TabularDownloadedDatasetSchema]
 
-    allowed_dataset_type = DatasetType.Tabular
+    allowed_dataset_type = DatasetType.TABULAR
 
     def execute(self, params: DdTaskParams[TabularDownloadedDatasetSchema]):
         dataset = params.datasets.table

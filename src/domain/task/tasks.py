@@ -32,7 +32,7 @@ class ProfileTaskTask(DatabaseTaskBase[TaskModel, UUID]):
         self._update_object_sync(
             id,
             **{
-                self.status_field: TaskStatus.Success,
+                self.status_field: TaskStatus.SUCCESS,
                 self.result_field: [
                     TaskResultModel(
                         task_id=id,

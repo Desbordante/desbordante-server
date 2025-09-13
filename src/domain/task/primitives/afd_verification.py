@@ -43,12 +43,12 @@ class AfdVerificationPrimitive(
     ]
 ):
     _algo_map = {
-        AfdVerificationAlgoName.AfdVerifier: AfdVerifier,
+        AfdVerificationAlgoName.AFD_VERIFIER: AfdVerifier,
     }
 
     _params_schema_class = AfdVerificationTaskParams[TabularDownloadedDatasetSchema]
 
-    allowed_dataset_type = DatasetType.Tabular
+    allowed_dataset_type = DatasetType.TABULAR
 
     def execute(
         self, params: AfdVerificationTaskParams[TabularDownloadedDatasetSchema]

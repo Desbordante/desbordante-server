@@ -20,27 +20,27 @@ class MdQueryHelper(
 ):
     def get_ordering_field(self, order_by: MdTaskResultOrderingField):
         match order_by:
-            case MdTaskResultOrderingField.NumberOfLhsItems:
+            case MdTaskResultOrderingField.NUMBER_OF_LHS_ITEMS:
                 return func.jsonb_array_length(
-                    TaskResultModel.result[MdTaskResultItemField.LhsItems]
+                    TaskResultModel.result[MdTaskResultItemField.LHS_ITEMS]
                 )
-            case MdTaskResultOrderingField.LhsItemsMetrics:
+            case MdTaskResultOrderingField.LHS_ITEMS_METRICS:
                 return func.jsonb_path_query_array(
-                    TaskResultModel.result[MdTaskResultItemField.LhsItems],
-                    f"$[*].{MdTaskResultSideItemField.Metric}",
+                    TaskResultModel.result[MdTaskResultItemField.LHS_ITEMS],
+                    f"$[*].{MdTaskResultSideItemField.METRIC}",
                 )
-            case MdTaskResultOrderingField.LhsItemsBoundaries:
+            case MdTaskResultOrderingField.LHS_ITEMS_BOUNDARIES:
                 return func.jsonb_path_query_array(
-                    TaskResultModel.result[MdTaskResultItemField.LhsItems],
-                    f"$[*].{MdTaskResultSideItemField.Boundary}",
+                    TaskResultModel.result[MdTaskResultItemField.LHS_ITEMS],
+                    f"$[*].{MdTaskResultSideItemField.BOUNDARY}",
                 )
-            case MdTaskResultOrderingField.RhsItemMetric:
-                return TaskResultModel.result[MdTaskResultItemField.RhsItem][
-                    MdTaskResultSideItemField.Metric
+            case MdTaskResultOrderingField.RHS_ITEM_METRIC:
+                return TaskResultModel.result[MdTaskResultItemField.RHS_ITEM][
+                    MdTaskResultSideItemField.METRIC
                 ]
-            case MdTaskResultOrderingField.RhsItemBoundary:
-                return TaskResultModel.result[MdTaskResultItemField.RhsItem][
-                    MdTaskResultSideItemField.Boundary
+            case MdTaskResultOrderingField.RHS_ITEM_BOUNDARY:
+                return TaskResultModel.result[MdTaskResultItemField.RHS_ITEM][
+                    MdTaskResultSideItemField.BOUNDARY
                 ]
 
         super().get_ordering_field(order_by)
@@ -53,14 +53,14 @@ class MdQueryHelper(
             else None,
             # lhs_items_metrics
             func.jsonb_array_length(
-                column("result").op("->")(MdTaskResultItemField.LhsItems)
+                column("result").op("->")(MdTaskResultItemField.LHS_ITEMS)
             )
             > 0
             if filters.lhs_items_metrics
             else None,
             # rhs_item_metrics
-            TaskResultModel.result[MdTaskResultItemField.RhsItem][
-                MdTaskResultSideItemField.Metric
+            TaskResultModel.result[MdTaskResultItemField.RHS_ITEM][
+                MdTaskResultSideItemField.METRIC
             ].in_(filters.rhs_item_metrics)
             if filters.rhs_item_metrics
             else None,
@@ -87,11 +87,11 @@ class MdQueryHelper(
         )
 
         return func.jsonb_build_object(
-            MdTaskResultItemField.LhsItems,
+            MdTaskResultItemField.LHS_ITEMS,
             func.jsonb_path_query_array(
-                TaskResultModel.result[MdTaskResultItemField.LhsItems],
+                TaskResultModel.result[MdTaskResultItemField.LHS_ITEMS],
                 condition,
             ),
-            MdTaskResultItemField.RhsItem,
-            TaskResultModel.result[MdTaskResultItemField.RhsItem],
+            MdTaskResultItemField.RHS_ITEM,
+            TaskResultModel.result[MdTaskResultItemField.RHS_ITEM],
         )

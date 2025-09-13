@@ -14,11 +14,11 @@ from .types import ColumnMatchMetric
 
 
 class MdTaskResultSideItemField(StrEnum):
-    Metric = "metric"
-    LeftColumn = "left_column"
-    RightColumn = "right_column"
-    Boundary = "boundary"
-    MaxInvalidBoundary = "max_invalid_boundary"
+    METRIC = "metric"
+    LEFT_COLUMN = "left_column"
+    RIGHT_COLUMN = "right_column"
+    BOUNDARY = "boundary"
+    MAX_INVALID_BOUNDARY = "max_invalid_boundary"
 
 
 class MdSideItemSchema(BaseSchema):
@@ -30,8 +30,8 @@ class MdSideItemSchema(BaseSchema):
 
 
 class MdTaskResultItemField(StrEnum):
-    LhsItems = "lhs_items"
-    RhsItem = "rhs_item"
+    LHS_ITEMS = "lhs_items"
+    RHS_ITEM = "rhs_item"
 
 
 class MdTaskResultItemSchema(BaseSchema):
@@ -56,10 +56,10 @@ class MdTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
 
 
 class MdTaskResultOrderingField(StrEnum):
-    NumberOfLhsItems = "number_of_lhs_items"
+    NUMBER_OF_LHS_ITEMS = "number_of_lhs_items"
 
-    LhsItemsMetrics = "lhs_items_metrics"
-    LhsItemsBoundaries = "lhs_items_boundaries"
+    LHS_ITEMS_METRICS = "lhs_items_metrics"
+    LHS_ITEMS_BOUNDARIES = "lhs_items_boundaries"
 
-    RhsItemMetric = "rhs_item_metric"
-    RhsItemBoundary = "rhs_item_boundary"
+    RHS_ITEM_METRIC = "rhs_item_metric"
+    RHS_ITEM_BOUNDARY = "rhs_item_boundary"

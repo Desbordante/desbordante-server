@@ -20,7 +20,7 @@ class TaskModel(BaseModel):
 
     params: Mapped[OneOfTaskParams] = mapped_column(PydanticType(OneOfTaskParams))
 
-    status: Mapped[TaskStatus] = mapped_column(default=TaskStatus.Pending)
+    status: Mapped[TaskStatus] = mapped_column(default=TaskStatus.PENDING)
     result: Mapped[OneOfTaskResultSchema | TaskErrorSchema | None] = mapped_column(
         PydanticType(OneOfTaskResultSchema | TaskErrorSchema | None), default=None
     )

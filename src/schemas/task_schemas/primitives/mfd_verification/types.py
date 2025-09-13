@@ -2,12 +2,12 @@ from enum import StrEnum, auto
 
 
 class MfdVerificationMetric(StrEnum):
-    Euclidean = auto()
-    Cosine = auto()
-    Levenshtein = auto()
+    EUCLIDEAN = auto()
+    COSINE = auto()
+    LEVENSHTEIN = auto()
 
 
 class MfdVerificationMetricAlgorithm(StrEnum):
-    Brute = auto()
-    Approx = auto()
-    Calipers = auto()
+    BRUTE = auto()
+    APPROX = auto()
+    CALIPERS = auto()
