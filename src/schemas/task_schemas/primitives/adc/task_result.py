@@ -6,13 +6,13 @@ from src.schemas.task_schemas.primitives.base_schemas import BaseTaskResultSchem
 
 
 class AdcItemSchema(BaseSchema):
-    left_prefix: str
-    left_index: int
-    left_column: str
+    lhs_prefix: str
+    lhs_index: int
+    lhs_column: str
 
-    right_prefix: str
-    right_index: int
-    right_column: str
+    rhs_prefix: str
+    rhs_index: int
+    rhs_column: str
 
     operator: Operator
 
@@ -23,30 +23,30 @@ class AdcTaskResultSchema(BaseTaskResultSchema):
 
 class AdcTaskResultItemField(StrEnum):
     Cojuncts = "cojuncts"
-    LeftIndices = "left_indices"
-    RightIndices = "right_indices"
-    LeftColumns = "left_columns"
-    RightColumns = "right_columns"
+    LhsIndices = "lhs_indices"
+    RhsIndices = "rhs_indices"
+    LhsColumns = "lhs_columns"
+    RhsColumns = "rhs_columns"
 
 
 class AdcTaskResultItemSchema(BaseSchema):
     cojuncts: list[AdcItemSchema]
-    left_columns: list[str]
-    right_columns: list[str]
-    left_indices: list[int]
-    right_indices: list[int]
+    lhs_columns: list[str]
+    rhs_columns: list[str]
+    lhs_indices: list[int]
+    rhs_indices: list[int]
 
 
 class AdcTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
-    left_columns: list[str]
-    right_columns: list[str]
-    left_indices: list[int]
-    right_indices: list[int]
+    lhs_columns: list[str]
+    rhs_columns: list[str]
+    lhs_indices: list[int]
+    rhs_indices: list[int]
 
 
 class AdcTaskResultOrderingField(StrEnum):
-    LeftColumns = "left_columns"
-    RightColumns = "right_columns"
-    LeftIndices = "left_index"
-    RightIndices = "right_index"
+    LhsColumns = "lhs_columns"
+    RhsColumns = "rhs_columns"
+    LhsIndices = "lhs_index"
+    RhsIndices = "rhs_index"
     NumberOfConjuncts = "number_of_conjuncts"

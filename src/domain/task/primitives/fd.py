@@ -66,10 +66,10 @@ class FdPrimitive(
             ),
             items=[
                 FdTaskResultItemSchema(
-                    left_indices=fd.lhs_indices,
-                    left_columns=[columns[index] for index in fd.lhs_indices],
-                    right_index=fd.rhs_index,
-                    right_column=columns[fd.rhs_index],
+                    lhs_indices=fd.lhs_indices,
+                    lhs_columns=[columns[index] for index in fd.lhs_indices],
+                    rhs_index=fd.rhs_index,
+                    rhs_column=columns[fd.rhs_index],
                 )
                 for fd in fds
             ],

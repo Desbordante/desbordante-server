@@ -16,20 +16,20 @@ class FdQueryHelper(
 ):
     def get_ordering_field(self, order_by: FdTaskResultOrderingField):
         match order_by:
-            case FdTaskResultOrderingField.LeftIndices:
-                return TaskResultModel.result[FdTaskResultItemField.LeftIndices].astext
-            case FdTaskResultOrderingField.LeftColumns:
-                return TaskResultModel.result[FdTaskResultItemField.LeftColumns].astext
-            case FdTaskResultOrderingField.RightIndex:
+            case FdTaskResultOrderingField.LhsIndices:
+                return TaskResultModel.result[FdTaskResultItemField.LhsIndices].astext
+            case FdTaskResultOrderingField.LhsColumns:
+                return TaskResultModel.result[FdTaskResultItemField.LhsColumns].astext
+            case FdTaskResultOrderingField.RhsIndex:
                 return func.cast(
-                    TaskResultModel.result[FdTaskResultItemField.RightIndex].astext,
+                    TaskResultModel.result[FdTaskResultItemField.RhsIndex].astext,
                     sqlalchemy.Integer,
                 )
-            case FdTaskResultOrderingField.RightColumn:
-                return TaskResultModel.result[FdTaskResultItemField.RightColumn].astext
-            case FdTaskResultOrderingField.NumberOfLeftColumns:
+            case FdTaskResultOrderingField.RhsColumn:
+                return TaskResultModel.result[FdTaskResultItemField.RhsColumn].astext
+            case FdTaskResultOrderingField.NumberOfLhsColumns:
                 return func.jsonb_array_length(
-                    TaskResultModel.result[FdTaskResultItemField.LeftColumns]
+                    TaskResultModel.result[FdTaskResultItemField.LhsColumns]
                 )
 
         super().get_ordering_field(order_by)
@@ -39,37 +39,37 @@ class FdQueryHelper(
             # search
             or_(
                 TaskResultModel.result[
-                    FdTaskResultItemField.LeftColumns
+                    FdTaskResultItemField.LhsColumns
                 ].astext.icontains(filters.search),
                 TaskResultModel.result[
-                    FdTaskResultItemField.RightColumn
+                    FdTaskResultItemField.RhsColumn
                 ].astext.icontains(filters.search),
             )
             if filters.search
             else None,
-            # left_columns
-            TaskResultModel.result[FdTaskResultItemField.LeftColumns].op("<@")(
-                cast(filters.left_columns, JSONB)
+            # lhs_columns
+            TaskResultModel.result[FdTaskResultItemField.LhsColumns].op("<@")(
+                cast(filters.lhs_columns, JSONB)
             )
-            if filters.left_columns
+            if filters.lhs_columns
             else None,
-            # left_indices
-            TaskResultModel.result[FdTaskResultItemField.LeftIndices].op("<@")(
-                cast(filters.left_indices, JSONB)
+            # lhs_indices
+            TaskResultModel.result[FdTaskResultItemField.LhsIndices].op("<@")(
+                cast(filters.lhs_indices, JSONB)
             )
-            if filters.left_indices
+            if filters.lhs_indices
             else None,
-            # right_index
+            # rhs_index
             func.cast(
-                TaskResultModel.result[FdTaskResultItemField.RightIndex].astext,
+                TaskResultModel.result[FdTaskResultItemField.RhsIndex].astext,
                 sqlalchemy.Integer,
             )
-            == filters.right_index
-            if filters.right_index is not None
+            == filters.rhs_index
+            if filters.rhs_index is not None
             else None,
-            # right_column
-            TaskResultModel.result[FdTaskResultItemField.RightColumn].astext
-            == filters.right_column
-            if filters.right_column
+            # rhs_column
+            TaskResultModel.result[FdTaskResultItemField.RhsColumn].astext
+            == filters.rhs_column
+            if filters.rhs_column
             else None,
         ]

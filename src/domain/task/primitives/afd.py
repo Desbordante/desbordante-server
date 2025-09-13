@@ -34,7 +34,7 @@ class AfdPrimitive(
 
     def execute(self, params: AfdTaskParams[TabularDownloadedDatasetSchema]):
         dataset = params.datasets.table
-        columns = dataset.info.column_names
+        column_names = dataset.info.column_names
 
         self._algo.load_data(table=dataset.df)
 
@@ -50,10 +50,10 @@ class AfdPrimitive(
             ),
             items=[
                 AfdTaskResultItemSchema(
-                    left_indices=fd.lhs_indices,
-                    left_columns=[columns[index] for index in fd.lhs_indices],
-                    right_index=fd.rhs_index,
-                    right_column=columns[fd.rhs_index],
+                    lhs_indices=fd.lhs_indices,
+                    lhs_columns=[column_names[index] for index in fd.lhs_indices],
+                    rhs_index=fd.rhs_index,
+                    rhs_column=column_names[fd.rhs_index],
                 )
                 for fd in fds
             ],

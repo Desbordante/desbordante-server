@@ -15,19 +15,19 @@ class AcQueryHelper(
 ):
     def get_ordering_field(self, order_by: AcTaskResultOrderingField):
         match order_by:
-            case AcTaskResultOrderingField.LeftIndex:
+            case AcTaskResultOrderingField.LhsIndex:
                 return func.cast(
-                    TaskResultModel.result[AcTaskResultItemField.LeftIndex], sa.Integer
+                    TaskResultModel.result[AcTaskResultItemField.LhsIndex], sa.Integer
                 )
-            case AcTaskResultOrderingField.RightIndex:
+            case AcTaskResultOrderingField.RhsIndex:
                 return func.cast(
-                    TaskResultModel.result[AcTaskResultItemField.RightIndex],
+                    TaskResultModel.result[AcTaskResultItemField.RhsIndex],
                     sa.Integer,
                 )
-            case AcTaskResultOrderingField.LeftColumn:
-                return TaskResultModel.result[AcTaskResultItemField.LeftColumn].astext
-            case AcTaskResultOrderingField.RightColumn:
-                return TaskResultModel.result[AcTaskResultItemField.RightColumn].astext
+            case AcTaskResultOrderingField.LhsColumn:
+                return TaskResultModel.result[AcTaskResultItemField.LhsColumn].astext
+            case AcTaskResultOrderingField.RhsColumn:
+                return TaskResultModel.result[AcTaskResultItemField.RhsColumn].astext
             case AcTaskResultOrderingField.NumberOfRanges:
                 return func.jsonb_array_length(
                     TaskResultModel.result[AcTaskResultItemField.Ranges]
@@ -45,28 +45,28 @@ class AcQueryHelper(
             TaskResultModel.result.astext.icontains(filters.search)
             if filters.search
             else None,
-            # left_index
+            # lhs_index
             func.cast(
-                TaskResultModel.result[AcTaskResultItemField.LeftIndex], sa.Integer
-            ).in_(filters.left_indices)
-            if filters.left_indices
+                TaskResultModel.result[AcTaskResultItemField.LhsIndex], sa.Integer
+            ).in_(filters.lhs_indices)
+            if filters.lhs_indices
             else None,
-            # right_index
+            # rhs_index
             func.cast(
-                TaskResultModel.result[AcTaskResultItemField.RightIndex], sa.Integer
-            ).in_(filters.right_indices)
-            if filters.right_indices
+                TaskResultModel.result[AcTaskResultItemField.RhsIndex], sa.Integer
+            ).in_(filters.rhs_indices)
+            if filters.rhs_indices
             else None,
-            # left_column
-            TaskResultModel.result[AcTaskResultItemField.LeftColumn].astext.in_(
-                filters.left_columns
+            # lhs_column
+            TaskResultModel.result[AcTaskResultItemField.LhsColumn].astext.in_(
+                filters.lhs_columns
             )
-            if filters.left_columns
+            if filters.lhs_columns
             else None,
-            # right_column
-            TaskResultModel.result[AcTaskResultItemField.RightColumn].astext.in_(
-                filters.right_columns
+            # rhs_column
+            TaskResultModel.result[AcTaskResultItemField.RhsColumn].astext.in_(
+                filters.rhs_columns
             )
-            if filters.right_columns
+            if filters.rhs_columns
             else None,
         ]

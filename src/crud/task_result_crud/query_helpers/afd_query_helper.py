@@ -16,20 +16,20 @@ class AfdQueryHelper(
 ):
     def get_ordering_field(self, order_by: AfdTaskResultOrderingField):
         match order_by:
-            case AfdTaskResultOrderingField.LeftIndices:
-                return TaskResultModel.result[AfdTaskResultItemField.LeftIndices].astext
-            case AfdTaskResultOrderingField.LeftColumns:
-                return TaskResultModel.result[AfdTaskResultItemField.LeftColumns].astext
-            case AfdTaskResultOrderingField.RightIndex:
+            case AfdTaskResultOrderingField.LhsIndices:
+                return TaskResultModel.result[AfdTaskResultItemField.LhsIndices].astext
+            case AfdTaskResultOrderingField.LhsColumns:
+                return TaskResultModel.result[AfdTaskResultItemField.LhsColumns].astext
+            case AfdTaskResultOrderingField.RhsIndex:
                 return func.cast(
-                    TaskResultModel.result[AfdTaskResultItemField.RightIndex].astext,
+                    TaskResultModel.result[AfdTaskResultItemField.RhsIndex].astext,
                     sqlalchemy.Integer,
                 )
-            case AfdTaskResultOrderingField.RightColumn:
-                return TaskResultModel.result[AfdTaskResultItemField.RightColumn].astext
-            case AfdTaskResultOrderingField.NumberOfLeftColumns:
+            case AfdTaskResultOrderingField.RhsColumn:
+                return TaskResultModel.result[AfdTaskResultItemField.RhsColumn].astext
+            case AfdTaskResultOrderingField.NumberOfLhsColumns:
                 return func.jsonb_array_length(
-                    TaskResultModel.result[AfdTaskResultItemField.LeftColumns]
+                    TaskResultModel.result[AfdTaskResultItemField.LhsColumns]
                 )
 
         super().get_ordering_field(order_by)
@@ -39,37 +39,37 @@ class AfdQueryHelper(
             # search
             or_(
                 TaskResultModel.result[
-                    AfdTaskResultItemField.LeftColumns
+                    AfdTaskResultItemField.LhsColumns
                 ].astext.icontains(filters.search),
                 TaskResultModel.result[
-                    AfdTaskResultItemField.RightColumn
+                    AfdTaskResultItemField.RhsColumn
                 ].astext.icontains(filters.search),
             )
             if filters.search
             else None,
-            # left_columns
-            TaskResultModel.result[AfdTaskResultItemField.LeftColumns].op("<@")(
-                cast(filters.left_columns, JSONB)
+            # lhs_columns
+            TaskResultModel.result[AfdTaskResultItemField.LhsColumns].op("<@")(
+                cast(filters.lhs_columns, JSONB)
             )
-            if filters.left_columns
+            if filters.lhs_columns
             else None,
-            # left_indices
-            TaskResultModel.result[AfdTaskResultItemField.LeftIndices].op("<@")(
-                cast(filters.left_indices, JSONB)
+            # lhs_indices
+            TaskResultModel.result[AfdTaskResultItemField.LhsIndices].op("<@")(
+                cast(filters.lhs_indices, JSONB)
             )
-            if filters.left_indices
+            if filters.lhs_indices
             else None,
-            # right_index
+            # rhs_index
             func.cast(
-                TaskResultModel.result[AfdTaskResultItemField.RightIndex].astext,
+                TaskResultModel.result[AfdTaskResultItemField.RhsIndex].astext,
                 sqlalchemy.Integer,
             )
-            == filters.right_index
-            if filters.right_index is not None
+            == filters.rhs_index
+            if filters.rhs_index is not None
             else None,
-            # right_column
-            TaskResultModel.result[AfdTaskResultItemField.RightColumn].astext
-            == filters.right_column
-            if filters.right_column
+            # rhs_column
+            TaskResultModel.result[AfdTaskResultItemField.RhsColumn].astext
+            == filters.rhs_column
+            if filters.rhs_column
             else None,
         ]

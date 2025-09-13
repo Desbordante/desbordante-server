@@ -15,18 +15,14 @@ class AdcQueryHelper(
 ):
     def get_ordering_field(self, order_by: AdcTaskResultOrderingField):
         match order_by:
-            case AdcTaskResultOrderingField.LeftColumns:
-                return TaskResultModel.result[AdcTaskResultItemField.LeftColumns].astext
-            case AdcTaskResultOrderingField.RightColumns:
-                return TaskResultModel.result[
-                    AdcTaskResultItemField.RightColumns
-                ].astext
-            case AdcTaskResultOrderingField.LeftIndices:
-                return TaskResultModel.result[AdcTaskResultItemField.LeftIndices].astext
-            case AdcTaskResultOrderingField.RightIndices:
-                return TaskResultModel.result[
-                    AdcTaskResultItemField.RightIndices
-                ].astext
+            case AdcTaskResultOrderingField.LhsColumns:
+                return TaskResultModel.result[AdcTaskResultItemField.LhsColumns].astext
+            case AdcTaskResultOrderingField.RhsColumns:
+                return TaskResultModel.result[AdcTaskResultItemField.RhsColumns].astext
+            case AdcTaskResultOrderingField.LhsIndices:
+                return TaskResultModel.result[AdcTaskResultItemField.LhsIndices].astext
+            case AdcTaskResultOrderingField.RhsIndices:
+                return TaskResultModel.result[AdcTaskResultItemField.RhsIndices].astext
             case AdcTaskResultOrderingField.NumberOfConjuncts:
                 return func.jsonb_array_length(
                     TaskResultModel.result[AdcTaskResultItemField.Cojuncts]
@@ -42,28 +38,28 @@ class AdcQueryHelper(
             )
             if filters.search
             else None,
-            # left_columns
-            TaskResultModel.result[AdcTaskResultItemField.LeftColumns].op("<@")(
-                cast(filters.left_columns, JSONB)
+            # lhs_columns
+            TaskResultModel.result[AdcTaskResultItemField.LhsColumns].op("<@")(
+                cast(filters.lhs_columns, JSONB)
             )
-            if filters.left_columns
+            if filters.lhs_columns
             else None,
-            # right_columns
-            TaskResultModel.result[AdcTaskResultItemField.RightColumns].op("<@")(
-                cast(filters.right_columns, JSONB)
+            # rhs_columns
+            TaskResultModel.result[AdcTaskResultItemField.RhsColumns].op("<@")(
+                cast(filters.rhs_columns, JSONB)
             )
-            if filters.right_columns
+            if filters.rhs_columns
             else None,
-            # left_indices
-            TaskResultModel.result[AdcTaskResultItemField.LeftIndices].op("<@")(
-                cast(filters.left_indices, JSONB)
+            # lhs_indices
+            TaskResultModel.result[AdcTaskResultItemField.LhsIndices].op("<@")(
+                cast(filters.lhs_indices, JSONB)
             )
-            if filters.left_indices
+            if filters.lhs_indices
             else None,
-            # right_indices
-            TaskResultModel.result[AdcTaskResultItemField.RightIndices].op("<@")(
-                cast(filters.right_indices, JSONB)
+            # rhs_indices
+            TaskResultModel.result[AdcTaskResultItemField.RhsIndices].op("<@")(
+                cast(filters.rhs_indices, JSONB)
             )
-            if filters.right_indices
+            if filters.rhs_indices
             else None,
         ]

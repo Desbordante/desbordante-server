@@ -52,10 +52,10 @@ class AcPrimitive(
             ),
             items=[
                 AcTaskResultItemSchema(
-                    left_index=range.column_indices[0],
-                    right_index=range.column_indices[1],
-                    left_column=column_names[range.column_indices[0]],
-                    right_column=column_names[range.column_indices[1]],
+                    lhs_index=range.column_indices[0],
+                    rhs_index=range.column_indices[1],
+                    lhs_column=column_names[range.column_indices[0]],
+                    rhs_column=column_names[range.column_indices[1]],
                     ranges=range.ranges,
                     exceptions=exceptions.setdefault(range.column_indices, []),
                 )
@@ -74,8 +74,8 @@ class AcPrimitive(
                 columns_dict.setdefault(col, []).append(
                     AcExceptionSchema(
                         row_index=e.row_index,
-                        left_value=row[col[0]],
-                        right_value=row[col[1]],
+                        lhs_value=row[col[0]],
+                        rhs_value=row[col[1]],
                     )
                 )
         return columns_dict

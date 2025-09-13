@@ -80,12 +80,12 @@ class AdcPrimitive(
 
             cojuncts.append(
                 AdcItemSchema(
-                    left_prefix=left_prefix,
-                    left_column=left_column,
-                    left_index=left_index,
-                    right_index=right_index,
-                    right_prefix=right_prefix,
-                    right_column=right_column,
+                    lhs_prefix=left_prefix,
+                    lhs_column=left_column,
+                    lhs_index=left_index,
+                    rhs_index=right_index,
+                    rhs_prefix=right_prefix,
+                    rhs_column=right_column,
                     operator=TypeAdapter(Operator).validate_python(operator),
                 )
             )
@@ -94,8 +94,8 @@ class AdcPrimitive(
 
         return AdcTaskResultItemSchema(
             cojuncts=cojuncts,
-            left_columns=sorted(left_columns),
-            right_columns=sorted(right_columns),
-            left_indices=sorted(left_indices),
-            right_indices=sorted(right_indices),
+            lhs_columns=sorted(left_columns),
+            rhs_columns=sorted(right_columns),
+            lhs_indices=sorted(left_indices),
+            rhs_indices=sorted(right_indices),
         )

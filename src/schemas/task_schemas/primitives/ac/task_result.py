@@ -7,24 +7,24 @@ from src.schemas.task_schemas.primitives.base_schemas import BaseTaskResultSchem
 
 class AcExceptionSchema(BaseSchema):
     row_index: int
-    left_value: float
-    right_value: float
+    lhs_value: float
+    rhs_value: float
 
 
 class AcTaskResultItemField(StrEnum):
-    LeftIndex = "left_index"
-    RightIndex = "right_index"
-    LeftColumn = "left_column"
-    RightColumn = "right_column"
+    LhsIndex = "lhs_index"
+    RhsIndex = "rhs_index"
+    LhsColumn = "lhs_column"
+    RhsColumn = "rhs_column"
     Ranges = "ranges"
     Exceptions = "exceptions"
 
 
 class AcTaskResultItemSchema(BaseSchema):
-    left_index: int
-    right_index: int
-    left_column: str
-    right_column: str
+    lhs_index: int
+    rhs_index: int
+    lhs_column: str
+    rhs_column: str
 
     ranges: list[tuple[float, float]]
     exceptions: list[AcExceptionSchema]
@@ -35,16 +35,16 @@ class AcTaskResultSchema(BaseTaskResultSchema):
 
 
 class AcTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
-    left_columns: list[str]
-    right_columns: list[str]
-    left_indices: list[int]
-    right_indices: list[int]
+    lhs_columns: list[str]
+    rhs_columns: list[str]
+    lhs_indices: list[int]
+    rhs_indices: list[int]
 
 
 class AcTaskResultOrderingField(StrEnum):
-    LeftColumn = "left_column"
-    RightColumn = "right_column"
-    LeftIndex = "left_index"
-    RightIndex = "right_index"
+    LhsColumn = "lhs_column"
+    RhsColumn = "rhs_column"
+    LhsIndex = "lhs_index"
+    RhsIndex = "rhs_index"
     NumberOfRanges = "number_of_ranges"
     NumberOfExceptions = "number_of_exceptions"
