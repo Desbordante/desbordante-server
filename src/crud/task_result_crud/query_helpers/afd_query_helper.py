@@ -78,15 +78,13 @@ class AfdQueryHelper(
                     ColumnField.Index
                 ].astext,
                 sqlalchemy.Integer,
-            )
-            == filters.rhs_column_index
-            if filters.rhs_column_index is not None
+            ).in_(filters.rhs_column_indices)
+            if filters.rhs_column_indices is not None
             else None,
             # rhs_column_name
             TaskResultModel.result[AfdTaskResultItemField.RhsColumn][
                 ColumnField.Name
-            ].astext
-            == filters.rhs_column_name
-            if filters.rhs_column_name
+            ].astext.in_(filters.rhs_column_names)
+            if filters.rhs_column_names
             else None,
         ]

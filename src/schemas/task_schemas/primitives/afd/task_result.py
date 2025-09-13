@@ -24,8 +24,8 @@ class AfdTaskResultSchema(BaseTaskResultSchema):
 class AfdTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
     lhs_columns_indices: list[int]
     lhs_columns_names: list[str]
-    rhs_column_index: int
-    rhs_column_name: str
+    rhs_column_indices: list[int]
+    rhs_column_names: list[str]
 
 
 class AfdTaskResultOrderingField(StrEnum):
