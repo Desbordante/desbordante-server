@@ -12,7 +12,10 @@ from src.schemas.task_schemas.primitives.afd.task_result import (
     AfdTaskResultItemSchema,
     AfdTaskResultSchema,
 )
-from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
+from src.schemas.task_schemas.primitives.base_schemas import (
+    ColumnSchema,
+    PrimitiveResultSchema,
+)
 
 
 class AfdPrimitive(
@@ -50,10 +53,17 @@ class AfdPrimitive(
             ),
             items=[
                 AfdTaskResultItemSchema(
-                    lhs_indices=fd.lhs_indices,
-                    lhs_columns=[column_names[index] for index in fd.lhs_indices],
-                    rhs_index=fd.rhs_index,
-                    rhs_column=column_names[fd.rhs_index],
+                    lhs_columns=[
+                        ColumnSchema(
+                            index=index,
+                            name=column_names[index],
+                        )
+                        for index in fd.lhs_indices
+                    ],
+                    rhs_column=ColumnSchema(
+                        index=fd.rhs_index,
+                        name=column_names[fd.rhs_index],
+                    ),
                 )
                 for fd in fds
             ],

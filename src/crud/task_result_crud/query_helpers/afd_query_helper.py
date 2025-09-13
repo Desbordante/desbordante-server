@@ -9,6 +9,7 @@ from src.schemas.task_schemas.primitives.afd.task_result import (
     AfdTaskResultItemField,
     AfdTaskResultOrderingField,
 )
+from src.schemas.task_schemas.primitives.base_schemas import ColumnField
 
 
 class AfdQueryHelper(
@@ -16,17 +17,27 @@ class AfdQueryHelper(
 ):
     def get_ordering_field(self, order_by: AfdTaskResultOrderingField):
         match order_by:
-            case AfdTaskResultOrderingField.LhsIndices:
-                return TaskResultModel.result[AfdTaskResultItemField.LhsIndices].astext
-            case AfdTaskResultOrderingField.LhsColumns:
-                return TaskResultModel.result[AfdTaskResultItemField.LhsColumns].astext
-            case AfdTaskResultOrderingField.RhsIndex:
+            case AfdTaskResultOrderingField.LhsColumnsIndices:
+                return func.jsonb_path_query_array(
+                    TaskResultModel.result[AfdTaskResultItemField.LhsColumns],
+                    f"$[*].{ColumnField.Index}",
+                )
+            case AfdTaskResultOrderingField.LhsColumnsNames:
+                return func.jsonb_path_query_array(
+                    TaskResultModel.result[AfdTaskResultItemField.LhsColumns],
+                    f"$[*].{ColumnField.Name}",
+                )
+            case AfdTaskResultOrderingField.RhsColumnIndex:
                 return func.cast(
-                    TaskResultModel.result[AfdTaskResultItemField.RhsIndex].astext,
+                    TaskResultModel.result[AfdTaskResultItemField.RhsColumn][
+                        ColumnField.Index
+                    ].astext,
                     sqlalchemy.Integer,
                 )
-            case AfdTaskResultOrderingField.RhsColumn:
-                return TaskResultModel.result[AfdTaskResultItemField.RhsColumn].astext
+            case AfdTaskResultOrderingField.RhsColumnName:
+                return TaskResultModel.result[AfdTaskResultItemField.RhsColumn][
+                    ColumnField.Name
+                ].astext
             case AfdTaskResultOrderingField.NumberOfLhsColumns:
                 return func.jsonb_array_length(
                     TaskResultModel.result[AfdTaskResultItemField.LhsColumns]
@@ -47,29 +58,35 @@ class AfdQueryHelper(
             )
             if filters.search
             else None,
-            # lhs_columns
-            TaskResultModel.result[AfdTaskResultItemField.LhsColumns].op("<@")(
-                cast(filters.lhs_columns, JSONB)
-            )
-            if filters.lhs_columns
+            # lhs_columns_names
+            func.jsonb_path_query_array(
+                TaskResultModel.result[AfdTaskResultItemField.LhsColumns],
+                f"$[*].{ColumnField.Name}",
+            ).op("<@")(cast(filters.lhs_columns_names, JSONB))
+            if filters.lhs_columns_names
             else None,
-            # lhs_indices
-            TaskResultModel.result[AfdTaskResultItemField.LhsIndices].op("<@")(
-                cast(filters.lhs_indices, JSONB)
-            )
-            if filters.lhs_indices
+            # lhs_columns_indices
+            func.jsonb_path_query_array(
+                TaskResultModel.result[AfdTaskResultItemField.LhsColumns],
+                f"$[*].{ColumnField.Index}",
+            ).op("<@")(cast(filters.lhs_columns_indices, JSONB))
+            if filters.lhs_columns_indices
             else None,
-            # rhs_index
+            # rhs_column_index
             func.cast(
-                TaskResultModel.result[AfdTaskResultItemField.RhsIndex].astext,
+                TaskResultModel.result[AfdTaskResultItemField.RhsColumn][
+                    ColumnField.Index
+                ].astext,
                 sqlalchemy.Integer,
             )
-            == filters.rhs_index
-            if filters.rhs_index is not None
+            == filters.rhs_column_index
+            if filters.rhs_column_index is not None
             else None,
-            # rhs_column
-            TaskResultModel.result[AfdTaskResultItemField.RhsColumn].astext
-            == filters.rhs_column
-            if filters.rhs_column
+            # rhs_column_name
+            TaskResultModel.result[AfdTaskResultItemField.RhsColumn][
+                ColumnField.Name
+            ].astext
+            == filters.rhs_column_name
+            if filters.rhs_column_name
             else None,
         ]

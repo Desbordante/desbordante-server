@@ -1,20 +1,19 @@
 from enum import StrEnum
 
 from src.schemas.base_schemas import BaseSchema, FiltersParamsSchema, OptionalSchema
-from src.schemas.task_schemas.primitives.base_schemas import BaseTaskResultSchema
+from src.schemas.task_schemas.primitives.base_schemas import (
+    BaseTaskResultSchema,
+    ColumnSchema,
+)
 
 
 class AfdTaskResultItemSchema(BaseSchema):
-    lhs_indices: list[int]
-    lhs_columns: list[str]
-    rhs_index: int
-    rhs_column: str
+    lhs_columns: list[ColumnSchema]
+    rhs_column: ColumnSchema
 
 
 class AfdTaskResultItemField(StrEnum):
-    LhsIndices = "lhs_indices"
     LhsColumns = "lhs_columns"
-    RhsIndex = "rhs_index"
     RhsColumn = "rhs_column"
 
 
@@ -23,15 +22,15 @@ class AfdTaskResultSchema(BaseTaskResultSchema):
 
 
 class AfdTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
-    lhs_indices: list[int]
-    lhs_columns: list[str]
-    rhs_index: int
-    rhs_column: str
+    lhs_columns_indices: list[int]
+    lhs_columns_names: list[str]
+    rhs_column_index: int
+    rhs_column_name: str
 
 
 class AfdTaskResultOrderingField(StrEnum):
-    LhsIndices = "lhs_indices"
-    LhsColumns = "lhs_columns"
-    RhsIndex = "rhs_index"
-    RhsColumn = "rhs_column"
+    LhsColumnsIndices = "lhs_columns_indices"
+    LhsColumnsNames = "lhs_columns_names"
+    RhsColumnIndex = "rhs_column_index"
+    RhsColumnName = "rhs_column_name"
     NumberOfLhsColumns = "number_of_lhs_columns"
