@@ -8,6 +8,7 @@ from src.schemas.task_schemas.primitives.adc.task_result import (
     AdcTaskResultItemField,
     AdcTaskResultOrderingField,
 )
+from src.schemas.task_schemas.primitives.base_schemas import ColumnField
 
 
 class AdcQueryHelper(
@@ -15,17 +16,29 @@ class AdcQueryHelper(
 ):
     def get_ordering_field(self, order_by: AdcTaskResultOrderingField):
         match order_by:
-            case AdcTaskResultOrderingField.LhsColumns:
-                return TaskResultModel.result[AdcTaskResultItemField.LhsColumns].astext
-            case AdcTaskResultOrderingField.RhsColumns:
-                return TaskResultModel.result[AdcTaskResultItemField.RhsColumns].astext
-            case AdcTaskResultOrderingField.LhsIndices:
-                return TaskResultModel.result[AdcTaskResultItemField.LhsIndices].astext
-            case AdcTaskResultOrderingField.RhsIndices:
-                return TaskResultModel.result[AdcTaskResultItemField.RhsIndices].astext
+            case AdcTaskResultOrderingField.LhsItemNames:
+                return func.jsonb_path_query_array(
+                    TaskResultModel.result[AdcTaskResultItemField.Conjuncts],
+                    f"$[*].lhs_item.{ColumnField.Name}",
+                )
+            case AdcTaskResultOrderingField.RhsItemNames:
+                return func.jsonb_path_query_array(
+                    TaskResultModel.result[AdcTaskResultItemField.Conjuncts],
+                    f"$[*].rhs_item.{ColumnField.Name}",
+                )
+            case AdcTaskResultOrderingField.LhsItemIndices:
+                return func.jsonb_path_query_array(
+                    TaskResultModel.result[AdcTaskResultItemField.Conjuncts],
+                    f"$[*].lhs_item.{ColumnField.Index}",
+                )
+            case AdcTaskResultOrderingField.RhsItemIndices:
+                return func.jsonb_path_query_array(
+                    TaskResultModel.result[AdcTaskResultItemField.Conjuncts],
+                    f"$[*].rhs_item.{ColumnField.Index}",
+                )
             case AdcTaskResultOrderingField.NumberOfConjuncts:
                 return func.jsonb_array_length(
-                    TaskResultModel.result[AdcTaskResultItemField.Cojuncts]
+                    TaskResultModel.result[AdcTaskResultItemField.Conjuncts]
                 )
 
         super().get_ordering_field(order_by)
@@ -33,33 +46,37 @@ class AdcQueryHelper(
     def make_filters(self, filters: AdcTaskResultFiltersSchema):
         return [
             # search
-            TaskResultModel.result[AdcTaskResultItemField.Cojuncts].astext.icontains(
+            TaskResultModel.result[AdcTaskResultItemField.Conjuncts].astext.icontains(
                 filters.search
             )
             if filters.search
             else None,
-            # lhs_columns
-            TaskResultModel.result[AdcTaskResultItemField.LhsColumns].op("<@")(
-                cast(filters.lhs_columns, JSONB)
-            )
-            if filters.lhs_columns
+            # lhs_item_names
+            func.jsonb_path_query_array(
+                TaskResultModel.result[AdcTaskResultItemField.Conjuncts],
+                f"$[*].lhs_item.{ColumnField.Name}",
+            ).op("<@")(cast(filters.lhs_item_names, JSONB))
+            if filters.lhs_item_names
             else None,
-            # rhs_columns
-            TaskResultModel.result[AdcTaskResultItemField.RhsColumns].op("<@")(
-                cast(filters.rhs_columns, JSONB)
-            )
-            if filters.rhs_columns
+            # rhs_item_names
+            func.jsonb_path_query_array(
+                TaskResultModel.result[AdcTaskResultItemField.Conjuncts],
+                f"$[*].rhs_item.{ColumnField.Name}",
+            ).op("<@")(cast(filters.rhs_item_names, JSONB))
+            if filters.rhs_item_names
             else None,
-            # lhs_indices
-            TaskResultModel.result[AdcTaskResultItemField.LhsIndices].op("<@")(
-                cast(filters.lhs_indices, JSONB)
-            )
-            if filters.lhs_indices
+            # lhs_item_indices
+            func.jsonb_path_query_array(
+                TaskResultModel.result[AdcTaskResultItemField.Conjuncts],
+                f"$[*].lhs_item.{ColumnField.Index}",
+            ).op("<@")(cast(filters.lhs_item_indices, JSONB))
+            if filters.lhs_item_indices
             else None,
-            # rhs_indices
-            TaskResultModel.result[AdcTaskResultItemField.RhsIndices].op("<@")(
-                cast(filters.rhs_indices, JSONB)
-            )
-            if filters.rhs_indices
+            # rhs_item_indices
+            func.jsonb_path_query_array(
+                TaskResultModel.result[AdcTaskResultItemField.Conjuncts],
+                f"$[*].rhs_item.{ColumnField.Index}",
+            ).op("<@")(cast(filters.rhs_item_indices, JSONB))
+            if filters.rhs_item_indices
             else None,
         ]

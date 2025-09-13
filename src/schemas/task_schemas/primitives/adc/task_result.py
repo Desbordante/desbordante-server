@@ -2,17 +2,19 @@ from enum import StrEnum
 
 from src.schemas.base_schemas import BaseSchema, FiltersParamsSchema, OptionalSchema
 from src.schemas.task_schemas.primitives.adc.types import Operator
-from src.schemas.task_schemas.primitives.base_schemas import BaseTaskResultSchema
+from src.schemas.task_schemas.primitives.base_schemas import (
+    BaseTaskResultSchema,
+    ColumnSchema,
+)
+
+
+class AdcSideItemSchema(ColumnSchema):
+    prefix: str
 
 
 class AdcItemSchema(BaseSchema):
-    lhs_prefix: str
-    lhs_index: int
-    lhs_column: str
-
-    rhs_prefix: str
-    rhs_index: int
-    rhs_column: str
+    lhs_item: AdcSideItemSchema
+    rhs_item: AdcSideItemSchema
 
     operator: Operator
 
@@ -22,31 +24,23 @@ class AdcTaskResultSchema(BaseTaskResultSchema):
 
 
 class AdcTaskResultItemField(StrEnum):
-    Cojuncts = "cojuncts"
-    LhsIndices = "lhs_indices"
-    RhsIndices = "rhs_indices"
-    LhsColumns = "lhs_columns"
-    RhsColumns = "rhs_columns"
+    Conjuncts = "conjuncts"
 
 
 class AdcTaskResultItemSchema(BaseSchema):
-    cojuncts: list[AdcItemSchema]
-    lhs_columns: list[str]
-    rhs_columns: list[str]
-    lhs_indices: list[int]
-    rhs_indices: list[int]
+    conjuncts: list[AdcItemSchema]
 
 
 class AdcTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
-    lhs_columns: list[str]
-    rhs_columns: list[str]
-    lhs_indices: list[int]
-    rhs_indices: list[int]
+    lhs_item_names: list[str]
+    rhs_item_names: list[str]
+    lhs_item_indices: list[int]
+    rhs_item_indices: list[int]
 
 
 class AdcTaskResultOrderingField(StrEnum):
-    LhsColumns = "lhs_columns"
-    RhsColumns = "rhs_columns"
-    LhsIndices = "lhs_index"
-    RhsIndices = "rhs_index"
+    LhsItemNames = "lhs_item_names"
+    RhsItemNames = "rhs_item_names"
+    LhsItemIndices = "lhs_item_indices"
+    RhsItemIndices = "rhs_item_indices"
     NumberOfConjuncts = "number_of_conjuncts"

@@ -9,6 +9,7 @@ from src.schemas.task_schemas.primitives.adc.algo_name import AdcAlgoName
 from src.schemas.task_schemas.primitives.adc.task_params import AdcTaskParams
 from src.schemas.task_schemas.primitives.adc.task_result import (
     AdcItemSchema,
+    AdcSideItemSchema,
     AdcTaskResultItemSchema,
     AdcTaskResultSchema,
 )
@@ -58,11 +59,7 @@ class AdcPrimitive(
         dc_clean = re.sub(r"^¬\{\s*|\s*\}$", "", dc.strip())
         conjuncts = re.split(r"\s*∧\s*", dc_clean)
 
-        cojuncts = []
-        left_columns = set()
-        right_columns = set()
-        left_indices = set()
-        right_indices = set()
+        conjuncts = []
         for conjunct in conjuncts:
             match = re.match(
                 r"([ts])\.(\w+)\s*(<=|>=|<|>|==|!=)\s*([ts])\.(\w+)", conjunct.strip()
@@ -78,24 +75,22 @@ class AdcPrimitive(
             left_index = column_names.index(left_column)
             right_index = column_names.index(right_column)
 
-            cojuncts.append(
+            conjuncts.append(
                 AdcItemSchema(
-                    lhs_prefix=left_prefix,
-                    lhs_column=left_column,
-                    lhs_index=left_index,
-                    rhs_index=right_index,
-                    rhs_prefix=right_prefix,
-                    rhs_column=right_column,
+                    lhs_item=AdcSideItemSchema(
+                        prefix=left_prefix,
+                        name=left_column,
+                        index=left_index,
+                    ),
+                    rhs_item=AdcSideItemSchema(
+                        prefix=right_prefix,
+                        name=right_column,
+                        index=right_index,
+                    ),
                     operator=TypeAdapter(Operator).validate_python(operator),
                 )
             )
-            left_columns.add(left_column)
-            right_columns.add(right_column)
 
         return AdcTaskResultItemSchema(
-            cojuncts=cojuncts,
-            lhs_columns=sorted(left_columns),
-            rhs_columns=sorted(right_columns),
-            lhs_indices=sorted(left_indices),
-            rhs_indices=sorted(right_indices),
+            conjuncts=conjuncts,
         )
