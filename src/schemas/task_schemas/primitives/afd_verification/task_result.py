@@ -1,72 +1,33 @@
-from enum import StrEnum
-from typing import Annotated, Literal, Union
+from src.schemas.task_schemas.primitives.fd_verification.task_result import (
+    FdVerificationRowSchema,
+    FdVerificationTaskResultFiltersSchema,
+    FdVerificationTaskResultItemField,
+    FdVerificationTaskResultItemSchema,
+    FdVerificationTaskResultOrderingField,
+    FdVerificationTaskResultSchema,
+    HoldsFdVerificationTaskResultSchema,
+    NotHoldsFdVerificationTaskResultSchema,
+)
 
-from pydantic import Field
-
-from src.schemas.base_schemas import BaseSchema, FiltersParamsSchema, OptionalSchema
-from src.schemas.task_schemas.primitives.base_schemas import BaseTaskResultSchema
-
-
-class AfdVerificationRowSchema(BaseSchema):
-    row_index: int
-    values: list[str]
-
-
-class AfdVerificationTaskResultItemField(StrEnum):
-    NumberOfDistinctRhsValues = "number_of_distinct_rhs_values"
-    MostFrequentRhsValueProportion = "most_frequent_rhs_value_proportion"
-    Rows = "rows"
+AfdVerificationRowSchema = FdVerificationRowSchema
 
 
-class AfdVerificationTaskResultItemSchema(BaseSchema):
-    number_of_distinct_rhs_values: int
-    most_frequent_rhs_value_proportion: float
-    rows: list[AfdVerificationRowSchema]
+AfdVerificationTaskResultItemField = FdVerificationTaskResultItemField
 
 
-class HoldsAfdVerificationTaskResultSchema(BaseTaskResultSchema):
-    fd_holds: Literal[True]
-    error: Literal[0]
-    number_of_error_clusters: Literal[0]
-    number_of_error_rows: Literal[0]
+AfdVerificationTaskResultItemSchema = FdVerificationTaskResultItemSchema
 
 
-class NotHoldsAfdVerificationTaskResultSchema(BaseTaskResultSchema):
-    fd_holds: Literal[False]
-    error: float
-    number_of_error_clusters: int
-    number_of_error_rows: int
-
-    min_num: Annotated[int, Field(description="Minimum number of distinct rhs values")]
-    max_num: Annotated[int, Field(description="Maximum number of distinct rhs values")]
-    min_prop: Annotated[
-        float, Field(description="Minimum most frequent rhs value proportion")
-    ]
-    max_prop: Annotated[
-        float, Field(description="Maximum most frequent rhs value proportion")
-    ]
+HoldsAfdVerificationTaskResultSchema = HoldsFdVerificationTaskResultSchema
 
 
-AfdVerificationTaskResultSchema = Annotated[
-    Union[
-        HoldsAfdVerificationTaskResultSchema, NotHoldsAfdVerificationTaskResultSchema
-    ],
-    Field(discriminator="fd_holds"),
-]
+NotHoldsAfdVerificationTaskResultSchema = NotHoldsFdVerificationTaskResultSchema
 
 
-class AfdVerificationTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
-    min_num: Annotated[int, Field(description="Minimum number of distinct rhs values")]
-    max_num: Annotated[int, Field(description="Maximum number of distinct rhs values")]
-    min_prop: Annotated[
-        float, Field(description="Minimum most frequent rhs value proportion")
-    ]
-    max_prop: Annotated[
-        float, Field(description="Maximum most frequent rhs value proportion")
-    ]
+AfdVerificationTaskResultSchema = FdVerificationTaskResultSchema
 
 
-class AfdVerificationTaskResultOrderingField(StrEnum):
-    NumberOfDistinctRhsValues = "number_of_distinct_rhs_values"
-    MostFrequentRhsValueProportion = "most_frequent_rhs_value_proportion"
-    NumberOfRows = "number_of_rows"
+AfdVerificationTaskResultFiltersSchema = FdVerificationTaskResultFiltersSchema
+
+
+AfdVerificationTaskResultOrderingField = FdVerificationTaskResultOrderingField

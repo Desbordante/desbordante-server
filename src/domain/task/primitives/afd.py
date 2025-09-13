@@ -1,8 +1,8 @@
-import desbordante.fd
 from desbordante.afd.algorithms import (
     Pyro,
     Tane,
 )
+from desbordante.fd import FdAlgorithm
 
 from src.domain.task.primitives.base_primitive import BasePrimitive
 from src.schemas.dataset_schemas import DatasetType, TabularDownloadedDatasetSchema
@@ -20,7 +20,7 @@ from src.schemas.task_schemas.primitives.base_schemas import (
 
 class AfdPrimitive(
     BasePrimitive[
-        desbordante.fd.FdAlgorithm,
+        FdAlgorithm,
         AfdAlgoName,
         AfdTaskParams[TabularDownloadedDatasetSchema],
         PrimitiveResultSchema[AfdTaskResultSchema, AfdTaskResultItemSchema],

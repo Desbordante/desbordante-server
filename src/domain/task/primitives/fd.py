@@ -1,4 +1,4 @@
-import desbordante.fd
+from desbordante.fd import FdAlgorithm
 from desbordante.fd.algorithms import (
     DFD,
     FUN,
@@ -28,7 +28,7 @@ from src.schemas.task_schemas.primitives.fd.task_result import (
 
 class FdPrimitive(
     BasePrimitive[
-        desbordante.fd.FdAlgorithm,
+        FdAlgorithm,
         FdAlgoName,
         FdTaskParams[TabularDownloadedDatasetSchema],
         PrimitiveResultSchema[FdTaskResultSchema, FdTaskResultItemSchema],
