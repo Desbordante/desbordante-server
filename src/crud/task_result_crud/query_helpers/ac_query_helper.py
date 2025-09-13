@@ -8,6 +8,7 @@ from src.schemas.task_schemas.primitives.ac.task_result import (
     AcTaskResultItemField,
     AcTaskResultOrderingField,
 )
+from src.schemas.task_schemas.primitives.base_schemas import ColumnField
 
 
 class AcQueryHelper(
@@ -15,19 +16,29 @@ class AcQueryHelper(
 ):
     def get_ordering_field(self, order_by: AcTaskResultOrderingField):
         match order_by:
-            case AcTaskResultOrderingField.LhsIndex:
+            case AcTaskResultOrderingField.LhsColumnIndex:
                 return func.cast(
-                    TaskResultModel.result[AcTaskResultItemField.LhsIndex], sa.Integer
-                )
-            case AcTaskResultOrderingField.RhsIndex:
-                return func.cast(
-                    TaskResultModel.result[AcTaskResultItemField.RhsIndex],
+                    TaskResultModel.result[AcTaskResultItemField.LhsColumn][
+                        ColumnField.Index
+                    ],
                     sa.Integer,
                 )
-            case AcTaskResultOrderingField.LhsColumn:
-                return TaskResultModel.result[AcTaskResultItemField.LhsColumn].astext
-            case AcTaskResultOrderingField.RhsColumn:
-                return TaskResultModel.result[AcTaskResultItemField.RhsColumn].astext
+            case AcTaskResultOrderingField.RhsColumnIndex:
+                return func.cast(
+                    TaskResultModel.result[AcTaskResultItemField.RhsColumn][
+                        ColumnField.Index
+                    ],
+                    sa.Integer,
+                )
+            case AcTaskResultOrderingField.LhsColumnName:
+                return TaskResultModel.result[AcTaskResultItemField.LhsColumn][
+                    ColumnField.Name
+                ].astext
+            case AcTaskResultOrderingField.RhsColumnName:
+                return TaskResultModel.result[AcTaskResultItemField.RhsColumn][
+                    ColumnField.Name
+                ].astext
+
             case AcTaskResultOrderingField.NumberOfRanges:
                 return func.jsonb_array_length(
                     TaskResultModel.result[AcTaskResultItemField.Ranges]
@@ -45,28 +56,34 @@ class AcQueryHelper(
             TaskResultModel.result.astext.icontains(filters.search)
             if filters.search
             else None,
-            # lhs_index
+            # lhs_column_indices
             func.cast(
-                TaskResultModel.result[AcTaskResultItemField.LhsIndex], sa.Integer
-            ).in_(filters.lhs_indices)
-            if filters.lhs_indices
+                TaskResultModel.result[AcTaskResultItemField.LhsColumn][
+                    ColumnField.Index
+                ],
+                sa.Integer,
+            ).in_(filters.lhs_column_indices)
+            if filters.lhs_column_indices
             else None,
-            # rhs_index
+            # rhs_column_indices
             func.cast(
-                TaskResultModel.result[AcTaskResultItemField.RhsIndex], sa.Integer
-            ).in_(filters.rhs_indices)
-            if filters.rhs_indices
+                TaskResultModel.result[AcTaskResultItemField.RhsColumn][
+                    ColumnField.Index
+                ],
+                sa.Integer,
+            ).in_(filters.rhs_column_indices)
+            if filters.rhs_column_indices
             else None,
-            # lhs_column
-            TaskResultModel.result[AcTaskResultItemField.LhsColumn].astext.in_(
-                filters.lhs_columns
-            )
-            if filters.lhs_columns
+            # lhs_column_names
+            TaskResultModel.result[AcTaskResultItemField.LhsColumn][
+                ColumnField.Name
+            ].astext.in_(filters.lhs_column_names)
+            if filters.lhs_column_names
             else None,
-            # rhs_column
-            TaskResultModel.result[AcTaskResultItemField.RhsColumn].astext.in_(
-                filters.rhs_columns
-            )
-            if filters.rhs_columns
+            # rhs_column_names
+            TaskResultModel.result[AcTaskResultItemField.RhsColumn][
+                ColumnField.Name
+            ].astext.in_(filters.rhs_column_names)
+            if filters.rhs_column_names
             else None,
         ]

@@ -2,7 +2,10 @@ from enum import StrEnum
 
 from src.schemas.base_schemas import BaseSchema, FiltersParamsSchema, OptionalSchema
 from src.schemas.task_schemas.primitives.ac.types import BinOperation
-from src.schemas.task_schemas.primitives.base_schemas import BaseTaskResultSchema
+from src.schemas.task_schemas.primitives.base_schemas import (
+    BaseTaskResultSchema,
+    ColumnSchema,
+)
 
 
 class AcExceptionSchema(BaseSchema):
@@ -12,8 +15,6 @@ class AcExceptionSchema(BaseSchema):
 
 
 class AcTaskResultItemField(StrEnum):
-    LhsIndex = "lhs_index"
-    RhsIndex = "rhs_index"
     LhsColumn = "lhs_column"
     RhsColumn = "rhs_column"
     Ranges = "ranges"
@@ -21,10 +22,8 @@ class AcTaskResultItemField(StrEnum):
 
 
 class AcTaskResultItemSchema(BaseSchema):
-    lhs_index: int
-    rhs_index: int
-    lhs_column: str
-    rhs_column: str
+    lhs_column: ColumnSchema
+    rhs_column: ColumnSchema
 
     ranges: list[tuple[float, float]]
     exceptions: list[AcExceptionSchema]
@@ -35,16 +34,16 @@ class AcTaskResultSchema(BaseTaskResultSchema):
 
 
 class AcTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
-    lhs_columns: list[str]
-    rhs_columns: list[str]
-    lhs_indices: list[int]
-    rhs_indices: list[int]
+    lhs_column_names: list[str]
+    rhs_column_names: list[str]
+    lhs_column_indices: list[int]
+    rhs_column_indices: list[int]
 
 
 class AcTaskResultOrderingField(StrEnum):
-    LhsColumn = "lhs_column"
-    RhsColumn = "rhs_column"
-    LhsIndex = "lhs_index"
-    RhsIndex = "rhs_index"
+    LhsColumnName = "lhs_column_name"
+    RhsColumnName = "rhs_column_name"
+    LhsColumnIndex = "lhs_column_index"
+    RhsColumnIndex = "rhs_column_index"
     NumberOfRanges = "number_of_ranges"
     NumberOfExceptions = "number_of_exceptions"

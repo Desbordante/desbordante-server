@@ -11,7 +11,10 @@ from src.schemas.task_schemas.primitives.ac.task_result import (
     AcTaskResultItemSchema,
     AcTaskResultSchema,
 )
-from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
+from src.schemas.task_schemas.primitives.base_schemas import (
+    ColumnSchema,
+    PrimitiveResultSchema,
+)
 
 
 class AcPrimitive(
@@ -52,10 +55,14 @@ class AcPrimitive(
             ),
             items=[
                 AcTaskResultItemSchema(
-                    lhs_index=range.column_indices[0],
-                    rhs_index=range.column_indices[1],
-                    lhs_column=column_names[range.column_indices[0]],
-                    rhs_column=column_names[range.column_indices[1]],
+                    lhs_column=ColumnSchema(
+                        name=column_names[range.column_indices[0]],
+                        index=range.column_indices[0],
+                    ),
+                    rhs_column=ColumnSchema(
+                        name=column_names[range.column_indices[1]],
+                        index=range.column_indices[1],
+                    ),
                     ranges=range.ranges,
                     exceptions=exceptions.setdefault(range.column_indices, []),
                 )
