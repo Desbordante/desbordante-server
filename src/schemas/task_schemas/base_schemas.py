@@ -69,6 +69,15 @@ from src.schemas.task_schemas.primitives.fd.task_result import (
     FdTaskResultOrderingField,
     FdTaskResultSchema,
 )
+from src.schemas.task_schemas.primitives.fd_verification.task_params import (
+    FdVerificationTaskParams,
+)
+from src.schemas.task_schemas.primitives.fd_verification.task_result import (
+    FdVerificationTaskResultFiltersSchema,
+    FdVerificationTaskResultItemSchema,
+    FdVerificationTaskResultOrderingField,
+    FdVerificationTaskResultSchema,
+)
 from src.schemas.task_schemas.primitives.md.task_params import MdTaskParams
 from src.schemas.task_schemas.primitives.md.task_result import (
     MdTaskResultFiltersSchema,
@@ -108,6 +117,7 @@ OneOfTaskParams = Annotated[
         AcTaskParams,
         AdcTaskParams,
         AfdVerificationTaskParams,
+        FdVerificationTaskParams,
         ArTaskParams,
         DdTaskParams,
         MdTaskParams,
@@ -125,6 +135,7 @@ OneOfTaskResultItemSchema = Union[
     AcTaskResultItemSchema,
     AdcTaskResultItemSchema,
     AfdVerificationTaskResultItemSchema,
+    FdVerificationTaskResultItemSchema,
     ArTaskResultItemSchema,
     DdTaskResultItemSchema,
     MdTaskResultItemSchema,
@@ -139,6 +150,7 @@ OneOfTaskResultSchema = Union[
     AcTaskResultSchema,
     AdcTaskResultSchema,
     AfdVerificationTaskResultSchema,
+    FdVerificationTaskResultSchema,
     ArTaskResultSchema,
     DdTaskResultSchema,
     MdTaskResultSchema,
@@ -183,6 +195,11 @@ OneOfPaginatedTaskResponseSchema = Annotated[
             AfdVerificationTaskResultItemSchema,
             AfdVerificationTaskResultSchema,
             Literal[PrimitiveName.AFD_VERIFICATION],
+        ],
+        PaginatedTaskResponseSchema[
+            FdVerificationTaskResultItemSchema,
+            FdVerificationTaskResultSchema,
+            Literal[PrimitiveName.FD_VERIFICATION],
         ],
         PaginatedTaskResponseSchema[
             ArTaskResultItemSchema,
@@ -268,6 +285,7 @@ class TaskResultOrderingField(StrEnum):
         list(AcTaskResultOrderingField),
         list(AdcTaskResultOrderingField),
         list(AfdVerificationTaskResultOrderingField),
+        list(FdVerificationTaskResultOrderingField),
         list(ArTaskResultOrderingField),
         list(DdTaskResultOrderingField),
         list(MdTaskResultOrderingField),
@@ -285,6 +303,7 @@ OneOfTaskResultFiltersSchema = Union[
     Annotated[AcTaskResultFiltersSchema, Depends()],
     Annotated[AdcTaskResultFiltersSchema, Depends()],
     Annotated[AfdVerificationTaskResultFiltersSchema, Depends()],
+    Annotated[FdVerificationTaskResultFiltersSchema, Depends()],
     Annotated[ArTaskResultFiltersSchema, Depends()],
     Annotated[DdTaskResultFiltersSchema, Depends()],
     Annotated[MdTaskResultFiltersSchema, Depends()],
@@ -309,6 +328,7 @@ OneOfTaskResultOrderingField = Union[
     AcTaskResultOrderingField,
     AdcTaskResultOrderingField,
     AfdVerificationTaskResultOrderingField,
+    FdVerificationTaskResultOrderingField,
     ArTaskResultOrderingField,
     DdTaskResultOrderingField,
     MdTaskResultOrderingField,

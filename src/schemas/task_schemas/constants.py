@@ -11,6 +11,9 @@ from src.schemas.task_schemas.primitives.afd_verification.task_result import (
 from src.schemas.task_schemas.primitives.ar.task_result import ArTaskResultFiltersSchema
 from src.schemas.task_schemas.primitives.dd.task_result import DdTaskResultFiltersSchema
 from src.schemas.task_schemas.primitives.fd.task_result import FdTaskResultFiltersSchema
+from src.schemas.task_schemas.primitives.fd_verification.task_result import (
+    FdVerificationTaskResultFiltersSchema,
+)
 from src.schemas.task_schemas.primitives.md.task_result import MdTaskResultFiltersSchema
 from src.schemas.task_schemas.primitives.mfd_verification.task_result import (
     MfdVerificationTaskResultFiltersSchema,
@@ -29,6 +32,7 @@ filters_schemas_map = {
     PrimitiveName.AC: AcTaskResultFiltersSchema,
     PrimitiveName.ADC: AdcTaskResultFiltersSchema,
     PrimitiveName.AFD_VERIFICATION: AfdVerificationTaskResultFiltersSchema,
+    PrimitiveName.FD_VERIFICATION: FdVerificationTaskResultFiltersSchema,
     PrimitiveName.AR: ArTaskResultFiltersSchema,
     PrimitiveName.DD: DdTaskResultFiltersSchema,
     PrimitiveName.MD: MdTaskResultFiltersSchema,

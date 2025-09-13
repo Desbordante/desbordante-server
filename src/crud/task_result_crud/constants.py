@@ -7,6 +7,9 @@ from src.crud.task_result_crud.query_helpers.afd_verification_query_helper impor
 from src.crud.task_result_crud.query_helpers.ar_query_helper import ArQueryHelper
 from src.crud.task_result_crud.query_helpers.dd_query_helper import DdQueryHelper
 from src.crud.task_result_crud.query_helpers.fd_query_helper import FdQueryHelper
+from src.crud.task_result_crud.query_helpers.fd_verification_query_helper import (
+    FdVerificationQueryHelper,
+)
 from src.crud.task_result_crud.query_helpers.md_query_helper import MdQueryHelper
 from src.crud.task_result_crud.query_helpers.mfd_verification_query_helper import (
     MfdVerificationQueryHelper,
@@ -21,6 +24,7 @@ query_helpers_map = {
     PrimitiveName.AC: AcQueryHelper,
     PrimitiveName.ADC: AdcQueryHelper,
     PrimitiveName.AFD_VERIFICATION: AfdVerificationQueryHelper,
+    PrimitiveName.FD_VERIFICATION: FdVerificationQueryHelper,
     PrimitiveName.AR: ArQueryHelper,
     PrimitiveName.DD: DdQueryHelper,
     PrimitiveName.MD: MdQueryHelper,

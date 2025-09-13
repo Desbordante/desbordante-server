@@ -2,59 +2,59 @@ from dataclasses import dataclass
 
 import pandas as pd
 from desbordante.fd_verification import Highlight
-from desbordante.fd_verification.algorithms import FDVerifier as AfdVerifier
+from desbordante.fd_verification.algorithms import FDVerifier as FdVerifier
 
 from src.domain.task.primitives.base_primitive import BasePrimitive
 from src.schemas.dataset_schemas import DatasetType, TabularDownloadedDatasetSchema
-from src.schemas.task_schemas.primitives.afd_verification.algo_name import (
-    AfdVerificationAlgoName,
-)
-from src.schemas.task_schemas.primitives.afd_verification.task_params import (
-    AfdVerificationTaskParams,
-)
-from src.schemas.task_schemas.primitives.afd_verification.task_result import (
-    AfdVerificationRowSchema,
-    AfdVerificationTaskResultItemSchema,
-    AfdVerificationTaskResultSchema,
-    HoldsAfdVerificationTaskResultSchema,
-    NotHoldsAfdVerificationTaskResultSchema,
-)
 from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
+from src.schemas.task_schemas.primitives.fd_verification.algo_name import (
+    FdVerificationAlgoName,
+)
+from src.schemas.task_schemas.primitives.fd_verification.task_params import (
+    FdVerificationTaskParams,
+)
+from src.schemas.task_schemas.primitives.fd_verification.task_result import (
+    FdVerificationRowSchema,
+    FdVerificationTaskResultItemSchema,
+    FdVerificationTaskResultSchema,
+    HoldsFdVerificationTaskResultSchema,
+    NotHoldsFdVerificationTaskResultSchema,
+)
 
 
 @dataclass
-class AfdVerificationResult:
-    items: list[AfdVerificationTaskResultItemSchema]
+class FdVerificationResult:
+    items: list[FdVerificationTaskResultItemSchema]
     min_num: int
     max_num: int
     min_prop: float
     max_prop: float
 
 
-class AfdVerificationPrimitive(
+class FdVerificationPrimitive(
     BasePrimitive[
-        AfdVerifier,
-        AfdVerificationAlgoName,
-        AfdVerificationTaskParams[TabularDownloadedDatasetSchema],
+        FdVerifier,
+        FdVerificationAlgoName,
+        FdVerificationTaskParams[TabularDownloadedDatasetSchema],
         PrimitiveResultSchema[
-            AfdVerificationTaskResultSchema,
-            AfdVerificationTaskResultItemSchema,
+            FdVerificationTaskResultSchema,
+            FdVerificationTaskResultItemSchema,
         ],
     ]
 ):
     _algo_map = {
-        AfdVerificationAlgoName.AfdVerifier: AfdVerifier,
+        FdVerificationAlgoName.FdVerifier: FdVerifier,
     }
 
-    _params_schema_class = AfdVerificationTaskParams[TabularDownloadedDatasetSchema]
+    _params_schema_class = FdVerificationTaskParams[TabularDownloadedDatasetSchema]
 
     allowed_dataset_type = DatasetType.Tabular
 
     def execute(
-        self, params: AfdVerificationTaskParams[TabularDownloadedDatasetSchema]
+        self, params: FdVerificationTaskParams[TabularDownloadedDatasetSchema]
     ) -> PrimitiveResultSchema[
-        AfdVerificationTaskResultSchema,
-        AfdVerificationTaskResultItemSchema,
+        FdVerificationTaskResultSchema,
+        FdVerificationTaskResultItemSchema,
     ]:
         dataset = params.datasets.table
         table = dataset.df
@@ -69,7 +69,7 @@ class AfdVerificationPrimitive(
 
         if fd_holds:
             return PrimitiveResultSchema(
-                result=HoldsAfdVerificationTaskResultSchema(
+                result=HoldsFdVerificationTaskResultSchema(
                     total_count=0,
                     fd_holds=fd_holds,
                     error=0,
@@ -86,7 +86,7 @@ class AfdVerificationPrimitive(
         )
 
         return PrimitiveResultSchema(
-            result=NotHoldsAfdVerificationTaskResultSchema(
+            result=NotHoldsFdVerificationTaskResultSchema(
                 total_count=len(result.items),
                 fd_holds=fd_holds,
                 error=self._algo.get_error(),
@@ -104,12 +104,12 @@ class AfdVerificationPrimitive(
         self,
         highlights: list[Highlight],
         table: pd.DataFrame,
-    ) -> AfdVerificationResult:
+    ) -> FdVerificationResult:
         items = [self._create_item(highlight, table) for highlight in highlights]
         distinct_rhs_values = [h.num_distinct_rhs_values for h in highlights]
         proportions = [h.most_frequent_rhs_value_proportion for h in highlights]
 
-        return AfdVerificationResult(
+        return FdVerificationResult(
             items=items,
             min_num=min(distinct_rhs_values),
             max_num=max(distinct_rhs_values),
@@ -119,12 +119,12 @@ class AfdVerificationPrimitive(
 
     def _create_item(
         self, highlight: Highlight, table: pd.DataFrame
-    ) -> AfdVerificationTaskResultItemSchema:
-        return AfdVerificationTaskResultItemSchema(
+    ) -> FdVerificationTaskResultItemSchema:
+        return FdVerificationTaskResultItemSchema(
             number_of_distinct_rhs_values=highlight.num_distinct_rhs_values,
             most_frequent_rhs_value_proportion=highlight.most_frequent_rhs_value_proportion,
             rows=[
-                AfdVerificationRowSchema(
+                FdVerificationRowSchema(
                     row_index=index,
                     values=[str(value) for value in table.iloc[index]],
                 )

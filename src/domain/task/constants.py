@@ -5,6 +5,7 @@ from src.domain.task.primitives.afd_verification import AfdVerificationPrimitive
 from src.domain.task.primitives.ar import ArPrimitive
 from src.domain.task.primitives.dd import DdPrimitive
 from src.domain.task.primitives.fd import FdPrimitive
+from src.domain.task.primitives.fd_verification import FdVerificationPrimitive
 from src.domain.task.primitives.md import MdPrimitive
 from src.domain.task.primitives.mfd_verification import MfdVerificationPrimitive
 from src.domain.task.primitives.nar import NarPrimitive
@@ -17,6 +18,7 @@ primitives_map = {
     PrimitiveName.AC: AcPrimitive,
     PrimitiveName.ADC: AdcPrimitive,
     PrimitiveName.AFD_VERIFICATION: AfdVerificationPrimitive,
+    PrimitiveName.FD_VERIFICATION: FdVerificationPrimitive,
     PrimitiveName.AR: ArPrimitive,
     PrimitiveName.DD: DdPrimitive,
     PrimitiveName.MD: MdPrimitive,
