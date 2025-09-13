@@ -1,3 +1,5 @@
+import re
+
 from desbordante.dd.algorithms import Split
 
 from src.domain.task.primitives.base_primitive import BasePrimitive
@@ -37,6 +39,7 @@ class DdPrimitive(
         dataset = params.datasets.table
         table = dataset.df
         difference_table = params.datasets.dif_table.df
+        column_names = dataset.info.column_names
 
         self._algo.load_data(table=table)
 
@@ -44,24 +47,44 @@ class DdPrimitive(
 
         self._algo.execute(**options, difference_table=difference_table)
 
+        dds = self._algo.get_dds()
+
         return PrimitiveResultSchema[DdTaskResultSchema, DdTaskResultItemSchema](
             result=DdTaskResultSchema(
-                total_count=len(self._algo.get_dds()),
+                total_count=len(dds),
             ),
-            items=[self._split_result(str(dd)) for dd in self._algo.get_dds()],
+            items=[self._extract_item(str(dd), column_names) for dd in dds],
         )
 
-    def _split_side(self, raw: list[str]) -> list[DdSideItemSchema]:
-        ans = []
-        for s in raw:
-            name, value = s.split(" [")
-            value = "[" + value
-            ans.append(DdSideItemSchema(name=name, values=value))
-        return ans
+    def _extract_item(self, dd: str, column_names: list[str]) -> DdTaskResultItemSchema:
+        pattern = r"^(.+?)\s*->\s*(.+?)$"
+        match = re.match(pattern, dd.strip())
 
-    def _split_result(self, row: str) -> DdTaskResultItemSchema:
-        lhs_rawraw, rhs_raw = row.split(" -> ")
-        lhs_raw = lhs_rawraw.split(" ; ")
-        lhs_ans = self._split_side(lhs_raw)
-        rhs_ans = self._split_side([rhs_raw])
-        return DdTaskResultItemSchema(lhs=lhs_ans, rhs=rhs_ans)
+        if not match:
+            raise ValueError(f"Invalid DD format: {dd}")
+
+        lhs_part, rhs_part = match.groups()
+
+        item_pattern = r"(\w+)\s*\[(\d+),\s*(\d+)\]"
+
+        lhs_items = [
+            DdSideItemSchema(
+                column_name=name,
+                column_index=column_names.index(name),
+                distance_interval=(int(start), int(end)),
+            )
+            for name, start, end in re.findall(item_pattern, lhs_part)
+        ]
+
+        rhs_match = re.search(item_pattern, rhs_part)
+        if not rhs_match:
+            raise ValueError(f"Invalid DD right part format: {rhs_part}")
+
+        rhs_name, rhs_start, rhs_end = rhs_match.groups()
+        rhs_item = DdSideItemSchema(
+            column_name=rhs_name,
+            column_index=column_names.index(rhs_name),
+            distance_interval=(int(rhs_start), int(rhs_end)),
+        )
+
+        return DdTaskResultItemSchema(lhs_items=lhs_items, rhs_item=rhs_item)

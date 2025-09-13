@@ -17,15 +17,14 @@ SEED_DESC = "RNG seed"
 
 
 class BaseAfdConfig(BaseSchema):
-    max_lhs: int = Field(default=1, ge=0, description=MAX_LHS_DESC)
-    error: float = Field(default=0, ge=0, le=1, description=ERROR_DESC)
-    is_null_equal_null: bool = Field(default=False, description=NULL_EQUAL_DESC)
+    max_lhs: int | None = Field(default=None, ge=0, description=MAX_LHS_DESC)
+    error: float = Field(default=0.3, ge=0, le=1, description=ERROR_DESC)
+    is_null_equal_null: bool | None = Field(default=None, description=NULL_EQUAL_DESC)
 
 
 class AFDPyroConfig(BaseAfdConfig):
     algo_name: Literal[AfdAlgoName.Pyro]
-    # threads: int = Field(default=0, ge=0, description=THREADS_DESC)
-    seed: int = Field(default=0, description=SEED_DESC)
+    seed: int | None = Field(default=None, description=SEED_DESC)
 
 
 class AFDTaneConfig(BaseAfdConfig):

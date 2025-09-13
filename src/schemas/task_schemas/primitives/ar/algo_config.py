@@ -9,8 +9,12 @@ from .algo_name import ArAlgoName
 
 class AprioriConfig(BaseSchema):
     algo_name: Literal[ArAlgoName.Apriori]
-    minconf: float = Field(0, ge=0, le=1, description="Minimum confidence")
-    minsup: float = Field(0, ge=0, le=1, description="Minimum support")
+    minconf: float | None = Field(
+        default=None, ge=0, le=1, description="Minimum confidence"
+    )
+    minsup: float | None = Field(
+        default=None, ge=0, le=1, description="Minimum support"
+    )
 
 
 OneOfArAlgoConfig = Annotated[

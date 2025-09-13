@@ -15,16 +15,24 @@ ALLOW_CROSS_COLUMNS = "Specifies whether to allow the construction of Denial Con
 EVIDENCE_THRESHOLD = "Denotes the maximum fraction of evidence violations allowed for a Denial Constraint to be considered approximate"
 
 
-class FastADCConfig(BaseSchema):
+class FastAdcConfig(BaseSchema):
     algo_name: Literal[AdcAlgoName.FastADC]
-    shard_length: int = Field(0, ge=0, description=SHARD_LEHGTH)
-    minimum_shared_value: int = Field(0, ge=0, le=1, description=MIN_SHARED_VALUE)
-    comparable_threshold: float = Field(0, ge=0, le=1, description=COMPARABLE_THRESHOLD)
-    allow_cross_columns: bool = Field(True, description=ALLOW_CROSS_COLUMNS)
-    evidence_threshold: float = Field(0, ge=0, le=1, description=EVIDENCE_THRESHOLD)
+    shard_length: int = Field(default=0, ge=0, description=SHARD_LEHGTH)
+    minimum_shared_value: int | None = Field(
+        default=None, ge=0, le=1, description=MIN_SHARED_VALUE
+    )
+    comparable_threshold: float | None = Field(
+        default=None, ge=0, le=1, description=COMPARABLE_THRESHOLD
+    )
+    allow_cross_columns: bool | None = Field(
+        default=None, description=ALLOW_CROSS_COLUMNS
+    )
+    evidence_threshold: float = Field(
+        default=0, ge=0, le=1, description=EVIDENCE_THRESHOLD
+    )
 
 
 OneOfAdcAlgoConfig = Annotated[
-    FastADCConfig,
+    FastAdcConfig,
     Field(discriminator="algo_name"),
 ]
