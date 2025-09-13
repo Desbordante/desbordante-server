@@ -1,7 +1,7 @@
 from enum import StrEnum, auto
 
 
-class ColumnMatchMetrics(StrEnum):
+class ColumnMatchMetric(StrEnum):
     Lcs = auto()
     Levenshtein = auto()
     Monge_Elkan = auto()

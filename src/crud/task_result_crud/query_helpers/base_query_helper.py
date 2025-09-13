@@ -18,4 +18,4 @@ class BaseQueryHelper[O = Any, F = Any](ABC):
         return []
 
     def get_filtered_result_column(self, filters: F) -> Any:
-        return TaskResultModel.result
+        return None

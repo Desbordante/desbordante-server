@@ -2,7 +2,6 @@ from sqlalchemy import (
     cast,
     column,
     func,
-    or_,
 )
 from sqlalchemy.dialects.postgresql import JSONPATH
 
@@ -10,7 +9,9 @@ from src.crud.task_result_crud.query_helpers.base_query_helper import BaseQueryH
 from src.models.task_result_models import TaskResultModel
 from src.schemas.task_schemas.primitives.md.task_result import (
     MdTaskResultFiltersSchema,
+    MdTaskResultItemField,
     MdTaskResultOrderingField,
+    MdTaskResultSideItemField,
 )
 
 
@@ -19,39 +20,49 @@ class MdQueryHelper(
 ):
     def get_ordering_field(self, order_by: MdTaskResultOrderingField):
         match order_by:
-            case MdTaskResultOrderingField.NumberOfLhs:
+            case MdTaskResultOrderingField.NumberOfLhsItems:
                 return func.jsonb_array_length(
-                    TaskResultModel.result[MdTaskResultOrderingField.Lhs]
+                    TaskResultModel.result[MdTaskResultItemField.LhsItems]
                 )
-            case MdTaskResultOrderingField.NumberOfRhs:
-                return func.jsonb_array_length(
-                    TaskResultModel.result[MdTaskResultOrderingField.Rhs]
+            case MdTaskResultOrderingField.LhsItemsMetrics:
+                return func.jsonb_path_query_array(
+                    TaskResultModel.result[MdTaskResultItemField.LhsItems],
+                    f"$[*].{MdTaskResultSideItemField.Metric}",
                 )
-            case MdTaskResultOrderingField.Lhs:
-                return TaskResultModel.result[order_by].astext
-            case MdTaskResultOrderingField.Rhs:
-                return TaskResultModel.result[order_by].astext
+            case MdTaskResultOrderingField.LhsItemsBoundaries:
+                return func.jsonb_path_query_array(
+                    TaskResultModel.result[MdTaskResultItemField.LhsItems],
+                    f"$[*].{MdTaskResultSideItemField.Boundary}",
+                )
+            case MdTaskResultOrderingField.RhsItemMetric:
+                return TaskResultModel.result[MdTaskResultItemField.RhsItem][
+                    MdTaskResultSideItemField.Metric
+                ]
+            case MdTaskResultOrderingField.RhsItemBoundary:
+                return TaskResultModel.result[MdTaskResultItemField.RhsItem][
+                    MdTaskResultSideItemField.Boundary
+                ]
 
         super().get_ordering_field(order_by)
 
     def make_filters(self, filters: MdTaskResultFiltersSchema):
         return [
             # search
-            or_(
-                TaskResultModel.result[MdTaskResultOrderingField.Lhs].astext.icontains(
-                    filters.search
-                ),
-                TaskResultModel.result[MdTaskResultOrderingField.Rhs].astext.icontains(
-                    filters.search
-                ),
-            )
+            TaskResultModel.result.astext.icontains(filters.search)
             if filters.search
             else None,
-            or_(
-                func.jsonb_array_length(column("result").op("->")("lhs")) > 0,
-                func.jsonb_array_length(column("result").op("->")("rhs")) > 0,
+            # lhs_items_metrics
+            func.jsonb_array_length(
+                column("result").op("->")(MdTaskResultItemField.LhsItems)
             )
-            if filters.metrics
+            > 0
+            if filters.lhs_items_metrics
+            else None,
+            # rhs_item_metrics
+            TaskResultModel.result[MdTaskResultItemField.RhsItem][
+                MdTaskResultSideItemField.Metric
+            ].in_(filters.rhs_item_metrics)
+            if filters.rhs_item_metrics
             else None,
         ]
 
@@ -59,11 +70,12 @@ class MdQueryHelper(
         conditions = [
             "@.boundary != 0" if not filters.show_zeroes else None,
             (
-                f"({' || '.join([f'@.metrics == "{metric}"' for metric in filters.metrics])})"
+                f"({' || '.join([f'@.metrics == "{metric}"' for metric in filters.lhs_items_metrics])})"
             )
-            if filters.metrics
+            if filters.lhs_items_metrics
             else None,
         ]
+
         conditions = [c for c in conditions if c is not None]
 
         if not conditions:
@@ -75,14 +87,11 @@ class MdQueryHelper(
         )
 
         return func.jsonb_build_object(
-            "lhs",
+            MdTaskResultItemField.LhsItems,
             func.jsonb_path_query_array(
-                TaskResultModel.result["lhs"],
+                TaskResultModel.result[MdTaskResultItemField.LhsItems],
                 condition,
             ),
-            "rhs",
-            func.jsonb_path_query_array(
-                TaskResultModel.result["rhs"],
-                condition,
-            ),
+            MdTaskResultItemField.RhsItem,
+            TaskResultModel.result[MdTaskResultItemField.RhsItem],
         )

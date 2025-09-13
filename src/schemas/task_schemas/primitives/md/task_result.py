@@ -5,21 +5,38 @@ from typing import Any
 from pydantic import TypeAdapter, field_validator
 
 from src.schemas.base_schemas import BaseSchema, FiltersParamsSchema, OptionalSchema
-from src.schemas.task_schemas.primitives.base_schemas import BaseTaskResultSchema
+from src.schemas.task_schemas.primitives.base_schemas import (
+    BaseTaskResultSchema,
+    ColumnSchema,
+)
 
-from .types import ColumnMatchMetrics
+from .types import ColumnMatchMetric
+
+
+class MdTaskResultSideItemField(StrEnum):
+    Metric = "metric"
+    LeftColumn = "left_column"
+    RightColumn = "right_column"
+    Boundary = "boundary"
+    MaxInvalidBoundary = "max_invalid_boundary"
 
 
 class MdSideItemSchema(BaseSchema):
-    metrics: str
-    left_column: str
-    right_column: str
+    metric: ColumnMatchMetric
+    left_column: ColumnSchema
+    right_column: ColumnSchema
     boundary: float
+    max_invalid_boundary: float | None
+
+
+class MdTaskResultItemField(StrEnum):
+    LhsItems = "lhs_items"
+    RhsItem = "rhs_item"
 
 
 class MdTaskResultItemSchema(BaseSchema):
-    lhs: list[MdSideItemSchema]
-    rhs: list[MdSideItemSchema]
+    lhs_items: list[MdSideItemSchema]
+    rhs_item: MdSideItemSchema
 
 
 class MdTaskResultSchema(BaseTaskResultSchema):
@@ -27,18 +44,22 @@ class MdTaskResultSchema(BaseTaskResultSchema):
 
 
 class MdTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
-    metrics: list[ColumnMatchMetrics]
+    lhs_items_metrics: list[ColumnMatchMetric]
+    rhs_item_metrics: list[ColumnMatchMetric]
     show_zeroes: bool
 
-    @field_validator("metrics", mode="before")
+    @field_validator("lhs_items_metrics", "rhs_item_metrics", mode="before")
     @classmethod
     def parse_metrics(cls, value: Any) -> list:
         array = json.loads(value) if isinstance(value, str) else value
-        return TypeAdapter(list[ColumnMatchMetrics]).validate_python(array)
+        return TypeAdapter(list[ColumnMatchMetric]).validate_python(array)
 
 
 class MdTaskResultOrderingField(StrEnum):
-    NumberOfLhs = "number_of_lhs"
-    NumberOfRhs = "number_of_rhs"
-    Lhs = "lhs"
-    Rhs = "rhs"
+    NumberOfLhsItems = "number_of_lhs_items"
+
+    LhsItemsMetrics = "lhs_items_metrics"
+    LhsItemsBoundaries = "lhs_items_boundaries"
+
+    RhsItemMetric = "rhs_item_metric"
+    RhsItemBoundary = "rhs_item_boundary"

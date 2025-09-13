@@ -1,9 +1,11 @@
-from typing import Sequence
-
 from desbordante.md import (
-    LhsSimilarityClassifierDesctription,
+    LhsSimilarityClassifierDesctription as LhsSimilarityClassifierDescription,
+)
+from desbordante.md import (
     MdAlgorithm,
-    RhsSimilarityClassifierDesctription,
+)
+from desbordante.md import (
+    RhsSimilarityClassifierDesctription as RhsSimilarityClassifierDescription,
 )
 from desbordante.md.algorithms import HyMD
 from desbordante.md.column_matches import (
@@ -15,13 +17,17 @@ from desbordante.md.column_matches import (
     LVNormNumberDistance,
     MongeElkan,
 )
+from pydantic import TypeAdapter
 
 from src.domain.task.primitives.base_primitive import BasePrimitive
 from src.schemas.dataset_schemas import (
     DatasetType,
     TabularDownloadedDatasetSchema,
 )
-from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
+from src.schemas.task_schemas.primitives.base_schemas import (
+    ColumnSchema,
+    PrimitiveResultSchema,
+)
 from src.schemas.task_schemas.primitives.md.algo_name import MdAlgoName
 from src.schemas.task_schemas.primitives.md.task_params import (
     MdTaskParams,
@@ -31,7 +37,7 @@ from src.schemas.task_schemas.primitives.md.task_result import (
     MdTaskResultItemSchema,
     MdTaskResultSchema,
 )
-from src.schemas.task_schemas.primitives.md.types import ColumnMatchMetrics
+from src.schemas.task_schemas.primitives.md.types import ColumnMatchMetric
 
 
 class MdPrimitive(
@@ -47,20 +53,20 @@ class MdPrimitive(
     }
 
     _metrics_map = {
-        ColumnMatchMetrics.Equality: Equality,
-        ColumnMatchMetrics.Jaccard: Jaccard,
-        ColumnMatchMetrics.Number_Difference: LVNormNumberDistance,
-        ColumnMatchMetrics.Date_Difference: LVNormDateDistance,
-        ColumnMatchMetrics.Lcs: Lcs,
-        ColumnMatchMetrics.Monge_Elkan: MongeElkan,
-        ColumnMatchMetrics.Levenshtein: Levenshtein,
+        ColumnMatchMetric.Equality: Equality,
+        ColumnMatchMetric.Jaccard: Jaccard,
+        ColumnMatchMetric.Number_Difference: LVNormNumberDistance,
+        ColumnMatchMetric.Date_Difference: LVNormDateDistance,
+        ColumnMatchMetric.Lcs: Lcs,
+        ColumnMatchMetric.Monge_Elkan: MongeElkan,
+        ColumnMatchMetric.Levenshtein: Levenshtein,
     }
 
     _params_schema_class = MdTaskParams[TabularDownloadedDatasetSchema]
 
     allowed_dataset_type = DatasetType.Tabular
 
-    def _match_metrics_class_by_name(self, metrics: ColumnMatchMetrics):
+    def _match_metrics_class_by_name(self, metrics: ColumnMatchMetric):
         if metrics_class := self._metrics_map.get(metrics):
             return metrics_class
         raise ValueError(f"Metrics {metrics} not found")
@@ -71,10 +77,12 @@ class MdPrimitive(
         left_table = left_dataset.df
         right_table = right_dataset.df
         column_matches = [
-            self._match_metrics_class_by_name(metric.metrics)(
-                **metric.model_dump(exclude_unset=True, exclude={"metrics"})
+            self._match_metrics_class_by_name(column_match.metric)(
+                **column_match.model_dump(
+                    exclude_unset=True, exclude_none=True, exclude={"metric"}
+                )
             )
-            for metric in params.config.column_matches
+            for column_match in params.config.column_matches
         ]
 
         self._algo.load_data(left_table=left_table, right_table=right_table)
@@ -91,31 +99,36 @@ class MdPrimitive(
             ),
             items=[
                 MdTaskResultItemSchema(
-                    lhs=self._extract_side(md.get_description().lhs),
-                    rhs=self._extract_side([md.get_description().rhs]),
+                    lhs_items=[
+                        self._extract_item(lhs) for lhs in md.get_description().lhs
+                    ],
+                    rhs_item=self._extract_item(md.get_description().rhs),
                 )
                 for md in mds
             ],
         )
 
-    def _extract_side(
+    def _extract_item(
         self,
-        side: Sequence[
-            LhsSimilarityClassifierDesctription | RhsSimilarityClassifierDesctription
-        ],
-    ) -> list[MdSideItemSchema]:
-        sides = []
-        for s in side:
-            boundary = s.decision_boundary
-            metrics = s.column_match_description.column_match_name
-            column1 = s.column_match_description.left_column_description.column_name
-            column2 = s.column_match_description.right_column_description.column_name
-            sides.append(
-                MdSideItemSchema(
-                    metrics=metrics,
-                    left_column=column1,
-                    right_column=column2,
-                    boundary=boundary,
-                )
-            )
-        return sides
+        side: LhsSimilarityClassifierDescription | RhsSimilarityClassifierDescription,
+    ) -> MdSideItemSchema:
+        boundary = side.decision_boundary
+        metric = side.column_match_description.column_match_name
+        left_column = side.column_match_description.left_column_description
+        right_column = side.column_match_description.right_column_description
+
+        return MdSideItemSchema(
+            metric=TypeAdapter(ColumnMatchMetric).validate_python(metric),
+            left_column=ColumnSchema(
+                name=left_column.column_name,
+                index=left_column.column_index,
+            ),
+            right_column=ColumnSchema(
+                name=right_column.column_name,
+                index=right_column.column_index,
+            ),
+            boundary=boundary,
+            max_invalid_boundary=side.max_invalid_bound
+            if isinstance(side, LhsSimilarityClassifierDescription)
+            else None,
+        )

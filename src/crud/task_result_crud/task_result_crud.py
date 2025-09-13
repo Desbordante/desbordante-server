@@ -60,6 +60,14 @@ class TaskResultCrud(BaseCrud[TaskResultModel, UUID]):
             query_params.filters
         )
 
+        if filtered_result_column is None:
+            return await super()._get_many(
+                pagination=pagination,
+                query_params=query_params,
+                query=select(TaskResultModel),
+                **kwargs,
+            )
+
         cte = (
             select(
                 TaskResultModel.id,

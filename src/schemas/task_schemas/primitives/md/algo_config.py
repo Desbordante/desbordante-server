@@ -5,7 +5,7 @@ from pydantic import Field
 from src.schemas.base_schemas import BaseSchema
 
 from .algo_name import MdAlgoName
-from .types import ColumnMatchMetrics
+from .types import ColumnMatchMetric
 
 MIN_SUPPORT = "Minimum support for a dependency's LHS"
 COLUMN_MATCHES = "Column matches to examine"
@@ -26,31 +26,31 @@ class FullColumnMatch(BaseColumnMatch):
 
 
 class EqualityConfig(BaseColumnMatch):
-    metrics: Literal[ColumnMatchMetrics.Equality]
+    metric: Literal[ColumnMatchMetric.Equality]
 
 
 class JaccardConfig(FullColumnMatch):
-    metrics: Literal[ColumnMatchMetrics.Jaccard]
+    metric: Literal[ColumnMatchMetric.Jaccard]
 
 
 class LevenshteinConfig(FullColumnMatch):
-    metrics: Literal[ColumnMatchMetrics.Levenshtein]
+    metric: Literal[ColumnMatchMetric.Levenshtein]
 
 
 class MongeElkanConfig(FullColumnMatch):
-    metrics: Literal[ColumnMatchMetrics.Monge_Elkan]
+    metric: Literal[ColumnMatchMetric.Monge_Elkan]
 
 
 class LcsConfig(FullColumnMatch):
-    metrics: Literal[ColumnMatchMetrics.Lcs]
+    metric: Literal[ColumnMatchMetric.Lcs]
 
 
 class LVNormNumberDistanceConfig(FullColumnMatch):
-    metrics: Literal[ColumnMatchMetrics.Number_Difference]
+    metric: Literal[ColumnMatchMetric.Number_Difference]
 
 
 class LVNormDateDistanceConfig(FullColumnMatch):
-    metrics: Literal[ColumnMatchMetrics.Date_Difference]
+    metric: Literal[ColumnMatchMetric.Date_Difference]
 
 
 OneOfColumnMatchesConfig = Annotated[
@@ -63,20 +63,20 @@ OneOfColumnMatchesConfig = Annotated[
         LVNormNumberDistanceConfig,
         JaccardConfig,
     ],
-    Field(discriminator="metrics", description=COLUMN_MATCHES),
+    Field(discriminator="metric", description=COLUMN_MATCHES),
 ]
 
 
 class HyMDConfig(BaseSchema):
     algo_name: Literal[MdAlgoName.HyMD]
-    min_support: int = Field(0, ge=0, description=MIN_SUPPORT)
+    min_support: int | None = Field(default=None, ge=0, description=MIN_SUPPORT)
     column_matches: list[OneOfColumnMatchesConfig]
     level_definition: Literal["cardinality", "lattice"] = Field(
-        "cardinality", description=LEVEL_DEFINITION
+        default="cardinality", description=LEVEL_DEFINITION
     )
-    prune_nondisjoint: bool = Field(True, description=PRUNE_NONDISJOINT)
-    max_cardinality: int | None = Field(None, description=MAX_CARDINALITY)
-    threads: int = Field(0, ge=0, le=65536, description=THREADS)
+    prune_nondisjoint: bool | None = Field(default=None, description=PRUNE_NONDISJOINT)
+    max_cardinality: int | None = Field(default=None, description=MAX_CARDINALITY)
+    # threads: int = Field(0, ge=0, le=65536, description=THREADS)
 
 
 OneOfMdAlgoConfig = Annotated[
