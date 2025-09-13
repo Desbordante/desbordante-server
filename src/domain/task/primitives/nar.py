@@ -1,3 +1,9 @@
+from desbordante.nar import (
+    FloatValueRange,
+    IntValueRange,
+    StringValueRange,
+    ValueRange,
+)
 from desbordante.nar.algorithms import DES
 
 from src.domain.task.primitives.base_primitive import BasePrimitive
@@ -11,7 +17,10 @@ from src.schemas.task_schemas.primitives.nar.task_params import (
     NarTaskParams,
 )
 from src.schemas.task_schemas.primitives.nar.task_result import (
+    NarFloatSideItemSchema,
+    NarIntegerSideItemSchema,
     NarSideItemSchema,
+    NarStringSideItemSchema,
     NarTaskResultItemSchema,
     NarTaskResultSchema,
 )
@@ -36,7 +45,7 @@ class NarPrimitive(
     def execute(self, params: NarTaskParams[TabularDownloadedDatasetSchema]):
         dataset = params.datasets.table
         table = dataset.df
-        columns = dataset.info.column_names
+        column_names = dataset.info.column_names
 
         self._algo.load_data(table=table)
 
@@ -44,23 +53,56 @@ class NarPrimitive(
 
         self._algo.execute(**options)
 
+        nars = self._algo.get_nars()
+
         return PrimitiveResultSchema[NarTaskResultSchema, NarTaskResultItemSchema](
             result=NarTaskResultSchema(
-                total_count=len(self._algo.get_nars()),
+                total_count=len(nars),
             ),
             items=[
                 NarTaskResultItemSchema(
                     confidence=nar.confidence,
                     support=nar.support,
-                    lhs=self._extract_side(nar.ante.items(), columns),
-                    rhs=self._extract_side(nar.cons.items(), columns),
+                    fitness=nar.fitness,
+                    lhs_items=self._extract_side(nar.ante, column_names),
+                    rhs_items=self._extract_side(nar.cons, column_names),
                 )
-                for nar in self._algo.get_nars()
+                for nar in nars
             ],
         )
 
-    def _extract_side(self, side, columns) -> list[NarSideItemSchema]:
-        return [
-            NarSideItemSchema(name=columns[column_index], values=str(value))
-            for column_index, value in side
-        ]
+    def _extract_side(
+        self, side: dict[int, ValueRange], column_names: list[str]
+    ) -> list[NarSideItemSchema]:
+        items = []
+        for column_index, value in side.items():
+            if isinstance(value, StringValueRange):
+                items.append(
+                    NarStringSideItemSchema(
+                        type="string",
+                        name=column_names[column_index],
+                        index=column_index,
+                        values=value.string,
+                    )
+                )
+            elif isinstance(value, IntValueRange):
+                items.append(
+                    NarIntegerSideItemSchema(
+                        type="integer",
+                        name=column_names[column_index],
+                        index=column_index,
+                        range=(value.lower_bound, value.upper_bound),
+                    )
+                )
+            elif isinstance(value, FloatValueRange):
+                items.append(
+                    NarFloatSideItemSchema(
+                        type="float",
+                        name=column_names[column_index],
+                        index=column_index,
+                        range=(value.lower_bound, value.upper_bound),
+                    )
+                )
+            else:
+                raise ValueError(f"Invalid value type: {type(value)}")
+        return items
