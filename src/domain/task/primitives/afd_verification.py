@@ -16,6 +16,8 @@ from src.schemas.task_schemas.primitives.afd_verification.task_result import (
     AfdVerificationRowSchema,
     AfdVerificationTaskResultItemSchema,
     AfdVerificationTaskResultSchema,
+    HoldsAfdVerificationTaskResultSchema,
+    NotHoldsAfdVerificationTaskResultSchema,
 )
 from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
 
@@ -23,10 +25,10 @@ from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSche
 @dataclass
 class AfdVerificationResult:
     items: list[AfdVerificationTaskResultItemSchema]
-    min_num: int | None
-    max_num: int | None
-    min_prop: float | None
-    max_prop: float | None
+    min_num: int
+    max_num: int
+    min_prop: float
+    max_prop: float
 
 
 class AfdVerificationPrimitive(
@@ -50,7 +52,10 @@ class AfdVerificationPrimitive(
 
     def execute(
         self, params: AfdVerificationTaskParams[TabularDownloadedDatasetSchema]
-    ):
+    ) -> PrimitiveResultSchema[
+        AfdVerificationTaskResultSchema,
+        AfdVerificationTaskResultItemSchema,
+    ]:
         dataset = params.datasets.table
         table = dataset.df
 
@@ -60,6 +65,20 @@ class AfdVerificationPrimitive(
 
         self._algo.execute(**options)
 
+        fd_holds = self._algo.fd_holds()
+
+        if fd_holds:
+            return PrimitiveResultSchema(
+                result=HoldsAfdVerificationTaskResultSchema(
+                    total_count=0,
+                    fd_holds=fd_holds,
+                    error=0,
+                    number_of_error_clusters=0,
+                    number_of_error_rows=0,
+                ),
+                items=[],
+            )
+
         highlights = self._algo.get_highlights()
         result = self._extract_result(
             highlights,
@@ -67,16 +86,16 @@ class AfdVerificationPrimitive(
         )
 
         return PrimitiveResultSchema(
-            result=AfdVerificationTaskResultSchema(
+            result=NotHoldsAfdVerificationTaskResultSchema(
                 total_count=len(result.items),
-                afd_holds=self._algo.fd_holds(),
+                fd_holds=fd_holds,
                 error=self._algo.get_error(),
                 number_of_error_clusters=self._algo.get_num_error_clusters(),
                 number_of_error_rows=self._algo.get_num_error_rows(),
-                min_number_of_distinct_rhs_values=result.min_num,
-                max_number_of_distinct_rhs_values=result.max_num,
-                min_most_frequent_rhs_value_proportion=result.min_prop,
-                max_most_frequent_rhs_value_proportion=result.max_prop,
+                min_num=result.min_num,
+                max_num=result.max_num,
+                min_prop=result.min_prop,
+                max_prop=result.max_prop,
             ),
             items=result.items,
         )
@@ -92,10 +111,10 @@ class AfdVerificationPrimitive(
 
         return AfdVerificationResult(
             items=items,
-            min_num=min(distinct_rhs_values) if distinct_rhs_values else None,
-            max_num=max(distinct_rhs_values) if distinct_rhs_values else None,
-            min_prop=min(proportions) if proportions else None,
-            max_prop=max(proportions) if proportions else None,
+            min_num=min(distinct_rhs_values),
+            max_num=max(distinct_rhs_values),
+            min_prop=min(proportions),
+            max_prop=max(proportions),
         )
 
     def _create_item(

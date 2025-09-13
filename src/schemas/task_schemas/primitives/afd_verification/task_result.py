@@ -1,4 +1,7 @@
 from enum import StrEnum
+from typing import Annotated, Literal, Union
+
+from pydantic import Field
 
 from src.schemas.base_schemas import BaseSchema, FiltersParamsSchema, OptionalSchema
 from src.schemas.task_schemas.primitives.base_schemas import BaseTaskResultSchema
@@ -21,23 +24,46 @@ class AfdVerificationTaskResultItemSchema(BaseSchema):
     rows: list[AfdVerificationRowSchema]
 
 
-class AfdVerificationTaskResultSchema(BaseTaskResultSchema):
-    afd_holds: bool
+class HoldsAfdVerificationTaskResultSchema(BaseTaskResultSchema):
+    fd_holds: Literal[True]
+    error: Literal[0]
+    number_of_error_clusters: Literal[0]
+    number_of_error_rows: Literal[0]
+
+
+class NotHoldsAfdVerificationTaskResultSchema(BaseTaskResultSchema):
+    fd_holds: Literal[False]
     error: float
     number_of_error_clusters: int
     number_of_error_rows: int
 
-    min_number_of_distinct_rhs_values: int | None
-    max_number_of_distinct_rhs_values: int | None
-    min_most_frequent_rhs_value_proportion: float | None
-    max_most_frequent_rhs_value_proportion: float | None
+    min_num: Annotated[int, Field(description="Minimum number of distinct rhs values")]
+    max_num: Annotated[int, Field(description="Maximum number of distinct rhs values")]
+    min_prop: Annotated[
+        float, Field(description="Minimum most frequent rhs value proportion")
+    ]
+    max_prop: Annotated[
+        float, Field(description="Maximum most frequent rhs value proportion")
+    ]
+
+
+AfdVerificationTaskResultSchema = Annotated[
+    Union[
+        HoldsAfdVerificationTaskResultSchema, NotHoldsAfdVerificationTaskResultSchema
+    ],
+    Field(discriminator="fd_holds"),
+]
 
 
 class AfdVerificationTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
-    min_number_of_distinct_rhs_values: int
-    max_number_of_distinct_rhs_values: int
-    min_most_frequent_rhs_value_proportion: float
-    max_most_frequent_rhs_value_proportion: float
+    min_num: Annotated[int, Field(description="Minimum number of distinct rhs values")]
+    max_num: Annotated[int, Field(description="Maximum number of distinct rhs values")]
+    min_prop: Annotated[
+        float, Field(description="Minimum most frequent rhs value proportion")
+    ]
+    max_prop: Annotated[
+        float, Field(description="Maximum most frequent rhs value proportion")
+    ]
 
 
 class AfdVerificationTaskResultOrderingField(StrEnum):
