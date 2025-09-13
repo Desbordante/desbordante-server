@@ -1,7 +1,7 @@
 from enum import StrEnum, auto
 
 
-class MfdVerificationMetrics(StrEnum):
+class MfdVerificationMetric(StrEnum):
     Euclidean = auto()
     Cosine = auto()
     Levenshtein = auto()

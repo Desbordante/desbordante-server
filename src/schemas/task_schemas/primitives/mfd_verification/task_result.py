@@ -1,28 +1,38 @@
-import json
 from enum import StrEnum
-from typing import Any
 
-from pydantic import field_validator
 
 from src.schemas.base_schemas import BaseSchema, FiltersParamsSchema, OptionalSchema
 from src.schemas.task_schemas.primitives.base_schemas import BaseTaskResultSchema
 
 
-class HighlightSchema(BaseSchema):
-    highlight_index: int
+class MfdVerificationHighlightField(StrEnum):
+    DataIndex = "data_index"
+    FurthestDataIndex = "furthest_data_index"
+    MaxDistance = "max_distance"
+    RhsValues = "rhs_values"
+    WithinLimit = "within_limit"
+
+
+class MfdVerificationHighlightSchema(BaseSchema):
     data_index: int
     furthest_data_index: int
     max_distance: float
+    rhs_values: list[str]
     within_limit: bool
-    value: list[str]
+
+
+class MfdVerificationTaskResultItemField(StrEnum):
+    MaxDistance = "max_distance"
+    Highlights = "highlights"
+    ClusterIndex = "cluster_index"
+    LhsValues = "lhs_values"
 
 
 class MfdVerificationTaskResultItemSchema(BaseSchema):
     cluster_index: int
-    cluster_name: list[str]
+    lhs_values: list[str]
     max_distance: float
-    highlights_count: int
-    highlights: list[HighlightSchema]
+    highlights: list[MfdVerificationHighlightSchema]
 
 
 class MfdVerificationTaskResultSchema(BaseTaskResultSchema):
@@ -32,13 +42,10 @@ class MfdVerificationTaskResultSchema(BaseTaskResultSchema):
 class MfdVerificationTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
     cluster_indices: list[int]
 
-    @field_validator("cluster_indices", mode="before")
-    @classmethod
-    def parse_json_arrays(cls, value: Any) -> list:
-        return json.loads(value) if isinstance(value, str) else value
-
 
 class MfdVerificationTaskResultOrderingField(StrEnum):
-    DataIndex = "data_index"
-    FarthestDataIndex = "farthest_data_index"
+    LhsValues = "lhs_values"
+    HighlightsDataIndices = "highlights_data_indices"
+    HighlightsFurthestDataIndices = "highlights_furthest_data_indices"
     MaxDistance = "max_distance"
+    ClusterIndex = "cluster_index"

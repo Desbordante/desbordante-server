@@ -4,8 +4,8 @@ from pydantic import Field
 
 from src.schemas.base_schemas import BaseSchema
 from src.schemas.task_schemas.primitives.mfd_verification.types import (
+    MfdVerificationMetric,
     MfdVerificationMetricAlgorithm,
-    MfdVerificationMetrics,
 )
 
 from .algo_name import MfdVerificationAlgoName
@@ -21,39 +21,27 @@ METRIC_ALGORITHM = ""
 Q = ""
 
 
-class BaseMfdVerificationConfig(BaseSchema):
+class MetricVerifierConfig(BaseSchema):
     algo_name: Literal[MfdVerificationAlgoName.MetricVerifier]
-    lhs_indices: list[int] = Field(..., description=LHS_INDICES)
-    rhs_indices: list[int] = Field(..., description=RHS_INDICES)
-    parameter: float = Field(1, ge=0, description="Parameter for the metric algorithm")
-    dist_from_null_is_infinity: bool = Field(
-        False,
+    lhs_indices: list[int] = Field(default=[0], description=LHS_INDICES)
+    rhs_indices: list[int] = Field(default=[1], description=RHS_INDICES)
+    parameter: float = Field(
+        default=1, ge=0, description="Parameter for the metric algorithm"
+    )
+    dist_from_null_is_infinity: bool | None = Field(
+        default=None,
         description=DIST_FROM_NULL_IS_INFINITY,
     )
-    is_null_equal_null: bool = Field(False, description=NULL_EQUAL_DESC)
+    is_null_equal_null: bool | None = Field(default=None, description=NULL_EQUAL_DESC)
     metric_algorithm: MfdVerificationMetricAlgorithm = Field(
-        ..., description=METRIC_ALGORITHM
+        default=MfdVerificationMetricAlgorithm.Brute, description=METRIC_ALGORITHM
     )
-
-
-class MfdVerificationEuclideanConfig(BaseMfdVerificationConfig):
-    metric: Literal[MfdVerificationMetrics.Euclidean] = Field(..., description=METRIC)
-
-
-class MfdVerificationCosineConfig(BaseMfdVerificationConfig):
-    metric: Literal[MfdVerificationMetrics.Cosine] = Field(..., description=METRIC)
-    # q: float = Field(1, ge=0, description=Q)
-
-
-class MfdVerificationLevenshteinConfig(BaseMfdVerificationConfig):
-    metric: Literal[MfdVerificationMetrics.Levenshtein] = Field(..., description=METRIC)
+    metric: Literal[MfdVerificationMetric.Euclidean] = Field(
+        default=MfdVerificationMetric.Euclidean, description=METRIC
+    )
 
 
 OneOfMfdVerificationAlgoConfig = Annotated[
-    Union[
-        MfdVerificationEuclideanConfig,
-        MfdVerificationCosineConfig,
-        MfdVerificationLevenshteinConfig,
-    ],
-    Field(discriminator="metric"),
+    Union[MetricVerifierConfig],
+    Field(discriminator="algo_name"),
 ]
