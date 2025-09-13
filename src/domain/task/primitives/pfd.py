@@ -5,7 +5,10 @@ from src.schemas.dataset_schemas import (
     DatasetType,
     TabularDownloadedDatasetSchema,
 )
-from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
+from src.schemas.task_schemas.primitives.base_schemas import (
+    ColumnSchema,
+    PrimitiveResultSchema,
+)
 from src.schemas.task_schemas.primitives.pfd.algo_name import PfdAlgoName
 from src.schemas.task_schemas.primitives.pfd.task_params import (
     PfdTaskParams,
@@ -22,7 +25,7 @@ class PfdPrimitive(
         PfdAlgoName,
         PfdTaskParams[TabularDownloadedDatasetSchema],
         PrimitiveResultSchema[PfdTaskResultSchema, PfdTaskResultItemSchema],
-    ]
+    ],
 ):
     _algo_map = {
         PfdAlgoName.PFDTane: PFDTane,
@@ -34,24 +37,31 @@ class PfdPrimitive(
 
     def execute(self, params: PfdTaskParams[TabularDownloadedDatasetSchema]):
         dataset = params.datasets.table
-        table = dataset.df
-        columns = dataset.info.column_names
+        column_names = dataset.info.column_names
 
-        self._algo.load_data(table=table)
+        self._algo.load_data(table=dataset.df)
 
         options = self._get_algo_options(params)
 
         self._algo.execute(**options)
 
-        return PrimitiveResultSchema[PfdTaskResultSchema, PfdTaskResultItemSchema](
+        fds = self._algo.get_fds()
+
+        return PrimitiveResultSchema(
             result=PfdTaskResultSchema(
-                total_count=len(self._algo.get_fds()),
+                total_count=len(fds),
             ),
             items=[
                 PfdTaskResultItemSchema(
-                    lhs=[columns[index] for index in fd.lhs_indices],
-                    rhs=[columns[fd.rhs_index]],
+                    lhs_columns=[
+                        ColumnSchema(index=index, name=column_names[index])
+                        for index in fd.lhs_indices
+                    ],
+                    rhs_column=ColumnSchema(
+                        index=fd.rhs_index,
+                        name=column_names[fd.rhs_index],
+                    ),
                 )
-                for fd in self._algo.get_fds()
+                for fd in fds
             ],
         )

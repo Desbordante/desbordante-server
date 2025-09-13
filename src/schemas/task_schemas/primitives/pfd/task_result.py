@@ -1,24 +1,17 @@
-from enum import StrEnum
+from src.schemas.task_schemas.primitives.fd.task_result import (
+    FdTaskResultFiltersSchema,
+    FdTaskResultItemSchema,
+    FdTaskResultOrderingField,
+    FdTaskResultSchema,
+)
 
-from src.schemas.base_schemas import BaseSchema, FiltersParamsSchema, OptionalSchema
-from src.schemas.task_schemas.primitives.base_schemas import BaseTaskResultSchema
-
-
-class PfdTaskResultItemSchema(BaseSchema):
-    lhs: list[str]
-    rhs: list[str]
-
-
-class PfdTaskResultSchema(BaseTaskResultSchema):
-    pass
+PfdTaskResultItemSchema = FdTaskResultItemSchema
 
 
-class PfdTaskResultFiltersSchema(FiltersParamsSchema, OptionalSchema):
-    pass
+PfdTaskResultSchema = FdTaskResultSchema
 
 
-class PfdTaskResultOrderingField(StrEnum):
-    NumberOfLhs = "number_of_lhs"
-    NumberOfRhs = "number_of_rhs"
-    Lhs = "lhs"
-    Rhs = "rhs"
+PfdTaskResultFiltersSchema = FdTaskResultFiltersSchema
+
+
+PfdTaskResultOrderingField = FdTaskResultOrderingField

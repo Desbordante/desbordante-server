@@ -14,4 +14,4 @@ class FdAlgoName(StrEnum):
     HyFD = auto()
     Pyro = auto()
     Tane = auto()
-    PFDTane = auto()
+    # PFDTane = auto()
