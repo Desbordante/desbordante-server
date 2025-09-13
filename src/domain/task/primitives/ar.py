@@ -12,6 +12,8 @@ from src.schemas.task_schemas.primitives.ar.task_params import (
 from src.schemas.task_schemas.primitives.ar.task_result import (
     ArTaskResultItemSchema,
     ArTaskResultSchema,
+    EmptyArTaskResultSchema,
+    NotEmptyArTaskResultSchema,
 )
 from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
 
@@ -32,7 +34,9 @@ class ArPrimitive(
 
     allowed_dataset_type = DatasetType.Transactional
 
-    def execute(self, params: ArTaskParams[TransactionalDownloadedDatasetSchema]):
+    def execute(
+        self, params: ArTaskParams[TransactionalDownloadedDatasetSchema]
+    ) -> PrimitiveResultSchema[ArTaskResultSchema, ArTaskResultItemSchema]:
         dataset = params.datasets.table
         table = dataset.df
 
@@ -44,17 +48,34 @@ class ArPrimitive(
 
         self._algo.execute(**options)
 
+        ars = self._algo.get_ars()
+        has_ars = len(ars) > 0
+
+        if not has_ars:
+            return PrimitiveResultSchema(
+                result=EmptyArTaskResultSchema(
+                    total_count=0,
+                    has_ars=False,
+                ),
+                items=[],
+            )
+
         return PrimitiveResultSchema[ArTaskResultSchema, ArTaskResultItemSchema](
-            result=ArTaskResultSchema(
-                total_count=len(self._algo.get_ars()),
+            result=NotEmptyArTaskResultSchema(
+                total_count=len(ars),
+                has_ars=True,
+                min_support=min(ar.support for ar in ars),
+                max_support=max(ar.support for ar in ars),
+                min_confidence=min(ar.confidence for ar in ars),
+                max_confidence=max(ar.confidence for ar in ars),
             ),
             items=[
                 ArTaskResultItemSchema(
-                    left=ar.left,
-                    right=ar.right,
+                    lhs_values=ar.left,
+                    rhs_values=ar.right,
                     support=ar.support,
                     confidence=ar.confidence,
                 )
-                for ar in self._algo.get_ars()
+                for ar in ars
             ],
         )

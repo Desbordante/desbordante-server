@@ -4,6 +4,7 @@ from src.crud.task_result_crud.query_helpers.base_query_helper import BaseQueryH
 from src.models.task_result_models import TaskResultModel
 from src.schemas.task_schemas.primitives.ar.task_result import (
     ArTaskResultFiltersSchema,
+    ArTaskResultItemField,
     ArTaskResultOrderingField,
 )
 
@@ -13,72 +14,67 @@ class ArQueryHelper(
 ):
     def get_ordering_field(self, order_by: ArTaskResultOrderingField):
         match order_by:
-            case ArTaskResultOrderingField.Left:
-                return TaskResultModel.result[order_by].astext
-            case ArTaskResultOrderingField.Right:
-                return TaskResultModel.result[order_by].astext
+            case ArTaskResultOrderingField.LhsValues:
+                return TaskResultModel.result[ArTaskResultItemField.LhsValues].astext
+            case ArTaskResultOrderingField.RhsValues:
+                return TaskResultModel.result[ArTaskResultItemField.RhsValues].astext
             case ArTaskResultOrderingField.Support:
                 return sqlalchemy.func.cast(
-                    TaskResultModel.result[order_by].astext, sqlalchemy.Float
+                    TaskResultModel.result[ArTaskResultItemField.Support],
+                    sqlalchemy.Float,
                 )
             case ArTaskResultOrderingField.Confidence:
                 return sqlalchemy.func.cast(
-                    TaskResultModel.result[order_by].astext, sqlalchemy.Float
+                    TaskResultModel.result[ArTaskResultItemField.Confidence],
+                    sqlalchemy.Float,
                 )
         super().get_ordering_field(order_by)
 
     def make_filters(self, filters: ArTaskResultFiltersSchema):
         return [
             # search
-            sqlalchemy.or_(
-                TaskResultModel.result[ArTaskResultOrderingField.Left].astext.icontains(
-                    filters.search
-                ),
-                TaskResultModel.result[
-                    ArTaskResultOrderingField.Right
-                ].astext.icontains(filters.search),
-            )
+            TaskResultModel.result.astext.icontains(filters.search)
             if filters.search
             else None,
-            # left
-            TaskResultModel.result[ArTaskResultOrderingField.Left].op("@>")(
-                filters.left
+            # lhs_values
+            TaskResultModel.result[ArTaskResultItemField.LhsValues].op("<@")(
+                filters.lhs_values
             )
-            if filters.left
+            if filters.lhs_values
             else None,
-            # right
-            TaskResultModel.result[ArTaskResultOrderingField.Right].op("@>")(
-                filters.right
+            # rhs_values
+            TaskResultModel.result[ArTaskResultItemField.RhsValues].op("<@")(
+                filters.rhs_values
             )
-            if filters.right
+            if filters.rhs_values
             else None,
-            # min support
+            # min_support
             sqlalchemy.cast(
-                TaskResultModel.result[ArTaskResultOrderingField.Support],
+                TaskResultModel.result[ArTaskResultItemField.Support],
                 sqlalchemy.Float,
             )
             >= filters.min_support
             if filters.min_support is not None
             else None,
-            # max support
+            # max_support
             sqlalchemy.cast(
-                TaskResultModel.result[ArTaskResultOrderingField.Support],
+                TaskResultModel.result[ArTaskResultItemField.Support],
                 sqlalchemy.Float,
             )
             <= filters.max_support
             if filters.max_support is not None
             else None,
-            # min confidence
+            # min_confidence
             sqlalchemy.cast(
-                TaskResultModel.result[ArTaskResultOrderingField.Confidence],
+                TaskResultModel.result[ArTaskResultItemField.Confidence],
                 sqlalchemy.Float,
             )
             >= filters.min_confidence
             if filters.min_confidence is not None
             else None,
-            # max confidence
+            # max_confidence
             sqlalchemy.cast(
-                TaskResultModel.result[ArTaskResultOrderingField.Confidence],
+                TaskResultModel.result[ArTaskResultItemField.Confidence],
                 sqlalchemy.Float,
             )
             <= filters.max_confidence
