@@ -51,8 +51,8 @@ class AfdVerificationQueryHelper(
                 ],
                 sa.Integer,
             )
-            >= filters.min_number_of_distinct_rhs_values
-            if filters.min_number_of_distinct_rhs_values is not None
+            >= filters.min_num
+            if filters.min_num is not None
             else None,
             # max_number_of_distinct_rhs_values
             func.cast(
@@ -61,8 +61,8 @@ class AfdVerificationQueryHelper(
                 ],
                 sa.Integer,
             )
-            <= filters.max_number_of_distinct_rhs_values
-            if filters.max_number_of_distinct_rhs_values is not None
+            <= filters.max_num
+            if filters.max_num is not None
             else None,
             # min_most_frequent_rhs_value_proportion
             func.cast(
@@ -71,8 +71,8 @@ class AfdVerificationQueryHelper(
                 ],
                 sa.Float,
             )
-            >= filters.min_most_frequent_rhs_value_proportion
-            if filters.min_most_frequent_rhs_value_proportion is not None
+            >= filters.min_prop
+            if filters.min_prop is not None
             else None,
             # max_most_frequent_rhs_value_proportion
             func.cast(
@@ -81,7 +81,7 @@ class AfdVerificationQueryHelper(
                 ],
                 sa.Float,
             )
-            <= filters.max_most_frequent_rhs_value_proportion
-            if filters.max_most_frequent_rhs_value_proportion is not None
+            <= filters.max_prop
+            if filters.max_prop is not None
             else None,
         ]
