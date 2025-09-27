@@ -17,7 +17,7 @@ class TokenPayloadSchema(BaseSchema):
 
 
 def password_field(
-    description: str = "The password of the user. Must contain at least one uppercase letter, one lowercase letter, one digit, and one special character",
+    description: str = "The password of the user. Must contain at least one letter, one digit",
 ) -> Any:
     """
     Creates a password field with standard validation requirements.
