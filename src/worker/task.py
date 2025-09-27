@@ -10,8 +10,6 @@ from src.db.session import scoped_session
 from src.models.base_models import BaseModel
 from src.schemas.base_schemas import TaskErrorSchema, TaskStatus
 
-loop = asyncio.get_event_loop()
-
 
 class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type: ignore
     """
@@ -29,12 +27,13 @@ class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type:
     crud_class: type[BaseCrud[ModelType, IdType]]
     status_field: str = "status"
     result_field: str = "result"
+    error_field: str = "info"
     entity: ModelType
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         id = args[0]
-        self.entity = self._update_object(
-            id, **{self.status_field: TaskStatus.Processing}
+        self.entity = self._update_object_sync(
+            id, **{self.status_field: TaskStatus.PROCESSING}
         )
         return self.run(*args, **kwargs)  # type: ignore
 
@@ -43,11 +42,11 @@ class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type:
     ) -> None:
         id = args[0]
 
-        self._update_object(
+        self._update_object_sync(
             id,
             **{
-                self.status_field: TaskStatus.Success,
-                self.result_field: retval,
+                self.status_field: TaskStatus.SUCCESS,
+                self.result_field: self.create_result_object(id, retval),
             },
         )
 
@@ -61,15 +60,22 @@ class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type:
     ) -> None:
         id = args[0]
 
-        self._update_object(
+        self._update_object_sync(
             id,
             **{
-                self.status_field: TaskStatus.Failed,
-                self.result_field: TaskErrorSchema(error=str(exc)),
+                self.status_field: TaskStatus.FAILED,
+                self.error_field: self.create_error_object(id, exc),
             },
         )
 
-    def _update_object(self, id: IdType, **kwargs: Any) -> ModelType:
+    def create_result_object(self, id: IdType, retval: Any) -> Any:
+        return retval
+
+    def create_error_object(self, id: IdType, exc: Exception) -> Any:
+        return TaskErrorSchema(error=str(exc))
+
+    def _update_object_sync(self, id: IdType, **kwargs: Any) -> ModelType:
+        loop = asyncio.get_event_loop()
         return loop.run_until_complete(self._update_object_async(id, **kwargs))
 
     async def _update_object_async(self, id: IdType, **kwargs: Any) -> ModelType:

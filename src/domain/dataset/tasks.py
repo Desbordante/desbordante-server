@@ -32,12 +32,12 @@ def preprocess_dataset(
     data = storage.download_file_sync(path=dataset.path)
 
     match dataset.type:
-        case DatasetType.Tabular:
+        case DatasetType.TABULAR:
             params = TabularDatasetParams.model_validate(dataset.params)
             return get_tabular_info(params, data)
-        case DatasetType.Transactional:
+        case DatasetType.TRANSACTIONAL:
             params = TransactionalDatasetParams.model_validate(dataset.params)
             return get_transactional_info(params, data)
-        case DatasetType.Graph:
+        case DatasetType.GRAPH:
             params = GraphDatasetParams.model_validate(dataset.params)
             return get_graph_info(params, data)
