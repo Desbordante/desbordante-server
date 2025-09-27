@@ -25,9 +25,7 @@ async def get_datasets(
     get_datasets: GetDatasetsUseCaseDep,
     query_params: DatasetQueryParamsDep,
 ) -> Any:
-    datasets = await get_datasets(
+    return await get_datasets(
         pagination=pagination,
         query_params=query_params,
     )
-
-    return datasets
