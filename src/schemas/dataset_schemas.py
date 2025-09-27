@@ -8,6 +8,7 @@ from pydantic import Field, model_validator
 
 from src.schemas.base_schemas import (
     BaseSchema,
+    FiltersParamsSchema,
     QueryParamsSchema,
     TaskErrorSchema,
     TaskStatus,
@@ -22,15 +23,15 @@ class File(Protocol):
 
 
 class DatasetSeparator(StrEnum):
-    Comma = ","
-    Semicolon = ";"
-    Pipe = "|"
+    COMMA = ","
+    SEMICOLON = ";"
+    PIPE = "|"
 
 
 class DatasetType(StrEnum):
-    Tabular = auto()
-    Transactional = auto()
-    Graph = auto()
+    TABULAR = auto()
+    TRANSACTIONAL = auto()
+    GRAPH = auto()
 
 
 class SingularTransactionalParams(BaseSchema):
@@ -82,17 +83,17 @@ class BaseUploadDatasetParams(BaseSchema):
 
 
 class UploadTabularDatasetParams(TabularDatasetParams, BaseUploadDatasetParams):
-    type: Literal[DatasetType.Tabular]
+    type: Literal[DatasetType.TABULAR]
 
 
 class UploadTransactionalDatasetParams(
     TransactionalDatasetParams, BaseUploadDatasetParams
 ):
-    type: Literal[DatasetType.Transactional]
+    type: Literal[DatasetType.TRANSACTIONAL]
 
 
 class UploadGraphDatasetParams(GraphDatasetParams, BaseUploadDatasetParams):
-    type: Literal[DatasetType.Graph]
+    type: Literal[DatasetType.GRAPH]
 
 
 OneOfUploadDatasetParams = Annotated[
@@ -110,7 +111,7 @@ class TabularDatasetInfo(BaseSchema):
 
 
 class TransactionalDatasetInfo(TabularDatasetInfo):
-    pass
+    unique_values: list[str]
 
 
 class GraphDatasetInfo(BaseSchema):
@@ -119,9 +120,7 @@ class GraphDatasetInfo(BaseSchema):
     is_directed: bool
 
 
-OneOfDatasetInfo = (
-    TabularDatasetInfo | TransactionalDatasetInfo | GraphDatasetInfo | TaskErrorSchema
-)
+OneOfDatasetInfo = TabularDatasetInfo | TransactionalDatasetInfo | GraphDatasetInfo
 
 
 class DatasetSchema(BaseSchema):
@@ -131,15 +130,16 @@ class DatasetSchema(BaseSchema):
     size: int
     params: OneOfDatasetParams
 
-    info: OneOfDatasetInfo | None
+    info: OneOfDatasetInfo | TaskErrorSchema | None
     status: TaskStatus
 
     created_at: datetime
     updated_at: datetime
 
 
-class DatasetFiltersSchema(BaseSchema):
+class DatasetFiltersSchema(FiltersParamsSchema):
     type: DatasetType | None = None
+    status: TaskStatus | None = None
     min_size: int | None = None
     max_size: int | None = None
     created_after: datetime | None = None
