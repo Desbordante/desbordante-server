@@ -51,6 +51,18 @@ def get_transactional_info(
     """
     Extract transactional dataset information using Pandas.
     """
-    result = get_tabular_info(params, data)
 
-    return TransactionalDatasetInfo(**result)
+    df = pd.read_csv(
+        BytesIO(data),
+        sep=params.separator,
+        header=0 if params.has_header else None,
+    )
+
+    unique_values = df.select_dtypes(include=["object"]).stack().unique()
+
+    return TransactionalDatasetInfo(
+        number_of_columns=df.shape[1],
+        number_of_rows=df.shape[0],
+        column_names=list(map(str, df.columns)),
+        unique_values=unique_values,
+    )
