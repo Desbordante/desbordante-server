@@ -25,6 +25,4 @@ async def get_dataset(
     id: UUID,
     get_dataset: GetDatasetUseCaseDep,
 ) -> Any:
-    dataset = await get_dataset(id=id)
-
-    return dataset
+    return await get_dataset(id=id)
