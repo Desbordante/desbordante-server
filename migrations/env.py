@@ -1,5 +1,6 @@
 import asyncio
 from logging.config import fileConfig
+from typing import Any
 
 from alembic import context
 from sqlalchemy import pool
@@ -10,6 +11,7 @@ from src.db.config import settings
 from src.models.base_models import BaseModel
 from src.models.dataset_models import DatasetModel  # type: ignore # noqa
 from src.models.user_models import UserModel  # type: ignore # noqa
+from src.schemas.base_schemas import PydanticType  # type: ignore # noqa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -34,6 +36,13 @@ target_metadata = BaseModel.metadata
 # ... etc.
 
 
+def render_item(type_: str, obj: Any, autogen_context: Any):
+    """Apply custom rendering for PydanticType."""
+    if type_ == "type" and isinstance(obj, PydanticType):
+        return "postgresql.JSONB(astext_type=sa.Text())"
+    return False
+
+
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
@@ -50,6 +59,7 @@ def run_migrations_offline() -> None:
     context.configure(
         url=url,
         target_metadata=target_metadata,
+        render_item=render_item,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
     )
@@ -59,7 +69,9 @@ def run_migrations_offline() -> None:
 
 
 def do_run_migrations(connection: Connection) -> None:
-    context.configure(connection=connection, target_metadata=target_metadata)
+    context.configure(
+        connection=connection, target_metadata=target_metadata, render_item=render_item
+    )
 
     with context.begin_transaction():
         context.run_migrations()
