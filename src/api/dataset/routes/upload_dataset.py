@@ -25,6 +25,7 @@ class UploadFileAdapter:
     description="Upload dataset to server",
     responses={
         status.HTTP_401_UNAUTHORIZED: {"model": ApiErrorSchema},
+        status.HTTP_403_FORBIDDEN: {"model": ApiErrorSchema},
         status.HTTP_429_TOO_MANY_REQUESTS: {"model": ApiErrorSchema},
     },
 )
