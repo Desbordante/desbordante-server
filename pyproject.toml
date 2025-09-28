@@ -31,6 +31,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "celery-types>=0.23.0",
+    "faker>=37.8.0",
     "mypy>=1.17.1",
     "pre-commit>=4.1.0",
     "pytest>=8.3.5",
@@ -38,7 +39,14 @@ dev = [
     "pytest-celery>=1.2.0",
     "pytest-cov>=6.1.1",
     "pytest-mock>=3.14.0",
+    "pytest-smtpd>=0.1.0",
     "ruff>=0.9.6",
     "types-sqlalchemy-utils>=1.1.0",
     "watchdog>=6.0.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
+testpaths = [
+    "tests"
 ]
