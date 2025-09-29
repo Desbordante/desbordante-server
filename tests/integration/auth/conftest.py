@@ -18,6 +18,11 @@ def mock_send_confirmation_email(mocker: MockerFixture):
     return mocker.patch("src.domain.account.tasks.send_confirmation_email.delay")
 
 
+@pytest.fixture(autouse=True)
+def mock_send_reset_email(mocker: MockerFixture):
+    return mocker.patch("src.domain.auth.tasks.send_reset_email.delay")
+
+
 @pytest.fixture(scope="function")
 def register_data(faker: Faker) -> RegisterUserData:
     return {

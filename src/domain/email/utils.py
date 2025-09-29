@@ -11,7 +11,7 @@ from src.schemas.email_schemas import EmailTokenPayloadSchema
 logger = logging.getLogger(__name__)
 
 
-def send_email[T: EmailTokenPayloadSchema](
+def send_token_email[T: EmailTokenPayloadSchema](
     to_email: str, schema: Type[T], expires_delta: timedelta, subject: str
 ) -> None:
     token_pair = create_token(

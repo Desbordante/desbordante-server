@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Form, status
+from pydantic import EmailStr
 
 from src.api.auth.dependencies import SendResetEmailUseCaseDep
 from src.schemas.base_schemas import ApiErrorSchema
@@ -19,7 +20,9 @@ router = APIRouter()
     },
 )
 async def send_reset_email(
-    email: Annotated[str, Form()],
+    email: Annotated[
+        EmailStr, Form(max_length=255, description="The email address of the user")
+    ],
     send_reset_email: SendResetEmailUseCaseDep,
 ) -> None:
     await send_reset_email(to_email=email)
