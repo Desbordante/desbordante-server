@@ -1,14 +1,14 @@
 from datetime import timedelta
 
 from src.domain.account.config import settings
-from src.domain.email.utils import send_email
+from src.domain.email.utils import send_token_email
 from src.schemas.email_schemas import ConfirmationTokenPayloadSchema
 from src.worker.worker import worker
 
 
 @worker.task(name="tasks.send_confirmation_email")
 def send_confirmation_email(to_email: str) -> None:
-    send_email(
+    send_token_email(
         to_email=to_email,
         schema=ConfirmationTokenPayloadSchema,
         expires_delta=timedelta(minutes=settings.CONFIRMATION_EMAIL_EXPIRE_MINUTES),
