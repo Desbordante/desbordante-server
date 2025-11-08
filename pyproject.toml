@@ -25,6 +25,7 @@ dependencies = [
     "python-multipart>=0.0.20",
     "sqlalchemy>=2.0.38",
     "sqlalchemy-utils>=0.41.2",
+    "starsessions>=2.2.1",
 ]
 
 

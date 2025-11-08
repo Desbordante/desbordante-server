@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Form, status
 from pydantic import EmailStr
 
-from src.api.auth.dependencies import SendResetEmailUseCaseDep
+from src.api.old.dependencies import SendResetEmailUseCaseDep
 from src.schemas.base_schemas import ApiErrorSchema
 
 router = APIRouter()

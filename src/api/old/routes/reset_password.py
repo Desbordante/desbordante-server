@@ -2,11 +2,11 @@ from typing import Annotated
 
 from fastapi import APIRouter, Form, Response, status
 
-from src.api.auth.dependencies import (
+from src.api.old.dependencies import (
     CreateTokensUseCaseDep,
     ResetPasswordUseCaseDep,
 )
-from src.api.auth.utils import set_auth_cookies
+from src.api.old.utils import set_auth_cookies
 from src.schemas.auth_schemas import AuthResponseSchema, ResetPasswordSchema
 from src.schemas.base_schemas import ApiErrorSchema
 from src.schemas.user_schemas import UserSchema

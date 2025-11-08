@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from src.api.auth.dependencies import AuthenticateUserUseCaseDep, CreateTokensUseCaseDep
+from src.api.old.dependencies import AuthenticateUserUseCaseDep, CreateTokensUseCaseDep
 from src.schemas.auth_schemas import AuthenticateUserSchema
 from src.schemas.base_schemas import ApiErrorSchema, BaseSchema
 

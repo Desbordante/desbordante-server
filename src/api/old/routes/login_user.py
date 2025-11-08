@@ -1,12 +1,10 @@
-from fastapi import APIRouter, Response, status
+from typing import Annotated
 
-from src.api.auth.dependencies import (
-    CreateTokensUseCaseDep,
-    GetUserByIdUseCaseDep,
-    RefreshTokenPayloadDep,
-)
-from src.api.auth.utils import set_auth_cookies
-from src.schemas.auth_schemas import AuthResponseSchema
+from fastapi import APIRouter, Form, Response, status
+
+from src.api.old.dependencies import AuthenticateUserUseCaseDep, CreateTokensUseCaseDep
+from src.api.old.utils import set_auth_cookies
+from src.schemas.auth_schemas import AuthenticateUserSchema, AuthResponseSchema
 from src.schemas.base_schemas import ApiErrorSchema
 from src.schemas.user_schemas import UserSchema
 
@@ -14,22 +12,22 @@ router = APIRouter()
 
 
 @router.post(
-    "/refresh/",
+    "/login/",
     response_model=AuthResponseSchema,
     status_code=status.HTTP_200_OK,
-    summary="Refresh access token",
-    description="Get new access token using refresh token from cookies",
+    summary="Login user",
+    description="Authenticate user with email and password, set auth cookies and return tokens",
     responses={
         status.HTTP_401_UNAUTHORIZED: {"model": ApiErrorSchema},
     },
 )
-async def refresh_token(
+async def login_user(
     response: Response,
-    refresh_token_payload: RefreshTokenPayloadDep,
-    get_user_by_id: GetUserByIdUseCaseDep,
+    form_data: Annotated[AuthenticateUserSchema, Form()],
+    authenticate_user: AuthenticateUserUseCaseDep,
     create_tokens: CreateTokensUseCaseDep,
 ) -> AuthResponseSchema:
-    user = await get_user_by_id(id=refresh_token_payload.id)
+    user = await authenticate_user(data=form_data)
     access_token_pair, refresh_token_pair = create_tokens(user=user)
     set_auth_cookies(response, access_token_pair, refresh_token_pair)
 

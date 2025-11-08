@@ -2,9 +2,9 @@ from typing import Annotated
 
 from fastapi import APIRouter, Form, Response, status
 
-from src.api.auth.dependencies import CreateTokensUseCaseDep, RegisterUserUseCaseDep
-from src.api.auth.utils import set_auth_cookies
 from src.api.dependencies import SendConfirmationEmailUseCaseDep
+from src.api.old.dependencies import CreateTokensUseCaseDep, RegisterUserUseCaseDep
+from src.api.old.utils import set_auth_cookies
 from src.schemas.auth_schemas import AuthResponseSchema, RegisterUserSchema
 from src.schemas.base_schemas import ApiErrorSchema
 from src.schemas.user_schemas import UserSchema
