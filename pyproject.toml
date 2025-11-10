@@ -8,6 +8,7 @@ dependencies = [
     "aioredlock>=0.7.3",
     "alembic>=1.15.1",
     "asyncpg>=0.30.0",
+    "authlib>=1.6.5",
     "celery>=5.4.0",
     "cryptography>=44.0.2",
     "fastapi[standard]>=0.115.8",

@@ -3,8 +3,10 @@ import logging
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.middleware.sessions import SessionMiddleware
 
 from src.api import router as api_router
+from src.domain.security.config import settings
 from src.exceptions import BaseAppException
 from src.logging import configure_logging
 
@@ -22,6 +24,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY.get_secret_value())
 
 
 # Global exception handlers
