@@ -1,13 +1,16 @@
 from typing import Protocol
 
-from src.domain.account.config import settings
-from src.schemas.account_schemas import AccountStatsSchema
+from src.domain.user.config import settings
 from src.schemas.dataset_schemas import DatasetsStatsSchema
-from src.schemas.session_schemas import UserSessionSchema
+from src.schemas.user_schemas import UserStatsSchema
 
 
 class DatasetCrud(Protocol):
     async def get_stats(self, *, user_id: int) -> DatasetsStatsSchema: ...
+
+
+class User(Protocol):
+    id: int
 
 
 class GetStatsUseCase:
@@ -15,15 +18,15 @@ class GetStatsUseCase:
         self,
         *,
         dataset_crud: DatasetCrud,
-        user_session: UserSessionSchema,
+        user: User,
     ):
         self.dataset_crud = dataset_crud
-        self.user_session = user_session
+        self.user = user
 
-    async def __call__(self) -> AccountStatsSchema:
-        datasets_stats = await self.dataset_crud.get_stats(user_id=self.user_session.id)
+    async def __call__(self) -> UserStatsSchema:
+        datasets_stats = await self.dataset_crud.get_stats(user_id=self.user.id)
 
-        return AccountStatsSchema(
+        return UserStatsSchema(
             datasets=datasets_stats,
             storage_limit=settings.STORAGE_LIMIT,
         )

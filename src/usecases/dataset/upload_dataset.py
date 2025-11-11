@@ -5,9 +5,9 @@ from uuid import uuid4
 
 from aioredlock import LockError
 
-from src.domain.account.config import settings
 from src.domain.dataset.storage import storage
 from src.domain.dataset.tasks import preprocess_dataset
+from src.domain.user.config import settings
 from src.exceptions import (
     ConflictException,
     PayloadTooLargeException,

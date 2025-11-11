@@ -11,9 +11,7 @@ from src.exceptions import ForbiddenException
 from src.infrastructure.session.starsessions_adapter import StarsessionsAdapter
 from src.schemas.base_schemas import PaginationParamsSchema
 from src.schemas.session_schemas import UserSessionSchema
-from src.usecases.account.send_confirmation_email import SendConfirmationEmailUseCase
 from src.usecases.session.get_user_session import GetUserSessionUseCase
-from src.usecases.user.get_user_by_id import GetUserByIdUseCase
 
 oauth2 = OAuth2PasswordBearer(tokenUrl="/auth/token", auto_error=False)
 TokenDep = Annotated[str, Depends(oauth2)]
@@ -33,24 +31,6 @@ async def get_dataset_crud(session: SessionDep) -> DatasetCrud:
 
 
 DatasetCrudDep = Annotated[DatasetCrud, Depends(get_dataset_crud)]
-
-
-async def get_get_user_by_id_use_case(user_crud: UserCrudDep) -> GetUserByIdUseCase:
-    return GetUserByIdUseCase(user_crud=user_crud)
-
-
-GetUserByIdUseCaseDep = Annotated[
-    GetUserByIdUseCase, Depends(get_get_user_by_id_use_case)
-]
-
-
-async def get_send_confirmation_email_use_case() -> SendConfirmationEmailUseCase:
-    return SendConfirmationEmailUseCase()
-
-
-SendConfirmationEmailUseCaseDep = Annotated[
-    SendConfirmationEmailUseCase, Depends(get_send_confirmation_email_use_case)
-]
 
 
 async def get_session_adapter(request: Request) -> StarsessionsAdapter:
