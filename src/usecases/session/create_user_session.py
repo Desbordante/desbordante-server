@@ -2,12 +2,18 @@ from typing import Protocol
 
 from fastapi import Request
 
-from src.models.user_models import UserModel
+from src.exceptions import ForbiddenException
 from src.schemas.session_schemas import UserSessionSchema
 
 
 class SessionManager(Protocol):
     async def create(self, request: Request, session: UserSessionSchema) -> None: ...
+
+
+class User(Protocol):
+    id: int
+    is_admin: bool
+    is_active: bool
 
 
 class CreateUserSessionUseCase:
@@ -16,10 +22,15 @@ class CreateUserSessionUseCase:
     def __init__(self, session_manager: SessionManager):
         self.session_manager = session_manager
 
-    async def __call__(self, *, request: Request, user: UserModel) -> None:
+    async def __call__(self, *, request: Request, user: User) -> None:
         """Create session for authenticated user."""
+
+        if not user.is_active:
+            raise ForbiddenException("User is banned")
+
         session = UserSessionSchema(
-            user_id=user.id,
+            id=user.id,
             is_admin=user.is_admin,
         )
+
         await self.session_manager.create(request, session)
