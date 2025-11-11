@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Path, Request, status
 from fastapi.responses import RedirectResponse
+from starsessions import load_session
 
 from src.api.auth.dependencies import GetOAuthAuthorizationRedirectUseCaseDep
 from src.schemas.auth_schemas import OAuthProvider
@@ -18,6 +19,8 @@ async def oauth_authorize(
     get_authorization_redirect: GetOAuthAuthorizationRedirectUseCaseDep,
     provider: OAuthProvider = Path(..., description="OAuth provider name"),
 ) -> RedirectResponse:
+    await load_session(request)
+
     redirect_uri = str(request.url_for("oauth_callback", provider=provider.value))
     return await get_authorization_redirect(
         provider=provider, request=request, redirect_uri=redirect_uri

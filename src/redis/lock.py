@@ -1,6 +1,6 @@
 # type: ignore
 from aioredlock import Aioredlock
 
-from src.redis.config import settings
+from src.redis.client import client
 
-lock_manager = Aioredlock([settings.redis_dsn.unicode_string()])
+lock_manager = Aioredlock([client])
