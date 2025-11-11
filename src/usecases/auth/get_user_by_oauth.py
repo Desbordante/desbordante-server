@@ -1,7 +1,7 @@
 from typing import Protocol
 
 from src.models.user_models import UserModel
-from src.schemas.auth_schemas import OAuthCredentialsSchema, OAuthProvider
+from src.schemas.auth_schemas import OAuthCredsSchema, OAuthProvider
 
 
 class UserCrud(Protocol):
@@ -16,7 +16,7 @@ class GetUserByOAuthUseCase:
     def __init__(self, user_crud: UserCrud):
         self.user_crud = user_crud
 
-    async def __call__(self, *, credentials: OAuthCredentialsSchema) -> UserModel:
+    async def __call__(self, *, creds: OAuthCredsSchema) -> UserModel:
         return await self.user_crud.get_by(
-            oauth_provider=credentials.provider, oauth_id=credentials.oauth_id
+            oauth_provider=creds.provider, oauth_id=creds.oauth_id
         )

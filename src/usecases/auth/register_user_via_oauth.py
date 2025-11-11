@@ -2,7 +2,7 @@ from typing import Protocol
 
 from src.exceptions import ResourceAlreadyExistsException
 from src.models.user_models import UserModel
-from src.schemas.auth_schemas import OAuthCredentialsSchema
+from src.schemas.auth_schemas import OAuthCredsSchema
 
 
 class UserCrud(Protocol):
@@ -15,15 +15,15 @@ class RegisterUserViaOAuthUseCase:
     def __init__(self, user_crud: UserCrud):
         self.user_crud = user_crud
 
-    async def __call__(self, *, credentials: OAuthCredentialsSchema) -> UserModel:
+    async def __call__(self, *, creds: OAuthCredsSchema) -> UserModel:
         user_model = UserModel(
-            oauth_provider=credentials.provider,
-            oauth_id=credentials.oauth_id,
+            oauth_provider=creds.provider,
+            oauth_id=creds.oauth_id,
         )
 
         try:
             return await self.user_crud.create(entity=user_model)
         except ResourceAlreadyExistsException:
             raise ResourceAlreadyExistsException(
-                f"User with OAuth provider '{credentials.provider.value}' and ID '{credentials.oauth_id}' already exists"
+                f"User with OAuth provider '{creds.provider.value}' and ID '{creds.oauth_id}' already exists"
             )

@@ -17,7 +17,7 @@ class OAuthUserInfoSchema(BaseSchema):
     id: str
 
 
-class OAuthCredentialsSchema(BaseSchema):
+class OAuthCredsSchema(BaseSchema):
     provider: OAuthProvider
     oauth_id: str
 
