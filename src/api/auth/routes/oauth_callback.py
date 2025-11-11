@@ -27,14 +27,8 @@ async def oauth_callback(
     create_session: CreateUserSessionUseCaseDep,
     provider: OAuthProvider = Path(..., description="OAuth provider name"),
 ) -> Any:
-    # Get OAuth user info (session loaded in adapter)
     oauth_user_info = await get_oauth_user_info(provider=provider, request=request)
-
-    # Get or create user
     creds = OAuthCredsSchema(provider=provider, oauth_id=oauth_user_info.id)
     user = await get_or_create_user_via_oauth(creds=creds)
-
-    # Create session
-    await create_session(user=user)
-
+    await create_session(request=request, user=user)
     return user

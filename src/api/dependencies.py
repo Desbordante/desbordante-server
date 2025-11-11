@@ -7,8 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.crud.dataset_crud import DatasetCrud
 from src.crud.user_crud import UserCrud
 from src.db.session import get_session
+from src.domain.session.manager import SessionManager
 from src.exceptions import ForbiddenException
-from src.infrastructure.session.starsessions_adapter import StarsessionsAdapter
+from src.infrastructure.session.manager import session_manager
 from src.schemas.base_schemas import PaginationParamsSchema
 from src.schemas.session_schemas import UserSessionSchema
 from src.usecases.session.get_user_session import GetUserSessionUseCase
@@ -33,17 +34,20 @@ async def get_dataset_crud(session: SessionDep) -> DatasetCrud:
 DatasetCrudDep = Annotated[DatasetCrud, Depends(get_dataset_crud)]
 
 
-async def get_session_adapter(request: Request) -> StarsessionsAdapter:
-    return StarsessionsAdapter(request=request)
+def get_session_manager() -> SessionManager:
+    return session_manager
 
 
-SessionAdapterDep = Annotated[StarsessionsAdapter, Depends(get_session_adapter)]
+SessionManagerDep = Annotated[SessionManager, Depends(get_session_manager)]
 
 
-async def get_user_session(session_adapter: SessionAdapterDep) -> UserSessionSchema:
+async def get_user_session(
+    request: Request,
+    session_manager: SessionManagerDep,
+) -> UserSessionSchema:
     """Get user session data."""
-    get_user_session = GetUserSessionUseCase(session_adapter=session_adapter)
-    return await get_user_session()
+    get_user_session_use_case = GetUserSessionUseCase(session_manager=session_manager)
+    return await get_user_session_use_case(request=request)
 
 
 UserSessionDep = Annotated[UserSessionSchema, Depends(get_user_session)]

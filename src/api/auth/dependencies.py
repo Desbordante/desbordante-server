@@ -1,15 +1,15 @@
 from typing import Annotated
 
-from fastapi import Depends, Request
+from fastapi import Depends
 
 from src.api.dependencies import UserCrudDep
 from src.domain.auth.factory import OAuthClientFactory
 from src.domain.auth.ports.oauth_port import OAuthPort
-from src.domain.session.ports import SessionPort
+from src.domain.session.manager import SessionManager
 from src.infrastructure.auth.session_aware_oauth_adapter import (
     SessionAwareOAuthAdapter,
 )
-from src.infrastructure.session.starsessions_adapter import StarsessionsAdapter
+from src.infrastructure.session.manager import session_manager
 from src.usecases.auth.get_oauth_authorization_redirect import (
     GetOAuthAuthorizationRedirectUseCase,
 )
@@ -30,20 +30,20 @@ async def get_oauth_client_factory() -> OAuthClientFactory:
 OAuthClientFactoryDep = Annotated[OAuthClientFactory, Depends(get_oauth_client_factory)]
 
 
-async def get_session_adapter(request: Request) -> SessionPort:
-    return StarsessionsAdapter(request=request)
+def get_session_manager() -> SessionManager:
+    return session_manager
 
 
-SessionAdapterDep = Annotated[SessionPort, Depends(get_session_adapter)]
+SessionManagerDep = Annotated[SessionManager, Depends(get_session_manager)]
 
 
 async def get_oauth_adapter(
     oauth_factory: OAuthClientFactoryDep,
-    session_adapter: SessionAdapterDep,
+    session_manager: SessionManagerDep,
 ) -> OAuthPort:
     return SessionAwareOAuthAdapter(
         oauth_factory=oauth_factory,
-        session_adapter=session_adapter,
+        session_manager=session_manager,
     )
 
 
@@ -111,9 +111,9 @@ GetOrCreateUserViaOAuthUseCaseDep = Annotated[
 
 
 async def get_create_user_session_use_case(
-    session_adapter: SessionAdapterDep,
+    session_manager: SessionManagerDep,
 ) -> CreateUserSessionUseCase:
-    return CreateUserSessionUseCase(session_adapter=session_adapter)
+    return CreateUserSessionUseCase(session_manager=session_manager)
 
 
 CreateUserSessionUseCaseDep = Annotated[
@@ -122,9 +122,9 @@ CreateUserSessionUseCaseDep = Annotated[
 
 
 async def get_destroy_session_use_case(
-    session_adapter: SessionAdapterDep,
+    session_manager: SessionManagerDep,
 ) -> DestroySessionUseCase:
-    return DestroySessionUseCase(session_adapter=session_adapter)
+    return DestroySessionUseCase(session_manager=session_manager)
 
 
 DestroySessionUseCaseDep = Annotated[

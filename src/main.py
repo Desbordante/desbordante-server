@@ -7,10 +7,11 @@ from fastapi.responses import JSONResponse
 from starsessions import SessionMiddleware
 
 from src.api import router as api_router
+from src.domain.session.config import settings as session_settings
 from src.exceptions import BaseAppException
+from src.infrastructure.redis.client import client as redis_client
+from src.infrastructure.session.manager import session_manager
 from src.logging import configure_logging
-from src.redis.client import client as redis_client
-from src.redis.session_store import session_store
 
 configure_logging()
 logger = logging.getLogger(__name__)
@@ -38,11 +39,11 @@ app.add_middleware(
 
 app.add_middleware(
     SessionMiddleware,
-    store=session_store,
-    cookie_name="session_id",
-    cookie_https_only=True,  # HTTP-only cookie
-    lifetime=3600 * 24 * 30,  # 30 days
-    rolling=True,
+    store=session_manager.get_store(),
+    cookie_name=session_settings.COOKIE_NAME,
+    cookie_https_only=session_settings.COOKIE_HTTPS_ONLY,
+    lifetime=session_settings.LIFETIME,
+    rolling=session_settings.ROLLING,
 )
 
 
