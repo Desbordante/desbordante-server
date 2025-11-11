@@ -23,7 +23,7 @@ class UserInfoSchema(BaseSchema):
     )
 
 
-class UserSchema(UserInfoSchema):
+class UserSchema(BaseSchema):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
