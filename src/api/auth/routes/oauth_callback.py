@@ -1,16 +1,13 @@
 from typing import Any
 
 from fastapi import APIRouter, Path, Request, status
-from starsessions import load_session, regenerate_session_id
 
 from src.api.auth.dependencies import (
+    CreateUserSessionUseCaseDep,
     GetOAuthUserInfoUseCaseDep,
     GetOrCreateUserViaOAuthUseCaseDep,
 )
-from src.schemas.auth_schemas import (
-    OAuthCredsSchema,
-    OAuthProvider,
-)
+from src.schemas.auth_schemas import OAuthCredsSchema, OAuthProvider
 from src.schemas.user_schemas import UserSchema
 
 router = APIRouter()
@@ -27,18 +24,17 @@ async def oauth_callback(
     request: Request,
     get_oauth_user_info: GetOAuthUserInfoUseCaseDep,
     get_or_create_user_via_oauth: GetOrCreateUserViaOAuthUseCaseDep,
+    create_session: CreateUserSessionUseCaseDep,
     provider: OAuthProvider = Path(..., description="OAuth provider name"),
 ) -> Any:
-    await load_session(request)
-
+    # 1. Get OAuth user info (session loaded in adapter)
     oauth_user_info = await get_oauth_user_info(provider=provider, request=request)
 
+    # 2. Get or create user
     creds = OAuthCredsSchema(provider=provider, oauth_id=oauth_user_info.id)
-
     user = await get_or_create_user_via_oauth(creds=creds)
 
-    regenerate_session_id(request)
-    request.session["user_id"] = user.id
-    request.session["is_admin"] = user.is_admin
+    # 3. Create session
+    await create_session(user=user)
 
     return user

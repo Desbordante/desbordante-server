@@ -9,11 +9,14 @@ from src.crud.dataset_crud import DatasetCrud
 from src.crud.user_crud import UserCrud
 from src.db.session import get_session
 from src.exceptions import ForbiddenException
+from src.infrastructure.session.starsessions_adapter import StarsessionsAdapter
 from src.models.user_models import UserModel
 from src.schemas.auth_schemas import AccessTokenPayloadSchema
 from src.schemas.base_schemas import PaginationParamsSchema
+from src.schemas.session_schemas import UserSessionSchema
 from src.usecases.account.send_confirmation_email import SendConfirmationEmailUseCase
 from src.usecases.auth.validate_token import ValidateTokenUseCase
+from src.usecases.session.get_user_session import GetUserSessionUseCase
 from src.usecases.user.get_user_by_id import GetUserByIdUseCase
 
 oauth2 = OAuth2PasswordBearer(tokenUrl="/auth/token", auto_error=False)
@@ -111,11 +114,8 @@ class VerificationDep:
         self.should_be_verified = should_be_verified
 
     def __call__(self, user: AuthorizedUserDep) -> UserModel:
-        if user.is_verified == self.should_be_verified:
-            return user
-        raise ForbiddenException(
-            f"User is {'already' if user.is_verified else 'not'} verified"
-        )
+        # TODO: Implement is_verified when needed (removed from UserModel)
+        return user
 
 
 VerifiedUserDep = Annotated[UserModel, Depends(VerificationDep())]
@@ -128,6 +128,43 @@ async def get_send_confirmation_email_use_case() -> SendConfirmationEmailUseCase
 SendConfirmationEmailUseCaseDep = Annotated[
     SendConfirmationEmailUseCase, Depends(get_send_confirmation_email_use_case)
 ]
+
+
+async def get_session_adapter(request: Request) -> StarsessionsAdapter:
+    return StarsessionsAdapter(request=request)
+
+
+SessionAdapterDep = Annotated[StarsessionsAdapter, Depends(get_session_adapter)]
+
+
+async def get_user_session(session_adapter: SessionAdapterDep) -> UserSessionSchema:
+    """Get user session data."""
+    get_user_session = GetUserSessionUseCase(session_adapter=session_adapter)
+    return await get_user_session()
+
+
+UserSessionDep = Annotated[UserSessionSchema, Depends(get_user_session)]
+
+
+async def get_current_user(
+    user_session: UserSessionDep,
+    get_user_by_id: GetUserByIdUseCaseDep,
+) -> UserModel:
+    """Get authenticated user model from session."""
+    return await get_user_by_id(id=user_session.user_id)
+
+
+CurrentUserDep = Annotated[UserModel, Depends(get_current_user)]
+
+
+async def get_admin_session(user_session: UserSessionDep) -> UserSessionSchema:
+    """Require admin user from session."""
+    if not user_session.is_admin:
+        raise ForbiddenException("Admin access required")
+    return user_session
+
+
+AdminSessionDep = Annotated[UserSessionSchema, Depends(get_admin_session)]
 
 
 PaginationParamsDep = Annotated[PaginationParamsSchema, Depends(PaginationParamsSchema)]

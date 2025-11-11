@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
-from src.api.auth.routes.oauth_authorize import router as oauth_authorize_router
-from src.api.auth.routes.oauth_callback import router as oauth_callback_router
+from src.api.auth.routes import logout, oauth_authorize, oauth_callback
 
 router = APIRouter()
 
-router.include_router(oauth_authorize_router)
-router.include_router(oauth_callback_router)
+router.include_router(oauth_authorize.router)
+router.include_router(oauth_callback.router)
+router.include_router(logout.router)

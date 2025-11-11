@@ -1,18 +1,26 @@
 from typing import Annotated
 
-from fastapi import Depends
+from fastapi import Depends, Request
 
 from src.api.dependencies import UserCrudDep
 from src.domain.auth.factory import OAuthClientFactory
-from src.usecases.auth.get_or_create_user_via_oauth import (
-    GetOrCreateUserViaOAuthUseCase,
+from src.domain.auth.ports.oauth_port import OAuthPort
+from src.domain.session.ports import SessionPort
+from src.infrastructure.auth.session_aware_oauth_adapter import (
+    SessionAwareOAuthAdapter,
 )
-from src.usecases.auth.get_user_by_oauth import GetUserByOAuthUseCase
+from src.infrastructure.session.starsessions_adapter import StarsessionsAdapter
 from src.usecases.auth.get_oauth_authorization_redirect import (
     GetOAuthAuthorizationRedirectUseCase,
 )
 from src.usecases.auth.get_oauth_user_info import GetOAuthUserInfoUseCase
+from src.usecases.auth.get_or_create_user_via_oauth import (
+    GetOrCreateUserViaOAuthUseCase,
+)
+from src.usecases.auth.get_user_by_oauth import GetUserByOAuthUseCase
 from src.usecases.auth.register_user_via_oauth import RegisterUserViaOAuthUseCase
+from src.usecases.session.create_user_session import CreateUserSessionUseCase
+from src.usecases.session.destroy_session import DestroySessionUseCase
 
 
 async def get_oauth_client_factory() -> OAuthClientFactory:
@@ -22,10 +30,30 @@ async def get_oauth_client_factory() -> OAuthClientFactory:
 OAuthClientFactoryDep = Annotated[OAuthClientFactory, Depends(get_oauth_client_factory)]
 
 
+async def get_session_adapter(request: Request) -> SessionPort:
+    return StarsessionsAdapter(request=request)
+
+
+SessionAdapterDep = Annotated[SessionPort, Depends(get_session_adapter)]
+
+
+async def get_oauth_adapter(
+    oauth_factory: OAuthClientFactoryDep,
+    session_adapter: SessionAdapterDep,
+) -> OAuthPort:
+    return SessionAwareOAuthAdapter(
+        oauth_factory=oauth_factory,
+        session_adapter=session_adapter,
+    )
+
+
+OAuthAdapterDep = Annotated[OAuthPort, Depends(get_oauth_adapter)]
+
+
 async def get_oauth_authorization_redirect_use_case(
-    client_factory: OAuthClientFactoryDep,
+    oauth_adapter: OAuthAdapterDep,
 ) -> GetOAuthAuthorizationRedirectUseCase:
-    return GetOAuthAuthorizationRedirectUseCase(client_factory=client_factory)
+    return GetOAuthAuthorizationRedirectUseCase(oauth_adapter=oauth_adapter)
 
 
 GetOAuthAuthorizationRedirectUseCaseDep = Annotated[
@@ -35,9 +63,9 @@ GetOAuthAuthorizationRedirectUseCaseDep = Annotated[
 
 
 async def get_oauth_user_info_use_case(
-    client_factory: OAuthClientFactoryDep,
+    oauth_adapter: OAuthAdapterDep,
 ) -> GetOAuthUserInfoUseCase:
-    return GetOAuthUserInfoUseCase(client_factory=client_factory)
+    return GetOAuthUserInfoUseCase(oauth_adapter=oauth_adapter)
 
 
 GetOAuthUserInfoUseCaseDep = Annotated[
@@ -79,4 +107,26 @@ async def get_or_create_user_via_oauth_use_case(
 
 GetOrCreateUserViaOAuthUseCaseDep = Annotated[
     GetOrCreateUserViaOAuthUseCase, Depends(get_or_create_user_via_oauth_use_case)
+]
+
+
+async def get_create_user_session_use_case(
+    session_adapter: SessionAdapterDep,
+) -> CreateUserSessionUseCase:
+    return CreateUserSessionUseCase(session_adapter=session_adapter)
+
+
+CreateUserSessionUseCaseDep = Annotated[
+    CreateUserSessionUseCase, Depends(get_create_user_session_use_case)
+]
+
+
+async def get_destroy_session_use_case(
+    session_adapter: SessionAdapterDep,
+) -> DestroySessionUseCase:
+    return DestroySessionUseCase(session_adapter=session_adapter)
+
+
+DestroySessionUseCaseDep = Annotated[
+    DestroySessionUseCase, Depends(get_destroy_session_use_case)
 ]
