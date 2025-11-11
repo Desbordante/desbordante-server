@@ -1,10 +1,11 @@
 from functools import lru_cache
-from typing import Annotated
+from typing import Annotated, Callable
 
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 from fastapi import Depends
 
 from src.domain.auth.config import settings
+from src.schemas.auth_schemas import OAuthProvider
 
 
 @lru_cache()
@@ -12,7 +13,7 @@ def get_oauth() -> OAuth:
     oauth = OAuth()
 
     oauth.register(
-        name="github",
+        name=OAuthProvider.GITHUB,
         client_id=settings.GITHUB_CLIENT_ID,
         client_secret=settings.GITHUB_CLIENT_SECRET,
         authorize_url="https://github.com/login/oauth/authorize",
@@ -22,7 +23,7 @@ def get_oauth() -> OAuth:
     )
 
     oauth.register(
-        name="google",
+        name=OAuthProvider.GOOGLE,
         client_id=settings.GOOGLE_CLIENT_ID,
         client_secret=settings.GOOGLE_CLIENT_SECRET,
         authorize_url="https://accounts.google.com/o/oauth2/v2/auth",
@@ -38,23 +39,19 @@ def get_oauth() -> OAuth:
 OAuthDep = Annotated[OAuth, Depends(get_oauth)]
 
 
-async def get_github_client(oauth: OAuthDep) -> StarletteOAuth2App:
-    github: StarletteOAuth2App | None = oauth.create_client("github")
+async def get_get_oauth_client(
+    oauth: OAuthDep,
+) -> Callable[[OAuthProvider], StarletteOAuth2App]:
+    def get_oauth_client(provider: OAuthProvider) -> StarletteOAuth2App:
+        client: StarletteOAuth2App | None = oauth.create_client(provider)
 
-    assert github is not None, "GitHub client not found"
+        assert client is not None, f"OAuth provider '{provider}' not found"
 
-    return github
+        return client
 
-
-GitHubClientDep = Annotated[StarletteOAuth2App, Depends(get_github_client)]
-
-
-async def get_google_client(oauth: OAuthDep) -> StarletteOAuth2App:
-    google: StarletteOAuth2App | None = oauth.create_client("google")
-
-    assert google is not None, "Google client not found"
-
-    return google
+    return get_oauth_client
 
 
-GoogleClientDep = Annotated[StarletteOAuth2App, Depends(get_google_client)]
+GetOAuthClientDep = Annotated[
+    Callable[[OAuthProvider], StarletteOAuth2App], Depends(get_get_oauth_client)
+]

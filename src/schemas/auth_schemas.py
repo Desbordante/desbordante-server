@@ -1,9 +1,16 @@
+from enum import StrEnum
+
 from pydantic import EmailStr, Field, field_validator
 
 from src.domain.security.utils import validate_password_strength
 from src.schemas.base_schemas import BaseSchema
 from src.schemas.security_schemas import TokenPayloadSchema, password_field
 from src.schemas.user_schemas import UserInfoSchema, UserSchema
+
+
+class OAuthProvider(StrEnum):
+    GITHUB = "github"
+    GOOGLE = "google"
 
 
 class AuthResponseSchema(BaseSchema):
