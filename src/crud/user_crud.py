@@ -4,11 +4,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.crud.base_crud import BaseCrud
 from src.models.user_models import UserModel
+from src.schemas.auth_schemas import OAuthProvider
 
 
 class UserFindProps(TypedDict, total=False):
     email: str
     id: int
+    oauth_provider: OAuthProvider
+    oauth_id: str
 
 
 class UserUpdateProps(TypedDict, total=False):

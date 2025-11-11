@@ -13,6 +13,15 @@ class OAuthProvider(StrEnum):
     GOOGLE = "google"
 
 
+class OAuthUserInfoSchema(BaseSchema):
+    id: str
+
+
+class OAuthCredentialsSchema(BaseSchema):
+    provider: OAuthProvider
+    oauth_id: str
+
+
 class AuthResponseSchema(BaseSchema):
     access_token: str
     user: UserSchema

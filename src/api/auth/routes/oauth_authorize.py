@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Path, Request, status
 from fastapi.responses import RedirectResponse
 
-from src.api.auth.dependencies import OAuthAuthorizeUseCaseDep
+from src.api.auth.dependencies import GetOAuthAuthorizationRedirectUseCaseDep
 from src.schemas.auth_schemas import OAuthProvider
 
 router = APIRouter()
@@ -15,10 +15,10 @@ router = APIRouter()
 )
 async def oauth_authorize(
     request: Request,
-    redirect_to_authorize_url: OAuthAuthorizeUseCaseDep,
+    get_authorization_redirect: GetOAuthAuthorizationRedirectUseCaseDep,
     provider: OAuthProvider = Path(..., description="OAuth provider name"),
 ) -> RedirectResponse:
     redirect_uri = str(request.url_for("oauth_callback", provider=provider.value))
-    return await redirect_to_authorize_url(
+    return await get_authorization_redirect(
         provider=provider, request=request, redirect_uri=redirect_uri
     )
