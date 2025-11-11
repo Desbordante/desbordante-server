@@ -14,7 +14,6 @@ from src.exceptions import (
     TooManyRequestsException,
 )
 from src.models.dataset_models import DatasetModel
-from src.models.user_models import UserModel
 from src.redis.lock import lock_manager
 from src.schemas.dataset_schemas import (
     DatasetsStatsSchema,
@@ -30,12 +29,16 @@ class DatasetCrud(Protocol):
     async def get_stats(self, *, user_id: int) -> DatasetsStatsSchema: ...
 
 
+class User(Protocol):
+    id: int
+
+
 class UploadDatasetUseCase:
     def __init__(
         self,
         *,
         dataset_crud: DatasetCrud,
-        user: UserModel,
+        user: User,
     ):
         self.dataset_crud = dataset_crud
         self.user = user

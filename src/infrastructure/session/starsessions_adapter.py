@@ -30,7 +30,7 @@ class StarsessionsAdapter:
 
         regenerate_session_id(self.request)
 
-        self.request.session[self.USER_ID_KEY] = session.user_id
+        self.request.session[self.USER_ID_KEY] = session.id
         self.request.session[self.IS_ADMIN_KEY] = session.is_admin
 
     async def get(self) -> UserSessionSchema | None:
@@ -43,7 +43,7 @@ class StarsessionsAdapter:
         if user_id is None:
             return None
 
-        return UserSessionSchema(user_id=user_id, is_admin=is_admin)
+        return UserSessionSchema(id=user_id, is_admin=is_admin)
 
     async def destroy(self) -> None:
         """Destroy current session."""

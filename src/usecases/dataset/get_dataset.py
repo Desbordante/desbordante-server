@@ -2,11 +2,14 @@ from typing import Protocol
 from uuid import UUID
 
 from src.models.dataset_models import DatasetModel
-from src.models.user_models import UserModel
 
 
 class DatasetCrud(Protocol):
     async def get_by(self, *, id: UUID, owner_id: int) -> DatasetModel: ...
+
+
+class User(Protocol):
+    id: int
 
 
 class GetDatasetUseCase:
@@ -14,7 +17,7 @@ class GetDatasetUseCase:
         self,
         *,
         dataset_crud: DatasetCrud,
-        user: UserModel,
+        user: User,
     ):
         self.dataset_crud = dataset_crud
         self.user = user

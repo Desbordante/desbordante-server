@@ -1,7 +1,6 @@
 from typing import Protocol
 
 from src.models.dataset_models import DatasetModel
-from src.models.user_models import UserModel
 from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema
 from src.schemas.dataset_schemas import DatasetQueryParamsSchema
 
@@ -16,12 +15,16 @@ class DatasetCrud(Protocol):
     ) -> PaginatedResult[DatasetModel]: ...
 
 
+class User(Protocol):
+    id: int
+
+
 class GetDatasetsUseCase:
     def __init__(
         self,
         *,
         dataset_crud: DatasetCrud,
-        user: UserModel,
+        user: User,
     ):
         self.dataset_crud = dataset_crud
         self.user = user

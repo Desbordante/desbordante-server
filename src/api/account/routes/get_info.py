@@ -2,7 +2,7 @@ from typing import Any
 
 from fastapi import APIRouter, status
 
-from src.api.dependencies import AuthorizedUserDep
+from src.api.account.dependencies import CurrentUserDep
 from src.schemas.base_schemas import ApiErrorSchema
 from src.schemas.user_schemas import UserSchema
 
@@ -19,5 +19,7 @@ router = APIRouter()
         status.HTTP_401_UNAUTHORIZED: {"model": ApiErrorSchema},
     },
 )
-async def get_me(user: AuthorizedUserDep) -> Any:
+async def get_me(
+    user: CurrentUserDep,
+) -> Any:
     return user

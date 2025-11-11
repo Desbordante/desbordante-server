@@ -1,9 +1,9 @@
 from typing import Protocol
 
 from src.domain.account.config import settings
-from src.models.user_models import UserModel
 from src.schemas.account_schemas import AccountStatsSchema
 from src.schemas.dataset_schemas import DatasetsStatsSchema
+from src.schemas.session_schemas import UserSessionSchema
 
 
 class DatasetCrud(Protocol):
@@ -15,13 +15,13 @@ class GetStatsUseCase:
         self,
         *,
         dataset_crud: DatasetCrud,
-        user: UserModel,
+        user_session: UserSessionSchema,
     ):
         self.dataset_crud = dataset_crud
-        self.user = user
+        self.user_session = user_session
 
     async def __call__(self) -> AccountStatsSchema:
-        datasets_stats = await self.dataset_crud.get_stats(user_id=self.user.id)
+        datasets_stats = await self.dataset_crud.get_stats(user_id=self.user_session.id)
 
         return AccountStatsSchema(
             datasets=datasets_stats,

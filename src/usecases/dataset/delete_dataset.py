@@ -3,7 +3,6 @@ from uuid import UUID
 
 from src.domain.dataset.storage import storage
 from src.models.dataset_models import DatasetModel
-from src.models.user_models import UserModel
 
 
 class DatasetCrud(Protocol):
@@ -11,12 +10,16 @@ class DatasetCrud(Protocol):
     async def delete(self, *, entity: DatasetModel) -> None: ...
 
 
+class User(Protocol):
+    id: int
+
+
 class DeleteDatasetUseCase:
     def __init__(
         self,
         *,
         dataset_crud: DatasetCrud,
-        user: UserModel,
+        user: User,
     ):
         self.dataset_crud = dataset_crud
         self.user = user
