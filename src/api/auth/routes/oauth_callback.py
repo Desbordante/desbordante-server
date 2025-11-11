@@ -2,7 +2,7 @@ from typing import Any
 
 from fastapi import APIRouter, Path, Request, status
 
-from src.api.auth.dependencies import GetOAuthClientDep
+from src.api.auth.dependencies import OAuthCallbackUseCaseDep
 from src.schemas.auth_schemas import OAuthProvider
 
 router = APIRouter()
@@ -17,14 +17,8 @@ router = APIRouter()
 )
 async def oauth_callback(
     request: Request,
-    get_oauth_client: GetOAuthClientDep,
+    oauth_callback: OAuthCallbackUseCaseDep,
     provider: OAuthProvider = Path(..., description="OAuth provider name"),
 ) -> dict[str, Any]:
-    oauth_client = get_oauth_client(provider)
-    token = await oauth_client.authorize_access_token(request)
-
-    user = token.get("userinfo")
-    if user is None:
-        user = await oauth_client.userinfo(token=token)
-
-    return user
+    user_info = await oauth_callback(provider=provider, request=request)
+    return user_info
