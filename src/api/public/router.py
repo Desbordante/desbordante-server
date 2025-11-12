@@ -9,5 +9,5 @@ from src.api.public.routes.upload_public_dataset import (
 
 router = APIRouter()
 
-router.include_router(get_public_datasets_router, prefix="/datasets", tags=["public"])
-router.include_router(upload_public_dataset_router, prefix="/datasets", tags=["public"])
+router.include_router(get_public_datasets_router, prefix="/datasets")
+router.include_router(upload_public_dataset_router, prefix="/datasets")

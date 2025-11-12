@@ -20,7 +20,6 @@ DatasetQueryParamsDep = Annotated[
     status_code=status.HTTP_200_OK,
     summary="Get user's datasets",
     description="Get list of specific user's datasets (admin only)",
-    tags=["user", "admin"],
     responses={
         status.HTTP_401_UNAUTHORIZED: {"model": ApiErrorSchema},
         status.HTTP_403_FORBIDDEN: {"model": ApiErrorSchema},

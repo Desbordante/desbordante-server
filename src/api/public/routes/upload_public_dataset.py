@@ -25,7 +25,6 @@ class UploadFileAdapter:
     status_code=status.HTTP_201_CREATED,
     summary="Upload public dataset",
     description="Upload public dataset (admin only)",
-    tags=["public", "admin"],
     responses={
         status.HTTP_401_UNAUTHORIZED: {"model": ApiErrorSchema},
         status.HTTP_403_FORBIDDEN: {"model": ApiErrorSchema},
