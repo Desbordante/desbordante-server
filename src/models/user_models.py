@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class UserModel(BaseModel):
     id: Mapped[int_pk]
 
-    is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
+    is_banned: Mapped[bool] = mapped_column(default=False, nullable=False)
     is_admin: Mapped[bool] = mapped_column(default=False, nullable=False)
 
     oauth_provider: Mapped[OAuthProvider] = mapped_column(nullable=False)

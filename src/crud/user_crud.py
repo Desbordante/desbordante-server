@@ -14,7 +14,7 @@ class UserFindProps(TypedDict, total=False):
 
 
 class UserUpdateProps(TypedDict, total=False):
-    is_active: bool
+    is_banned: bool
 
 
 class UserCrud(BaseCrud[UserModel, int]):
@@ -31,6 +31,6 @@ class UserCrud(BaseCrud[UserModel, int]):
     ) -> UserModel:
         return await super().update(entity=entity, **kwargs)
 
-    async def update_is_active(self, *, user_id: int, is_active: bool) -> UserModel:
+    async def update_is_banned(self, *, user_id: int, is_banned: bool) -> UserModel:
         user = await self.get_by(id=user_id)
-        return await self.update(entity=user, is_active=is_active)
+        return await self.update(entity=user, is_banned=is_banned)

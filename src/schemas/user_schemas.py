@@ -12,13 +12,17 @@ class UserSchema(BaseSchema):
 
     id: int
 
-    is_active: bool
+    is_banned: bool
     is_admin: bool
 
     oauth_provider: OAuthProvider
     oauth_id: str
 
     created_at: datetime
+
+
+class UpdateUserStatusSchema(BaseSchema):
+    is_banned: bool
 
 
 class UserStatsSchema(BaseSchema):

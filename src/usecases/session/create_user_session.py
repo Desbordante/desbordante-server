@@ -13,7 +13,7 @@ class SessionManager(Protocol):
 class User(Protocol):
     id: int
     is_admin: bool
-    is_active: bool
+    is_banned: bool
 
 
 class CreateUserSessionUseCase:
@@ -25,7 +25,7 @@ class CreateUserSessionUseCase:
     async def __call__(self, *, request: Request, user: User) -> None:
         """Create session for authenticated user."""
 
-        if not user.is_active:
+        if user.is_banned:
             raise ForbiddenException("User is banned")
 
         session = UserSessionSchema(

@@ -13,11 +13,10 @@ from src.models.user_models import UserModel
 from src.usecases.dataset.get_my_datasets import GetMyDatasetsUseCase
 from src.usecases.dataset.get_user_datasets import GetUserDatasetsUseCase
 from src.usecases.dataset.upload_dataset import UploadDatasetUseCase
-from src.usecases.user.ban_user import BanUserUseCase
 from src.usecases.user.get_stats import GetStatsUseCase
 from src.usecases.user.get_user_by_id import GetUserByIdUseCase
 from src.usecases.user.get_user_stats import GetUserStatsUseCase
-from src.usecases.user.unban_user import UnbanUserUseCase
+from src.usecases.user.update_user_status import UpdateUserStatusUseCase
 
 
 async def get_get_my_stats_use_case(
@@ -61,25 +60,17 @@ async def get_current_user(
 CurrentUserDep = Annotated[UserModel, Depends(get_current_user)]
 
 
-async def get_ban_user_use_case(
+async def get_update_user_status_use_case(
     user_crud: UserCrudDep,
     session_manager: SessionManagerDep,
     admin_session: AdminSessionDep,
-) -> BanUserUseCase:
-    return BanUserUseCase(user_crud=user_crud, session_manager=session_manager)
+) -> UpdateUserStatusUseCase:
+    return UpdateUserStatusUseCase(user_crud=user_crud, session_manager=session_manager)
 
 
-BanUserUseCaseDep = Annotated[BanUserUseCase, Depends(get_ban_user_use_case)]
-
-
-async def get_unban_user_use_case(
-    user_crud: UserCrudDep,
-    admin_session: AdminSessionDep,
-) -> UnbanUserUseCase:
-    return UnbanUserUseCase(user_crud=user_crud)
-
-
-UnbanUserUseCaseDep = Annotated[UnbanUserUseCase, Depends(get_unban_user_use_case)]
+UpdateUserStatusUseCaseDep = Annotated[
+    UpdateUserStatusUseCase, Depends(get_update_user_status_use_case)
+]
 
 
 async def get_get_my_datasets_use_case(
