@@ -1,0 +1,6 @@
+REGISTER_ENDPOINT = "/v1/auth/register/"
+LOGIN_ENDPOINT = "/v1/auth/login/"
+LOGOUT_ENDPOINT = "/v1/auth/logout/"
+REFRESH_TOKEN_ENDPOINT = "/v1/auth/refresh/"
+SEND_RESET_EMAIL_ENDPOINT = "/v1/auth/password-reset/"
+RESET_PASSWORD_ENDPOINT = "/v1/auth/password-reset/"

@@ -1,4 +1,4 @@
-.PHONY: env install list format app services dev revision migrate downgrade
+.PHONY: env install list format app services dev revision migrate downgrade test
 
 ifeq ($(shell test -e '.env' && echo -n yes), yes)
 	include .env
@@ -31,16 +31,21 @@ format:
 
 ## Run application server in watch mode
 app:
-	uv run uvicorn --port 8000 app.main:app --reload
+	uv run uvicorn --port 8000 src.main:app --reload
 
 ## Run development-only docker containers
 services:
 	(trap 'docker compose -f dev-docker-compose.yaml down' INT; \
 	docker compose -f dev-docker-compose.yaml up -d --build --force-recreate --remove-orphans $(args))
 
+## Run celery worker
+worker:
+	uv run celery -A src.worker worker --loglevel=info
+
 ## Run app and services in dev mode
 dev:
 	make services
+	make migrate
 	make app
 
 ## Create new revision file
@@ -53,7 +58,12 @@ migrate:
 
 ## Downgrade database
 downgrade:
-	poetry run alembic downgrade $(args)
+	uv run alembic downgrade $(args)
+
+## Run all tests in project
+test:
+	uv run pytest -o log_cli=true --verbosity=2 --showlocals --log-cli-level=INFO --cov=src --cov-report term --ignore=volumes
+
 
 .DEFAULT_GOAL := help
 # See <https://gist.github.com/klmr/575726c7e05d8780505a> for explanation.

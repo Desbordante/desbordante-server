@@ -5,17 +5,52 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "aioredlock>=0.7.3",
     "alembic>=1.15.1",
     "asyncpg>=0.30.0",
+    "authlib>=1.6.5",
+    "celery>=5.4.0",
+    "cryptography>=44.0.2",
     "fastapi[standard]>=0.115.8",
+    "flower>=2.0.1",
     "greenlet>=3.1.1",
+    "minio>=7.2.15",
+    "networkx>=3.5",
+    "pandas>=2.2.3",
+    "passlib[bcrypt]>=1.7.4",
+    "psycopg[binary]>=3.2.6",
     "pydantic>=2.10.6",
     "pydantic-settings>=2.8.1",
+    "pydot>=4.0.1",
+    "pyjwt>=2.10.1",
+    "python-multipart>=0.0.20",
+    "redis>=7.0.1",
+    "slowapi>=0.1.9",
     "sqlalchemy>=2.0.38",
+    "sqlalchemy-utils>=0.41.2",
+    "starsessions[redis]>=2.2.1",
 ]
+
 
 [dependency-groups]
 dev = [
+    "celery-types>=0.23.0",
+    "faker>=37.8.0",
+    "mypy>=1.17.1",
     "pre-commit>=4.1.0",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.26.0",
+    "pytest-celery>=1.2.0",
+    "pytest-cov>=6.1.1",
+    "pytest-mock>=3.14.0",
+    "pytest-smtpd>=0.1.0",
     "ruff>=0.9.6",
+    "types-sqlalchemy-utils>=1.1.0",
+    "watchdog>=6.0.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
+testpaths = [
+    "tests"
 ]

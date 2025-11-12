@@ -1,20 +1,23 @@
 import asyncio
 from logging.config import fileConfig
+from typing import Any
 
+from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from alembic import context
-
-from app.config import settings
-from app.db.models import Base
+from src.db.config import settings
+from src.models.base_models import BaseModel
+from src.models.dataset_models import DatasetModel  # type: ignore # noqa
+from src.models.user_models import UserModel  # type: ignore # noqa
+from src.schemas.base_schemas import PydanticType  # type: ignore # noqa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-config.set_main_option("sqlalchemy.url", settings.postgres_url.unicode_string())
+config.set_main_option("sqlalchemy.url", settings.postgres_dsn.unicode_string())
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -25,12 +28,19 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
+target_metadata = BaseModel.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+
+
+def render_item(type_: str, obj: Any, autogen_context: Any):
+    """Apply custom rendering for PydanticType."""
+    if type_ == "type" and isinstance(obj, PydanticType):
+        return "postgresql.JSONB(astext_type=sa.Text())"
+    return False
 
 
 def run_migrations_offline() -> None:
@@ -49,6 +59,7 @@ def run_migrations_offline() -> None:
     context.configure(
         url=url,
         target_metadata=target_metadata,
+        render_item=render_item,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
     )
@@ -58,7 +69,9 @@ def run_migrations_offline() -> None:
 
 
 def do_run_migrations(connection: Connection) -> None:
-    context.configure(connection=connection, target_metadata=target_metadata)
+    context.configure(
+        connection=connection, target_metadata=target_metadata, render_item=render_item
+    )
 
     with context.begin_transaction():
         context.run_migrations()
