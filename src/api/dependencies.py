@@ -8,7 +8,7 @@ from src.crud.dataset_crud import DatasetCrud
 from src.crud.user_crud import UserCrud
 from src.db.session import get_session
 from src.domain.session.manager import SessionManager
-from src.exceptions import ForbiddenException
+from src.exceptions import ForbiddenException, UnauthorizedException
 from src.infrastructure.session.manager import session_manager
 from src.schemas.base_schemas import PaginationParamsSchema
 from src.schemas.session_schemas import UserSessionSchema
@@ -51,6 +51,25 @@ async def get_user_session(
 
 
 UserSessionDep = Annotated[UserSessionSchema, Depends(get_user_session)]
+
+
+async def get_optional_user_session(
+    request: Request,
+    session_manager: SessionManagerDep,
+) -> UserSessionSchema | None:
+    """Get user session if exists, None otherwise (for optional auth)."""
+    try:
+        get_user_session_use_case = GetUserSessionUseCase(
+            session_manager=session_manager
+        )
+        return await get_user_session_use_case(request=request)
+    except UnauthorizedException:
+        return None
+
+
+OptionalUserSessionDep = Annotated[
+    UserSessionSchema | None, Depends(get_optional_user_session)
+]
 
 
 async def get_admin_session(user_session: UserSessionDep) -> UserSessionSchema:

@@ -21,6 +21,7 @@ class DatasetModel(BaseModel):
     size: Mapped[int]
     path: Mapped[str_non_nullable]
     params: Mapped[OneOfDatasetParams] = mapped_column(JSONB)
+    is_public: Mapped[bool] = mapped_column(default=False, index=True)
 
     status: Mapped[TaskStatus] = mapped_column(default=TaskStatus.PENDING)
     info: Mapped[OneOfDatasetInfo | TaskErrorSchema | None] = mapped_column(

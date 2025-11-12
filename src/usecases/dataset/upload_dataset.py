@@ -5,9 +5,10 @@ from uuid import uuid4
 
 from aioredlock import LockError
 
+from src.domain.dataset.config import settings as dataset_settings
 from src.domain.dataset.storage import storage
 from src.domain.dataset.tasks import preprocess_dataset
-from src.domain.user.config import settings
+from src.domain.user.config import settings as user_settings
 from src.exceptions import (
     ConflictException,
     PayloadTooLargeException,
@@ -27,6 +28,7 @@ logger = logging.getLogger(__name__)
 class DatasetCrud(Protocol):
     async def create(self, entity: DatasetModel) -> DatasetModel: ...
     async def get_stats(self, *, user_id: int) -> DatasetsStatsSchema: ...
+    async def get_public_stats(self) -> DatasetsStatsSchema: ...
 
 
 class User(Protocol):
@@ -44,24 +46,31 @@ class UploadDatasetUseCase:
         self.user = user
 
     async def __call__(
-        self, *, file: File, params: OneOfUploadDatasetParams
+        self, *, file: File, params: OneOfUploadDatasetParams, is_public: bool = False
     ) -> DatasetModel:
         try:
             async with await lock_manager.lock(f"user_upload_lock:{self.user.id}"):
-                if file.size > settings.STORAGE_LIMIT:
+                if is_public:
+                    public_stats = await self.dataset_crud.get_public_stats()
+                    storage_limit = dataset_settings.PUBLIC_STORAGE_LIMIT
+                    total_size = public_stats.total_size
+                else:
+                    user_stats = await self.dataset_crud.get_stats(user_id=self.user.id)
+                    storage_limit = user_settings.STORAGE_LIMIT
+                    total_size = user_stats.total_size
+
+                if file.size > storage_limit:
                     raise PayloadTooLargeException(
                         "File size exceeds the maximum allowed size."
                     )
 
-                datasets_stats = await self.dataset_crud.get_stats(user_id=self.user.id)
-
-                if datasets_stats.total_size + file.size > settings.STORAGE_LIMIT:
+                if total_size + file.size > storage_limit:
                     raise ConflictException(
-                        "You have reached your storage limit. Delete some datasets to upload a new one."
+                        "Storage limit reached. Delete some datasets to upload a new one."
                     )
 
                 _, file_extension = os.path.splitext(file.name)
-                path = f"{self.user.id}/{uuid4()}{file_extension}"
+                path = f"{'public' if is_public else self.user.id}/{uuid4()}{file_extension}"
 
                 await storage.upload_file(file=file, path=path)
 
@@ -72,6 +81,7 @@ class UploadDatasetUseCase:
                     path=path,
                     params=params.model_dump(exclude={"type"}),
                     owner_id=self.user.id,
+                    is_public=is_public,
                 )
 
                 try:

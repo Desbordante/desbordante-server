@@ -15,6 +15,7 @@ router = APIRouter()
     response_model=UserSchema,
     summary="Ban user",
     description="Ban user by ID and clear all their active sessions (admin only)",
+    tags=["user", "admin"],
     responses={
         status.HTTP_401_UNAUTHORIZED: {"model": ApiErrorSchema},
         status.HTTP_403_FORBIDDEN: {"model": ApiErrorSchema},

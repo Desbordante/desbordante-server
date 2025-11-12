@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     MINIO_BUCKET: str = "files"
     MINIO_SECURE: bool = False
     MINIO_PRESIGNED_URL_EXPIRE_MINUTES: int = 60
+    PUBLIC_STORAGE_LIMIT: int = 1024 * 1024 * 1024 * 10  # 10GB
 
     @cached_property
     def minio_endpoint(self) -> str:

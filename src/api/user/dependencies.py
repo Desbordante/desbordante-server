@@ -10,6 +10,9 @@ from src.api.dependencies import (
     UserSessionDep,
 )
 from src.models.user_models import UserModel
+from src.usecases.dataset.get_my_datasets import GetMyDatasetsUseCase
+from src.usecases.dataset.get_user_datasets import GetUserDatasetsUseCase
+from src.usecases.dataset.upload_dataset import UploadDatasetUseCase
 from src.usecases.user.ban_user import BanUserUseCase
 from src.usecases.user.get_stats import GetStatsUseCase
 from src.usecases.user.get_user_by_id import GetUserByIdUseCase
@@ -77,3 +80,39 @@ async def get_unban_user_use_case(
 
 
 UnbanUserUseCaseDep = Annotated[UnbanUserUseCase, Depends(get_unban_user_use_case)]
+
+
+async def get_get_my_datasets_use_case(
+    dataset_crud: DatasetCrudDep,
+    user_session: UserSessionDep,
+) -> GetMyDatasetsUseCase:
+    return GetMyDatasetsUseCase(dataset_crud=dataset_crud, user=user_session)
+
+
+GetMyDatasetsUseCaseDep = Annotated[
+    GetMyDatasetsUseCase, Depends(get_get_my_datasets_use_case)
+]
+
+
+async def get_upload_my_dataset_use_case(
+    dataset_crud: DatasetCrudDep,
+    user_session: UserSessionDep,
+) -> UploadDatasetUseCase:
+    return UploadDatasetUseCase(dataset_crud=dataset_crud, user=user_session)
+
+
+UploadMyDatasetUseCaseDep = Annotated[
+    UploadDatasetUseCase, Depends(get_upload_my_dataset_use_case)
+]
+
+
+async def get_get_user_datasets_use_case(
+    dataset_crud: DatasetCrudDep,
+    admin_session: AdminSessionDep,
+) -> GetUserDatasetsUseCase:
+    return GetUserDatasetsUseCase(dataset_crud=dataset_crud)
+
+
+GetUserDatasetsUseCaseDep = Annotated[
+    GetUserDatasetsUseCase, Depends(get_get_user_datasets_use_case)
+]

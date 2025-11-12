@@ -15,6 +15,7 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
     summary="Get user info by ID",
     description="Returns information about a specific user",
+    tags=["user", "admin"],
     responses={
         status.HTTP_401_UNAUTHORIZED: {"model": ApiErrorSchema},
         status.HTTP_403_FORBIDDEN: {"model": ApiErrorSchema},

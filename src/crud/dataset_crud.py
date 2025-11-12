@@ -20,6 +20,7 @@ class DatasetFindProps(TypedDict, total=False):
     owner_id: int
     type: DatasetType
     status: TaskStatus
+    is_public: bool
 
 
 class DatasetUpdateProps(TypedDict, total=False):
@@ -47,6 +48,9 @@ class DatasetCrud(BaseCrud[DatasetModel, UUID]):
             self.model.type == filters_params.type if filters_params.type else None,
             self.model.status == filters_params.status
             if filters_params.status
+            else None,
+            self.model.is_public == filters_params.is_public
+            if filters_params.is_public is not None
             else None,
             self.model.size >= filters_params.min_size
             if filters_params.min_size
@@ -84,6 +88,26 @@ class DatasetCrud(BaseCrud[DatasetModel, UUID]):
             func.sum(self.model.size),
         ).where(
             self.model.owner_id == user_id,
+            ~self.model.is_public,
+        )
+        result = await self._session.execute(query)
+
+        row = result.first()
+
+        total_count = row[0] if row and row[0] else 0
+        total_size = row[1] if row and row[1] else 0
+
+        return DatasetsStatsSchema(
+            total_count=total_count,
+            total_size=total_size,
+        )
+
+    async def get_public_stats(self) -> DatasetsStatsSchema:
+        query = select(
+            func.count(self.model.id),
+            func.sum(self.model.size),
+        ).where(
+            self.model.is_public,
         )
         result = await self._session.execute(query)
 

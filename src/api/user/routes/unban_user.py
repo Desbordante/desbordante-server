@@ -15,6 +15,7 @@ router = APIRouter()
     response_model=UserSchema,
     summary="Unban user",
     description="Unban user by ID (admin only)",
+    tags=["user", "admin"],
     responses={
         status.HTTP_401_UNAUTHORIZED: {"model": ApiErrorSchema},
         status.HTTP_403_FORBIDDEN: {"model": ApiErrorSchema},

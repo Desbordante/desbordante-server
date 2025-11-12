@@ -123,7 +123,7 @@ class GraphDatasetInfo(BaseSchema):
 OneOfDatasetInfo = TabularDatasetInfo | TransactionalDatasetInfo | GraphDatasetInfo
 
 
-class DatasetSchema(BaseSchema):
+class BaseDatasetSchema(BaseSchema):
     id: UUID
     type: DatasetType
     name: str
@@ -137,9 +137,25 @@ class DatasetSchema(BaseSchema):
     updated_at: datetime
 
 
+class PublicDatasetSchema(BaseDatasetSchema):
+    is_public: Literal[True] = True
+
+
+class PrivateDatasetSchema(BaseDatasetSchema):
+    is_public: Literal[False] = False
+    owner_id: int
+
+
+DatasetSchema = Annotated[
+    PublicDatasetSchema | PrivateDatasetSchema,
+    Field(discriminator="is_public"),
+]
+
+
 class DatasetFiltersSchema(FiltersParamsSchema):
     type: DatasetType | None = None
     status: TaskStatus | None = None
+    is_public: bool | None = None
     min_size: int | None = None
     max_size: int | None = None
     created_after: datetime | None = None
