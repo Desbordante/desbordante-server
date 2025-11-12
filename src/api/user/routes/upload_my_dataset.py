@@ -1,8 +1,10 @@
 from typing import Any
 
-from fastapi import APIRouter, File, Form, UploadFile, status
+from fastapi import APIRouter, File, Form, Request, UploadFile, status
 
 from src.api.user.dependencies import UploadMyDatasetUseCaseDep
+from src.infrastructure.rate_limit.config import settings as rate_limit_settings
+from src.infrastructure.rate_limit.limiter import limiter
 from src.schemas.base_schemas import ApiErrorSchema
 from src.schemas.dataset_schemas import OneOfUploadDatasetParams, PrivateDatasetSchema
 
@@ -30,7 +32,10 @@ class UploadFileAdapter:
         status.HTTP_429_TOO_MANY_REQUESTS: {"model": ApiErrorSchema},
     },
 )
+@limiter.limit(rate_limit_settings.UPLOAD_RATE_LIMIT)
+@limiter.limit(rate_limit_settings.UPLOAD_RATE_LIMIT_HOURLY)
 async def upload_my_dataset(
+    request: Request,
     upload_dataset: UploadMyDatasetUseCaseDep,
     file: UploadFile = File(...),
     params: OneOfUploadDatasetParams = Form(...),

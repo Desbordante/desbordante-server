@@ -7,6 +7,8 @@ from src.api.auth.dependencies import (
     GetOAuthUserInfoUseCaseDep,
     GetOrCreateUserViaOAuthUseCaseDep,
 )
+from src.infrastructure.rate_limit.config import settings as rate_limit_settings
+from src.infrastructure.rate_limit.limiter import limiter
 from src.models.user_models import UserModel
 from src.schemas.auth_schemas import OAuthCredsSchema, OAuthProvider
 from src.schemas.user_schemas import UserSchema
@@ -18,7 +20,7 @@ class UserAdapter:
     def __init__(self, user: UserModel):
         self.id = user.id
         self.is_admin = user.is_admin
-        self.is_active = user.is_active
+        self.is_banned = user.is_banned
 
 
 @router.get(
@@ -28,6 +30,8 @@ class UserAdapter:
     summary="OAuth callback",
     description="Callback endpoint for OAuth authentication",
 )
+@limiter.limit(rate_limit_settings.AUTH_RATE_LIMIT)
+@limiter.limit(rate_limit_settings.AUTH_RATE_LIMIT_HOURLY)
 async def oauth_callback(
     request: Request,
     get_oauth_user_info: GetOAuthUserInfoUseCaseDep,

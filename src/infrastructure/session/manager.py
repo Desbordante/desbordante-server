@@ -4,7 +4,7 @@ from starsessions import load_session, regenerate_session_id
 from starsessions.stores.redis import RedisStore
 
 from src.domain.session.config import settings
-from src.infrastructure.redis.client import client
+from src.infrastructure.redis.config import settings as redis_settings
 from src.schemas.session_schemas import UserSessionSchema
 
 
@@ -14,16 +14,23 @@ class SessionManager:
     USER_ID_KEY = "user_id"
     IS_ADMIN_KEY = "is_admin"
 
-    def __init__(self, redis_client: Redis):
+    def __init__(self):
+        """Initialize SessionManager with its own Redis client."""
+        self.redis_client = Redis.from_url(
+            redis_settings.redis_sessions_dsn.unicode_string()
+        )
         self.redis_store = RedisStore(
-            connection=redis_client,
+            connection=self.redis_client,
             prefix=settings.PREFIX,
         )
-        self.redis_client = redis_client
 
     def get_store(self) -> RedisStore:
         """Get underlying RedisStore for middleware."""
         return self.redis_store
+
+    async def close(self) -> None:
+        """Close Redis connection."""
+        await self.redis_client.close()
 
     async def _ensure_session_loaded(self, request: Request) -> None:
         """Ensure session is loaded from request."""
@@ -83,4 +90,4 @@ class SessionManager:
         return deleted_count
 
 
-session_manager = SessionManager(redis_client=client)
+session_manager = SessionManager()

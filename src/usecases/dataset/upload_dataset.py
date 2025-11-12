@@ -14,7 +14,7 @@ from src.exceptions import (
     PayloadTooLargeException,
     TooManyRequestsException,
 )
-from src.infrastructure.redis.lock import lock_manager
+from src.infrastructure.lock import lock_manager
 from src.models.dataset_models import DatasetModel
 from src.schemas.dataset_schemas import (
     DatasetsStatsSchema,
