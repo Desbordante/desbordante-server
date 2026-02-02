@@ -9,6 +9,7 @@ from src.schemas.auth_schemas import OAuthProvider
 
 if TYPE_CHECKING:
     from src.models.dataset_models import DatasetModel
+    from src.models.task_models import TaskModel
 
 
 class UserModel(BaseModel):
@@ -21,6 +22,7 @@ class UserModel(BaseModel):
     oauth_id: Mapped[str_non_nullable]
 
     datasets: Mapped[list["DatasetModel"]] = relationship(back_populates="owner")
+    tasks: Mapped[list["TaskModel"]] = relationship(back_populates="owner")
 
     __table_args__ = (
         UniqueConstraint("oauth_provider", "oauth_id", name="uq_user_oauth"),

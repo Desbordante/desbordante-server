@@ -6,6 +6,7 @@ from src.api.dependencies import (
     AdminSessionDep,
     DatasetCrudDep,
     SessionManagerDep,
+    TaskCrudDep,
     UserCrudDep,
     UserSessionDep,
 )
@@ -13,6 +14,7 @@ from src.models.user_models import UserModel
 from src.usecases.dataset.get_my_datasets import GetMyDatasetsUseCase
 from src.usecases.dataset.get_user_datasets import GetUserDatasetsUseCase
 from src.usecases.dataset.upload_dataset import UploadDatasetUseCase
+from src.usecases.task.create_task import CreateTaskUseCase
 from src.usecases.user.get_stats import GetStatsUseCase
 from src.usecases.user.get_user_by_id import GetUserByIdUseCase
 from src.usecases.user.get_user_stats import GetUserStatsUseCase
@@ -107,3 +109,16 @@ async def get_get_user_datasets_use_case(
 GetUserDatasetsUseCaseDep = Annotated[
     GetUserDatasetsUseCase, Depends(get_get_user_datasets_use_case)
 ]
+
+
+async def get_create_task_use_case(
+    user_session: UserSessionDep,
+    task_crud: TaskCrudDep,
+    dataset_crud: DatasetCrudDep,
+) -> CreateTaskUseCase:
+    return CreateTaskUseCase(
+        task_crud=task_crud, dataset_crud=dataset_crud, user=user_session
+    )
+
+
+CreateTaskUseCaseDep = Annotated[CreateTaskUseCase, Depends(get_create_task_use_case)]

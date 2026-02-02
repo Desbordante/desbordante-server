@@ -27,7 +27,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Uuid(), nullable=False),
         sa.Column(
             "type",
-            sa.Enum("Tabular", "Transactional", "Graph", name="datasettype"),
+            sa.Enum("TABULAR", "TRANSACTIONAL", "GRAPH", name="datasettype"),
             nullable=False,
         ),
         sa.Column("name", sa.String(), nullable=False),
@@ -36,7 +36,7 @@ def upgrade() -> None:
         sa.Column("params", sa.JSON(), nullable=False),
         sa.Column(
             "status",
-            sa.Enum("Pending", "Processing", "Success", "Failed", name="taskstatus"),
+            sa.Enum("PENDING", "PROCESSING", "SUCCESS", "FAILED", name="taskstatus"),
             nullable=False,
         ),
         sa.Column("info", sa.JSON(), nullable=True),
@@ -71,7 +71,7 @@ def downgrade() -> None:
         sa.Column("path", sa.VARCHAR(), autoincrement=False, nullable=False),
         sa.Column(
             "status",
-            postgresql.ENUM("Temporary", "Permanent", name="filestatus"),
+            postgresql.ENUM("TEMPORARY", "PERMANENT", name="filestatus"),
             autoincrement=False,
             nullable=False,
         ),

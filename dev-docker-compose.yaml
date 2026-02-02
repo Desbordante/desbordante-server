@@ -45,36 +45,36 @@ services:
       - '${FLOWER_PORT}:5555'
     command: celery --broker=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:${RABBITMQ_PORT}// flower --basic_auth=${FLOWER_USER}:${FLOWER_PASSWORD}
 
-  worker:
-    build:
-      context: .
-    command: /celery
-    env_file:
-      - .env
-    depends_on:
-      - postgres
-      - rabbitmq
-      - minio
-    restart: always
-    environment:
-      # Postgres settings
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_PORT: ${POSTGRES_PORT}
+  # worker:
+  #   build:
+  #     context: .
+  #   command: /celery
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - postgres
+  #     - rabbitmq
+  #     - minio
+  #   restart: always
+  #   environment:
+  #     # Postgres settings
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #     POSTGRES_HOST: postgres
+  #     POSTGRES_DB: ${POSTGRES_DB}
+  #     POSTGRES_PORT: ${POSTGRES_PORT}
 
-      # RabbitMQ settings
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_PORT: ${RABBITMQ_PORT}
+  #     # RabbitMQ settings
+  #     RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+  #     RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+  #     RABBITMQ_HOST: rabbitmq
+  #     RABBITMQ_PORT: ${RABBITMQ_PORT}
 
-      # MinIO settings
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-      MINIO_DEFAULT_BUCKETS: ${MINIO_DEFAULT_BUCKETS}
-      MINIO_HOST: minio
-      MINIO_PORT: ${MINIO_PORT}
+  #     # MinIO settings
+  #     MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+  #     MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+  #     MINIO_DEFAULT_BUCKETS: ${MINIO_DEFAULT_BUCKETS}
+  #     MINIO_HOST: minio
+  #     MINIO_PORT: ${MINIO_PORT}
 
-      # SECRET_KEY: ${SECRET_KEY}
+  #     # SECRET_KEY: ${SECRET_KEY}

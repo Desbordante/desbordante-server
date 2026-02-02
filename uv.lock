@@ -477,6 +477,22 @@ wheels = [
 ]
 
 [[package]]
+name = "desbordante"
+version = "2.4.1"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/75/21/706c700b70f413b5c40bc1f0ffaedd1c2fba2a16a2a41d73dd4d98bf297f/desbordante-2.4.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:dcb8ab0a91bf7ab9b91f48fd85a6d48f39767cbbc51c700b1afa1270ffbea8e7", size = 2767852 },
+    { url = "https://files.pythonhosted.org/packages/7d/bf/4d95922b4ce0a1d5e3b31a66cd67ccf7202c1f69a65fb43009ea6cc23404/desbordante-2.4.1-cp313-cp313-macosx_11_0_x86_64.whl", hash = "sha256:995113094bbe8e2214879aa624ccd91083d7d356f9e745aeecd3f7c96ad2c0fd", size = 3534131 },
+    { url = "https://files.pythonhosted.org/packages/c9/cb/0385563e16393fc1c1df51847f73f37de985b7386352b63a82d14022fd39/desbordante-2.4.1-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:1a690da682b8bea5af72d431f67d36c49922888d18e119dcb60fe4931be32ebd", size = 4875420 },
+    { url = "https://files.pythonhosted.org/packages/76/d8/1c35008945b3f36c5e45b2a0b16082f1217c5bb7f1cf5abba5b5c83d2f9d/desbordante-2.4.1-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:79e644e9e596cea58fda3761f0555aa04e92e81249d0a108bb070396ea3435cd", size = 2768210 },
+    { url = "https://files.pythonhosted.org/packages/a9/67/3e98dd3bc139e4913ba7341389c76cff47c0d02d1e22df52f2e8b2324541/desbordante-2.4.1-cp314-cp314-macosx_11_0_x86_64.whl", hash = "sha256:f041b005e93381a8e192ca24060bc0a331cfa911bad8321b521e840489cbac2e", size = 3533856 },
+    { url = "https://files.pythonhosted.org/packages/1a/f8/66fc75be79e61155f71484b96614aea6b54dda49959f19dae490c48eae11/desbordante-2.4.1-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:4ca234d90250b6f6870ef5db23397c6e1fe67656b0c8331db78ae38c48ddb40b", size = 4875529 },
+    { url = "https://files.pythonhosted.org/packages/c8/ae/a48037119f1b8a99f7572c0eaa2c506df31929e2b792b510602c87e896f4/desbordante-2.4.1-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:10e425ca20fa03f056db8456dffa657d60217692a803ba42331e135217888a7a", size = 2801084 },
+    { url = "https://files.pythonhosted.org/packages/28/80/595c535fe6576c827b320ea0280fbcc9b0ef8e9444071d9cad8c2a7857fb/desbordante-2.4.1-cp314-cp314t-macosx_11_0_x86_64.whl", hash = "sha256:7341c75a44c3028c72f5c566d519fe5bb6346d3f502ff92f6161b0be27e3f182", size = 3575370 },
+    { url = "https://files.pythonhosted.org/packages/d4/a1/4283bb91f63038a9f79e3e7f3085d3c3d7077fa892d1b1512c2bce85eeb5/desbordante-2.4.1-cp314-cp314t-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:98d67635cac830f03382e981e491236c0a2ea5302d29fa9ff2c59d7867db9a12", size = 4892618 },
+]
+
+[[package]]
 name = "desbordante-server"
 version = "0.1.0"
 source = { virtual = "." }
@@ -487,6 +503,8 @@ dependencies = [
     { name = "authlib" },
     { name = "celery" },
     { name = "cryptography" },
+    { name = "desbordante" },
+    { name = "desbordante-stubs" },
     { name = "fastapi", extra = ["standard"] },
     { name = "flower" },
     { name = "greenlet" },
@@ -532,6 +550,8 @@ requires-dist = [
     { name = "authlib", specifier = ">=1.6.5" },
     { name = "celery", specifier = ">=5.4.0" },
     { name = "cryptography", specifier = ">=44.0.2" },
+    { name = "desbordante", specifier = ">=2.4.1" },
+    { name = "desbordante-stubs", specifier = ">=0.3.0" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.8" },
     { name = "flower", specifier = ">=2.0.1" },
     { name = "greenlet", specifier = ">=3.1.1" },
@@ -567,6 +587,18 @@ dev = [
     { name = "ruff", specifier = ">=0.9.6" },
     { name = "types-sqlalchemy-utils", specifier = ">=1.1.0" },
     { name = "watchdog", specifier = ">=6.0.0" },
+]
+
+[[package]]
+name = "desbordante-stubs"
+version = "0.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "desbordante" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/11/55/19c55f246327de94369adb179de0d00265ceac1b63cbb18de219f854c5fc/desbordante_stubs-0.3.0.tar.gz", hash = "sha256:e390824b7e97436b6aea31533fb91682f6a87d543da830c8063f7dbc59345e75", size = 11426 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1a/5a/6bafd458b3e50202902be683838ae98ea314dcc764d0ef4d7a540d0bff83/desbordante_stubs-0.3.0-py3-none-any.whl", hash = "sha256:ecb05d15985ab76dd197c56cb9063c2d45f309e0a13d26ff70eeff943d6ba524", size = 27864 },
 ]
 
 [[package]]

@@ -5,6 +5,7 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.crud.dataset_crud import DatasetCrud
+from src.crud.task_crud import TaskCrud
 from src.crud.user_crud import UserCrud
 from src.db.session import get_session
 from src.domain.session.manager import SessionManager
@@ -32,6 +33,13 @@ async def get_dataset_crud(session: SessionDep) -> DatasetCrud:
 
 
 DatasetCrudDep = Annotated[DatasetCrud, Depends(get_dataset_crud)]
+
+
+async def get_task_crud(session: SessionDep) -> TaskCrud:
+    return TaskCrud(session=session)
+
+
+TaskCrudDep = Annotated[TaskCrud, Depends(get_task_crud)]
 
 
 def get_session_manager() -> SessionManager:
