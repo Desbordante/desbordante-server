@@ -112,13 +112,11 @@ GetUserDatasetsUseCaseDep = Annotated[
 
 
 async def get_create_task_use_case(
-    user_session: UserSessionDep,
+    user: UserSessionDep,
     task_crud: TaskCrudDep,
     dataset_crud: DatasetCrudDep,
 ) -> CreateTaskUseCase:
-    return CreateTaskUseCase(
-        task_crud=task_crud, dataset_crud=dataset_crud, user=user_session
-    )
+    return CreateTaskUseCase(task_crud=task_crud, dataset_crud=dataset_crud, user=user)
 
 
 CreateTaskUseCaseDep = Annotated[CreateTaskUseCase, Depends(get_create_task_use_case)]
