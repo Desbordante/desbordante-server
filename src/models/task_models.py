@@ -10,7 +10,11 @@ from src.models.base_models import BaseModel
 from src.models.user_models import UserModel
 from src.schemas.base_schemas import PydanticType, TaskErrorSchema
 from src.schemas.dataset_schemas import TaskStatus
-from src.schemas.task_schemas.base_schemas import OneOfTaskConfig, OneOfTaskResult
+from src.schemas.task_schemas.base_schemas import (
+    OneOfTaskConfig,
+    OneOfTaskResult,
+    TaskFailureReason,
+)
 
 if TYPE_CHECKING:
     from src.models.dataset_models import DatasetModel
@@ -35,3 +39,8 @@ class TaskModel(BaseModel):
 
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     owner: Mapped["UserModel"] = relationship(back_populates="tasks")
+
+    # Only if task failed
+    raised_exception_name: Mapped[str | None] = mapped_column(default=None)
+    failure_reason: Mapped[TaskFailureReason | None] = mapped_column(default=None)
+    traceback: Mapped[str | None] = mapped_column(default=None)

@@ -7,7 +7,6 @@ from aioredlock import LockError
 
 from src.domain.dataset.config import settings as dataset_settings
 from src.domain.dataset.storage import storage
-from src.domain.dataset.tasks import preprocess_dataset
 from src.domain.user.config import settings as user_settings
 from src.exceptions import (
     ConflictException,
@@ -89,7 +88,7 @@ class UploadDatasetUseCase:
                         entity=dataset_entity
                     )
 
-                    preprocess_dataset.delay(created_dataset.id)
+                    # preprocess_dataset.delay(created_dataset.id)
 
                     return created_dataset
                 except Exception as e:

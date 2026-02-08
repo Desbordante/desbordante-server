@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import StrEnum, auto
 from typing import Annotated, Literal, Union
 from uuid import UUID
 
@@ -47,6 +48,13 @@ class FailedTaskSchema(BaseTaskSchema):
 class SuccessTaskSchema(BaseTaskSchema):
     status: Literal[TaskStatus.SUCCESS]
     result: OneOfTaskResult
+
+
+class TaskFailureReason(StrEnum):
+    MEMORY_LIMIT_EXCEEDED = auto()
+    TIME_LIMIT_EXCEEDED = auto()
+    WORKER_KILLED_BY_SIGNAL = auto()
+    OTHER = auto()
 
 
 TaskSchema = Annotated[

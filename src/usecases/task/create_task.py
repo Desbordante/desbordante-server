@@ -1,6 +1,7 @@
 from typing import Protocol
 from uuid import UUID
 
+from src.domain.task.tasks import data_profiling_task
 from src.models.dataset_models import DatasetModel
 from src.models.task_models import TaskModel
 from src.schemas.task_schemas.base_schemas import OneOfTaskConfig
@@ -44,6 +45,10 @@ class CreateTaskUseCase:
 
         created_task = await self.task_crud.create(entity=task_entity)
 
-        # profile_task.delay(created_task.id)
+        data_profiling_task.delay(
+            task_id=created_task.id,
+            dataset_id=dataset_id,
+            config=config,
+        )
 
         return created_task

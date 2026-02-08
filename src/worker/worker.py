@@ -7,5 +7,6 @@ worker = Celery(
     broker=settings.rabbitmq_dsn.unicode_string(),
     include=[
         "src.domain.dataset.tasks",
+        "src.domain.task.tasks",
     ],
 )
