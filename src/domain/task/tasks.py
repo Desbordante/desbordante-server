@@ -7,11 +7,13 @@ import pandas as pd
 from celery.exceptions import SoftTimeLimitExceeded, TimeLimitExceeded, WorkerLostError
 from celery.signals import task_failure, task_postrun, task_prerun
 
+from src.crud.dataset_crud import DatasetCrud
 from src.crud.task_crud import TaskCrud
 from src.db.session import scoped_session
 from src.domain.dataset.storage import storage
 from src.domain.task.resource_intensive_task import ResourceIntensiveTask
 from src.domain.task.utils import match_task_by_primitive_name
+from src.models.dataset_models import DatasetModel
 from src.models.task_models import TaskModel
 from src.schemas.base_schemas import TaskStatus
 from src.schemas.dataset_schemas import TabularDatasetParams
@@ -36,13 +38,25 @@ async def update_object_async(id: UUID, **kwargs: Any) -> TaskModel:
     raise RuntimeError("Failed to get database session")
 
 
+def get_dataset_by_id(dataset_id: UUID) -> DatasetModel:
+    async def _get_dataset_by_id(dataset_id: UUID) -> DatasetModel:
+        async with scoped_session() as session:
+            crud = DatasetCrud(session=session)
+            return await crud.get_by(id=dataset_id)
+
+    loop = asyncio.get_event_loop()
+    return loop.run_until_complete(_get_dataset_by_id(dataset_id))
+
+
 @worker.task(base=ResourceIntensiveTask, ignore_result=True, max_retries=0)
 def data_profiling_task(
     task_id: UUID,
     dataset_id: UUID,
     config: OneOfTaskConfig,
 ) -> Any:
+    dataset = get_dataset_by_id(dataset_id)
     task = update_object_sync(id=task_id)
+
     dataset = task.dataset
 
     data = storage.download_file_sync(path=dataset.path)
