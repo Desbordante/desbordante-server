@@ -8,8 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.db.annotations import uuid_pk
 from src.models.base_models import BaseModel
 from src.models.user_models import UserModel
-from src.schemas.base_schemas import PydanticType, TaskErrorSchema
-from src.schemas.dataset_schemas import TaskStatus
+from src.schemas.base_schemas import PydanticType, TaskErrorSchema, TaskStatus
 from src.schemas.task_schemas.base_schemas import (
     OneOfTaskConfig,
     OneOfTaskResult,

@@ -10,8 +10,6 @@ from src.schemas.base_schemas import (
     BaseSchema,
     FiltersParamsSchema,
     QueryParamsSchema,
-    TaskErrorSchema,
-    TaskStatus,
 )
 
 
@@ -104,34 +102,12 @@ OneOfUploadDatasetParams = Annotated[
 ]
 
 
-class TabularDatasetInfo(BaseSchema):
-    number_of_columns: int
-    number_of_rows: int
-    column_names: list[str]
-
-
-class TransactionalDatasetInfo(TabularDatasetInfo):
-    unique_values: list[str]
-
-
-class GraphDatasetInfo(BaseSchema):
-    number_of_nodes: int
-    number_of_edges: int
-    is_directed: bool
-
-
-OneOfDatasetInfo = TabularDatasetInfo | TransactionalDatasetInfo | GraphDatasetInfo
-
-
 class BaseDatasetSchema(BaseSchema):
     id: UUID
     type: DatasetType
     name: str
     size: int
     params: OneOfDatasetParams
-
-    info: OneOfDatasetInfo | TaskErrorSchema | None
-    status: TaskStatus
 
     created_at: datetime
     updated_at: datetime
@@ -154,7 +130,6 @@ DatasetSchema = Annotated[
 
 class DatasetFiltersSchema(FiltersParamsSchema):
     type: DatasetType | None = None
-    status: TaskStatus | None = None
     is_public: bool | None = None
     min_size: int | None = None
     max_size: int | None = None

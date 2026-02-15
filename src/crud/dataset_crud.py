@@ -11,7 +11,6 @@ from src.schemas.dataset_schemas import (
     DatasetQueryParamsSchema,
     DatasetsStatsSchema,
     DatasetType,
-    TaskStatus,
 )
 
 
@@ -19,7 +18,6 @@ class DatasetFindProps(TypedDict, total=False):
     id: UUID
     owner_id: int
     type: DatasetType
-    status: TaskStatus
     is_public: bool
 
 
@@ -46,9 +44,6 @@ class DatasetCrud(BaseCrud[DatasetModel, UUID]):
             if filters_params.search
             else None,
             self.model.type == filters_params.type if filters_params.type else None,
-            self.model.status == filters_params.status
-            if filters_params.status
-            else None,
             self.model.is_public == filters_params.is_public
             if filters_params.is_public is not None
             else None,

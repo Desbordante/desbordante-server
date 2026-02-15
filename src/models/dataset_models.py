@@ -6,12 +6,9 @@ from src.db.annotations import str_non_nullable, uuid_pk
 from src.models.base_models import BaseModel
 from src.models.task_models import TaskModel
 from src.models.user_models import UserModel
-from src.schemas.base_schemas import TaskErrorSchema
 from src.schemas.dataset_schemas import (
     DatasetType,
-    OneOfDatasetInfo,
     OneOfDatasetParams,
-    TaskStatus,
 )
 
 
@@ -23,11 +20,6 @@ class DatasetModel(BaseModel):
     path: Mapped[str_non_nullable]
     params: Mapped[OneOfDatasetParams] = mapped_column(JSONB)
     is_public: Mapped[bool] = mapped_column(default=False, index=True)
-
-    status: Mapped[TaskStatus] = mapped_column(default=TaskStatus.PENDING)
-    info: Mapped[OneOfDatasetInfo | TaskErrorSchema | None] = mapped_column(
-        JSONB, default=None
-    )
 
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     owner: Mapped["UserModel"] = relationship(back_populates="datasets")

@@ -88,8 +88,6 @@ class UploadDatasetUseCase:
                         entity=dataset_entity
                     )
 
-                    # preprocess_dataset.delay(created_dataset.id)
-
                     return created_dataset
                 except Exception as e:
                     await storage.delete_file(path=path)
