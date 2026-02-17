@@ -1,17 +1,16 @@
-from typing import Any
-
 from fastapi import APIRouter, Path, Request, status
+from fastapi.responses import RedirectResponse
 
 from src.api.auth.dependencies import (
     CreateUserSessionUseCaseDep,
     GetOAuthUserInfoUseCaseDep,
     GetOrCreateUserViaOAuthUseCaseDep,
 )
+from src.domain.auth.config import settings
 from src.infrastructure.rate_limit.config import settings as rate_limit_settings
 from src.infrastructure.rate_limit.limiter import limiter
 from src.models.user_models import UserModel
 from src.schemas.auth_schemas import OAuthCredsSchema, OAuthProvider
-from src.schemas.user_schemas import UserSchema
 
 router = APIRouter()
 
@@ -25,8 +24,7 @@ class UserAdapter:
 
 @router.get(
     "/{provider}/callback/",
-    response_model=UserSchema,
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_302_FOUND,
     summary="OAuth callback",
     description="Callback endpoint for OAuth authentication",
 )
@@ -38,7 +36,7 @@ async def oauth_callback(
     get_or_create_user_via_oauth: GetOrCreateUserViaOAuthUseCaseDep,
     create_session: CreateUserSessionUseCaseDep,
     provider: OAuthProvider = Path(..., description="OAuth provider name"),
-) -> Any:
+) -> RedirectResponse:
     oauth_user_info = await get_oauth_user_info(provider=provider, request=request)
 
     creds = OAuthCredsSchema(provider=provider, oauth_id=oauth_user_info.id)
@@ -47,4 +45,6 @@ async def oauth_callback(
 
     await create_session(request=request, user=UserAdapter(user=user))
 
-    return user
+    return RedirectResponse(
+        url=settings.OAUTH_SUCCESS_REDIRECT_URL, status_code=status.HTTP_302_FOUND
+    )

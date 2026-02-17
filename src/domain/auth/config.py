@@ -5,9 +5,7 @@ load_dotenv()
 
 
 class Settings(BaseSettings):
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
-    RESET_PASSWORD_EMAIL_EXPIRE_MINUTES: int = 10
+    OAUTH_SUCCESS_REDIRECT_URL: str
 
     GITHUB_CLIENT_ID: str
     GITHUB_CLIENT_SECRET: str
