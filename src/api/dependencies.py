@@ -9,6 +9,7 @@ from src.crud.dataset_crud import DatasetCrud
 from src.crud.task_crud import TaskCrud
 from src.crud.user_crud import UserCrud
 from src.db.session import get_session
+from src.domain.session.config import settings
 from src.exceptions import ForbiddenException, UnauthorizedException
 from src.infrastructure.session.manager import SessionManager
 from src.schemas.base_schemas import PaginationParamsSchema
@@ -56,28 +57,42 @@ def get_session_manager(redis: RedisDep) -> SessionManager:
 SessionManagerDep = Annotated[SessionManager, Depends(get_session_manager)]
 
 
-async def get_user_session(
-    request: Request,
+async def get_get_user_session_use_case(
     session_manager: SessionManagerDep,
+) -> GetUserSessionUseCase:
+    return GetUserSessionUseCase(session_manager=session_manager)
+
+
+GetUserSessionUseCaseDep = Annotated[
+    GetUserSessionUseCase, Depends(get_get_user_session_use_case)
+]
+
+
+def get_session_id(request: Request) -> str | None:
+    return request.cookies.get(settings.SESSION_COOKIE_NAME)
+
+
+SessionIdDep = Annotated[str | None, Depends(get_session_id)]
+
+
+async def get_user_session(
+    get_user_session_use_case: GetUserSessionUseCaseDep,
+    session_id: SessionIdDep,
 ) -> SessionSchema:
     """Get user session data."""
-    get_user_session_use_case = GetUserSessionUseCase(session_manager=session_manager)
-    return await get_user_session_use_case(request=request)
+    return await get_user_session_use_case(session_id=session_id)
 
 
 UserSessionDep = Annotated[SessionSchema, Depends(get_user_session)]
 
 
 async def get_optional_user_session(
-    request: Request,
-    session_manager: SessionManagerDep,
+    get_user_session_use_case: GetUserSessionUseCaseDep,
+    session_id: SessionIdDep,
 ) -> SessionSchema | None:
     """Get user session if exists, None otherwise (for optional auth)."""
     try:
-        get_user_session_use_case = GetUserSessionUseCase(
-            session_manager=session_manager
-        )
-        return await get_user_session_use_case(request=request)
+        return await get_user_session_use_case(session_id=session_id)
     except UnauthorizedException:
         return None
 

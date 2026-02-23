@@ -8,7 +8,7 @@ class UserCrud(Protocol):
 
 
 class SessionManager(Protocol):
-    async def clear_all_user_sessions(self, *, user_id: int) -> int: ...
+    async def destroy_all_user_sessions(self, *, user_id: int) -> None: ...
 
 
 class UpdateUserStatusUseCase:
@@ -30,6 +30,6 @@ class UpdateUserStatusUseCase:
         )
 
         if is_banned:
-            await self.session_manager.clear_all_user_sessions(user_id=user_id)
+            await self.session_manager.destroy_all_user_sessions(user_id=user_id)
 
         return user

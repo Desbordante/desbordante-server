@@ -11,6 +11,7 @@ from src.api.dependencies import (
     UserSessionDep,
 )
 from src.models.user_models import UserModel
+from src.schemas.session_schemas import SessionSchema
 from src.usecases.dataset.get_my_datasets import GetMyDatasetsUseCase
 from src.usecases.dataset.get_user_datasets import GetUserDatasetsUseCase
 from src.usecases.dataset.upload_dataset import UploadDatasetUseCase
@@ -21,11 +22,17 @@ from src.usecases.user.get_user_stats import GetUserStatsUseCase
 from src.usecases.user.update_user_status import UpdateUserStatusUseCase
 
 
+class UserAdapter:
+    def __init__(self, session: SessionSchema):
+        self.id = session.user_id
+        self.is_admin = session.is_admin
+
+
 async def get_get_my_stats_use_case(
     dataset_crud: DatasetCrudDep,
     user_session: UserSessionDep,
 ) -> GetStatsUseCase:
-    return GetStatsUseCase(dataset_crud=dataset_crud, user=user_session)
+    return GetStatsUseCase(dataset_crud=dataset_crud, user=UserAdapter(user_session))
 
 
 GetMyStatsUseCaseDep = Annotated[GetStatsUseCase, Depends(get_get_my_stats_use_case)]
@@ -56,7 +63,7 @@ async def get_current_user(
     user_session: UserSessionDep,
     get_user_by_id: GetUserByIdUseCaseDep,
 ) -> UserModel:
-    return await get_user_by_id(id=user_session.id)
+    return await get_user_by_id(id=user_session.user_id)
 
 
 CurrentUserDep = Annotated[UserModel, Depends(get_current_user)]
@@ -79,7 +86,9 @@ async def get_get_my_datasets_use_case(
     dataset_crud: DatasetCrudDep,
     user_session: UserSessionDep,
 ) -> GetMyDatasetsUseCase:
-    return GetMyDatasetsUseCase(dataset_crud=dataset_crud, user=user_session)
+    return GetMyDatasetsUseCase(
+        dataset_crud=dataset_crud, user=UserAdapter(user_session)
+    )
 
 
 GetMyDatasetsUseCaseDep = Annotated[
@@ -91,7 +100,9 @@ async def get_upload_my_dataset_use_case(
     dataset_crud: DatasetCrudDep,
     user_session: UserSessionDep,
 ) -> UploadDatasetUseCase:
-    return UploadDatasetUseCase(dataset_crud=dataset_crud, user=user_session)
+    return UploadDatasetUseCase(
+        dataset_crud=dataset_crud, user=UserAdapter(user_session)
+    )
 
 
 UploadMyDatasetUseCaseDep = Annotated[
@@ -112,11 +123,13 @@ GetUserDatasetsUseCaseDep = Annotated[
 
 
 async def get_create_task_use_case(
-    user: UserSessionDep,
+    user_session: UserSessionDep,
     task_crud: TaskCrudDep,
     dataset_crud: DatasetCrudDep,
 ) -> CreateTaskUseCase:
-    return CreateTaskUseCase(task_crud=task_crud, dataset_crud=dataset_crud, user=user)
+    return CreateTaskUseCase(
+        task_crud=task_crud, dataset_crud=dataset_crud, user=UserAdapter(user_session)
+    )
 
 
 CreateTaskUseCaseDep = Annotated[CreateTaskUseCase, Depends(get_create_task_use_case)]

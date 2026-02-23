@@ -7,7 +7,6 @@ from fakeredis import FakeAsyncRedis
 from src.domain.session.config import settings
 from src.infrastructure.session.manager import SessionManager
 from src.schemas.session_schemas import SessionSchema
-
 from tests.integration.session.constants import (
     ABSOLUTE_REMAINING_SEC,
     NONEXISTENT_SESSION_ID,
@@ -185,33 +184,33 @@ async def test_get_does_not_extend_ttl_beyond_absolute(
     assert ttl <= ABSOLUTE_REMAINING_SEC
 
 
-async def test_delete_removes_session_key_and_from_user_index(
+async def test_destroy_removes_session_key_and_from_user_index(
     session_manager: SessionManager, redis: FakeAsyncRedis
 ):
-    """delete() removes session key and session_id from user index when session exists."""
+    """destroy() removes session key and session_id from user index when session exists."""
     user_id = 7
     session_id, session_key, index_key = await create_session_for_user(
         session_manager, user_id, is_admin=True
     )
 
-    await session_manager.delete(session_id=session_id)
+    await session_manager.destroy(session_id=session_id)
 
     await assert_session_key_absent(redis, session_id)
     await assert_index_lacks_session(redis, user_id, session_id)
     await assert_index_empty(redis, user_id)
 
 
-async def test_delete_nonexistent_session_does_not_raise(
+async def test_destroy_nonexistent_session_does_not_raise(
     session_manager: SessionManager,
 ):
-    """delete() does not raise when session key does not exist."""
-    await session_manager.delete(session_id=NONEXISTENT_SESSION_ID)
+    """destroy() does not raise when session key does not exist."""
+    await session_manager.destroy(session_id=NONEXISTENT_SESSION_ID)
 
 
-async def test_delete_removes_only_given_session_from_user_index(
+async def test_destroy_removes_only_given_session_from_user_index(
     session_manager: SessionManager, redis: FakeAsyncRedis
 ):
-    """delete() removes only the given session; other sessions of the same user remain."""
+    """destroy() removes only the given session; other sessions of the same user remain."""
     user_id = 10
     session_id_1, key_1, index_key = await create_session_for_user(
         session_manager, user_id, is_admin=False
@@ -220,7 +219,7 @@ async def test_delete_removes_only_given_session_from_user_index(
         session_manager, user_id, is_admin=True
     )
 
-    await session_manager.delete(session_id=session_id_1)
+    await session_manager.destroy(session_id=session_id_1)
 
     await assert_session_key_absent(redis, session_id_1)
     assert await redis.get(key_2) is not None
@@ -228,10 +227,10 @@ async def test_delete_removes_only_given_session_from_user_index(
     await assert_index_has_session(redis, user_id, session_id_2)
 
 
-async def test_delete_all_user_sessions_removes_all_sessions_and_index(
+async def test_destroy_all_user_sessions_removes_all_sessions_and_index(
     session_manager: SessionManager, redis: FakeAsyncRedis
 ):
-    """delete_all_user_sessions() removes all session keys and the user index."""
+    """destroy_all_user_sessions() removes all session keys and the user index."""
     user_id = 5
     session_id_1, key_1, index_key = await create_session_for_user(
         session_manager, user_id, is_admin=False
@@ -240,24 +239,24 @@ async def test_delete_all_user_sessions_removes_all_sessions_and_index(
         session_manager, user_id, is_admin=True
     )
 
-    await session_manager.delete_all_user_sessions(user_id=user_id)
+    await session_manager.destroy_all_user_sessions(user_id=user_id)
 
     await assert_session_key_absent(redis, session_id_1)
     await assert_session_key_absent(redis, session_id_2)
     await assert_index_empty(redis, user_id)
 
 
-async def test_delete_all_user_sessions_empty_index_does_not_raise(
+async def test_destroy_all_user_sessions_empty_index_does_not_raise(
     session_manager: SessionManager,
 ):
-    """delete_all_user_sessions() does not raise when user has no sessions."""
-    await session_manager.delete_all_user_sessions(user_id=NONEXISTENT_USER_ID)
+    """destroy_all_user_sessions() does not raise when user has no sessions."""
+    await session_manager.destroy_all_user_sessions(user_id=NONEXISTENT_USER_ID)
 
 
-async def test_delete_all_user_sessions_removes_index_when_session_keys_expired(
+async def test_destroy_all_user_sessions_removes_index_when_session_keys_expired(
     session_manager: SessionManager, redis: FakeAsyncRedis
 ):
-    """delete_all_user_sessions() removes index even when session keys already expired (simulated by manual delete)."""
+    """destroy_all_user_sessions() removes index even when session keys already expired (simulated by manual delete)."""
     user_id = 6
     session_id_1, key_1, index_key = await create_session_for_user(
         session_manager, user_id, is_admin=False
@@ -268,7 +267,7 @@ async def test_delete_all_user_sessions_removes_index_when_session_keys_expired(
 
     await redis.delete(key_1, key_2)
 
-    await session_manager.delete_all_user_sessions(user_id=user_id)
+    await session_manager.destroy_all_user_sessions(user_id=user_id)
 
     await assert_index_empty(redis, user_id)
 
@@ -332,10 +331,10 @@ async def test_get_does_not_shorten_index_ttl_with_gt(
     assert ttl_after > 100
 
 
-async def test_delete_all_user_sessions_does_not_affect_other_users(
+async def test_destroy_all_user_sessions_does_not_affect_other_users(
     session_manager: SessionManager, redis: FakeAsyncRedis
 ):
-    """delete_all_user_sessions() removes only the given user's sessions."""
+    """destroy_all_user_sessions() removes only the given user's sessions."""
     session_a, key_a, index_a = await create_session_for_user(
         session_manager, TEST_USER_ID, is_admin=False
     )
@@ -343,7 +342,7 @@ async def test_delete_all_user_sessions_does_not_affect_other_users(
         session_manager, OTHER_USER_ID, is_admin=True
     )
 
-    await session_manager.delete_all_user_sessions(user_id=TEST_USER_ID)
+    await session_manager.destroy_all_user_sessions(user_id=TEST_USER_ID)
 
     await assert_session_key_absent(redis, session_a)
     await assert_index_empty(redis, TEST_USER_ID)

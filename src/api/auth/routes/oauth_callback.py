@@ -6,6 +6,7 @@ from src.api.auth.dependencies import (
     GetOAuthUserInfoUseCaseDep,
     GetOrCreateUserViaOAuthUseCaseDep,
 )
+from src.api.auth.utils import set_session_cookie
 from src.domain.auth.config import settings
 from src.infrastructure.rate_limit.config import settings as rate_limit_settings
 from src.infrastructure.rate_limit.limiter import limiter
@@ -43,8 +44,12 @@ async def oauth_callback(
 
     user = await get_or_create_user_via_oauth(creds=creds)
 
-    await create_session(user=UserAdapter(user=user))
+    session_id = await create_session(user=UserAdapter(user=user))
 
-    return RedirectResponse(
+    response = RedirectResponse(
         url=settings.OAUTH_SUCCESS_REDIRECT_URL, status_code=status.HTTP_302_FOUND
     )
+
+    set_session_cookie(response, session_id)
+
+    return response

@@ -1,6 +1,5 @@
 from typing import Protocol
 
-
 from src.exceptions import ForbiddenException
 
 
@@ -20,10 +19,12 @@ class CreateUserSessionUseCase:
     def __init__(self, session_manager: SessionManager):
         self.session_manager = session_manager
 
-    async def __call__(self, *, user: User) -> None:
+    async def __call__(self, *, user: User) -> str:
         """Create session for authenticated user."""
 
         if user.is_banned:
             raise ForbiddenException("User is banned")
 
-        await self.session_manager.create(user_id=user.id, is_admin=user.is_admin)
+        return await self.session_manager.create(
+            user_id=user.id, is_admin=user.is_admin
+        )

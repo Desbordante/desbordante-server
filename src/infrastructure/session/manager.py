@@ -69,7 +69,7 @@ class SessionManager:
 
         return session
 
-    async def delete(self, *, session_id: str) -> None:
+    async def destroy(self, *, session_id: str) -> None:
         session_data = await self.redis.get(self._session_key(session_id))
 
         pipe = self.redis.pipeline()
@@ -81,7 +81,7 @@ class SessionManager:
 
         await pipe.execute()
 
-    async def delete_all_user_sessions(self, *, user_id: int) -> None:
+    async def destroy_all_user_sessions(self, *, user_id: int) -> None:
         index_key = self._user_index_key(user_id)
         session_ids = await self.redis.smembers(index_key)  # type: ignore
 
