@@ -16,6 +16,7 @@ dependencies = [
     "fastapi[standard]>=0.115.8",
     "flower>=2.0.1",
     "greenlet>=3.1.1",
+    "itsdangerous>=2.2.0",
     "minio>=7.2.15",
     "networkx>=3.5",
     "pandas>=2.2.3",
@@ -24,13 +25,12 @@ dependencies = [
     "pydantic>=2.10.6",
     "pydantic-settings>=2.8.1",
     "pydot>=4.0.1",
-    "pyjwt>=2.10.1",
+    "pyjwt>=2.11.0",
     "python-multipart>=0.0.20",
     "redis>=7.0.1",
     "slowapi>=0.1.9",
     "sqlalchemy>=2.0.38",
     "sqlalchemy-utils>=0.41.2",
-    "starsessions[redis]>=2.2.1",
 ]
 
 
@@ -38,6 +38,7 @@ dependencies = [
 dev = [
     "celery-types>=0.23.0",
     "faker>=37.8.0",
+    "fakeredis>=2.34.0",
     "mypy>=1.17.1",
     "pre-commit>=4.1.0",
     "pytest>=8.3.5",

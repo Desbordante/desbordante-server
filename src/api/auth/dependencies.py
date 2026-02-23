@@ -2,14 +2,8 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from src.api.dependencies import UserCrudDep
+from src.api.dependencies import SessionManagerDep, UserCrudDep
 from src.domain.auth.factory import OAuthClientFactory
-from src.domain.auth.ports.oauth_port import OAuthPort
-from src.domain.session.manager import SessionManager
-from src.infrastructure.auth.session_aware_oauth_adapter import (
-    SessionAwareOAuthAdapter,
-)
-from src.infrastructure.session.manager import session_manager
 from src.usecases.auth.get_oauth_authorization_redirect import (
     GetOAuthAuthorizationRedirectUseCase,
 )
@@ -30,30 +24,10 @@ async def get_oauth_client_factory() -> OAuthClientFactory:
 OAuthClientFactoryDep = Annotated[OAuthClientFactory, Depends(get_oauth_client_factory)]
 
 
-def get_session_manager() -> SessionManager:
-    return session_manager
-
-
-SessionManagerDep = Annotated[SessionManager, Depends(get_session_manager)]
-
-
-async def get_oauth_adapter(
-    oauth_factory: OAuthClientFactoryDep,
-    session_manager: SessionManagerDep,
-) -> OAuthPort:
-    return SessionAwareOAuthAdapter(
-        oauth_factory=oauth_factory,
-        session_manager=session_manager,
-    )
-
-
-OAuthAdapterDep = Annotated[OAuthPort, Depends(get_oauth_adapter)]
-
-
 async def get_oauth_authorization_redirect_use_case(
-    oauth_adapter: OAuthAdapterDep,
+    oauth_factory: OAuthClientFactoryDep,
 ) -> GetOAuthAuthorizationRedirectUseCase:
-    return GetOAuthAuthorizationRedirectUseCase(oauth_adapter=oauth_adapter)
+    return GetOAuthAuthorizationRedirectUseCase(oauth_factory=oauth_factory)
 
 
 GetOAuthAuthorizationRedirectUseCaseDep = Annotated[
@@ -63,9 +37,9 @@ GetOAuthAuthorizationRedirectUseCaseDep = Annotated[
 
 
 async def get_oauth_user_info_use_case(
-    oauth_adapter: OAuthAdapterDep,
+    oauth_factory: OAuthClientFactoryDep,
 ) -> GetOAuthUserInfoUseCase:
-    return GetOAuthUserInfoUseCase(oauth_adapter=oauth_adapter)
+    return GetOAuthUserInfoUseCase(oauth_factory=oauth_factory)
 
 
 GetOAuthUserInfoUseCaseDep = Annotated[

@@ -508,6 +508,7 @@ dependencies = [
     { name = "fastapi", extra = ["standard"] },
     { name = "flower" },
     { name = "greenlet" },
+    { name = "itsdangerous" },
     { name = "minio" },
     { name = "networkx" },
     { name = "pandas" },
@@ -522,13 +523,13 @@ dependencies = [
     { name = "slowapi" },
     { name = "sqlalchemy" },
     { name = "sqlalchemy-utils" },
-    { name = "starsessions", extra = ["redis"] },
 ]
 
 [package.dev-dependencies]
 dev = [
     { name = "celery-types" },
     { name = "faker" },
+    { name = "fakeredis" },
     { name = "mypy" },
     { name = "pre-commit" },
     { name = "pytest" },
@@ -555,6 +556,7 @@ requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.8" },
     { name = "flower", specifier = ">=2.0.1" },
     { name = "greenlet", specifier = ">=3.1.1" },
+    { name = "itsdangerous", specifier = ">=2.2.0" },
     { name = "minio", specifier = ">=7.2.15" },
     { name = "networkx", specifier = ">=3.5" },
     { name = "pandas", specifier = ">=2.2.3" },
@@ -563,19 +565,19 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.10.6" },
     { name = "pydantic-settings", specifier = ">=2.8.1" },
     { name = "pydot", specifier = ">=4.0.1" },
-    { name = "pyjwt", specifier = ">=2.10.1" },
+    { name = "pyjwt", specifier = ">=2.11.0" },
     { name = "python-multipart", specifier = ">=0.0.20" },
     { name = "redis", specifier = ">=7.0.1" },
     { name = "slowapi", specifier = ">=0.1.9" },
     { name = "sqlalchemy", specifier = ">=2.0.38" },
     { name = "sqlalchemy-utils", specifier = ">=0.41.2" },
-    { name = "starsessions", extras = ["redis"], specifier = ">=2.2.1" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "celery-types", specifier = ">=0.23.0" },
     { name = "faker", specifier = ">=37.8.0" },
+    { name = "fakeredis", specifier = ">=2.34.0" },
     { name = "mypy", specifier = ">=1.17.1" },
     { name = "pre-commit", specifier = ">=4.1.0" },
     { name = "pytest", specifier = ">=8.3.5" },
@@ -656,6 +658,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/3a/da/1336008d39e5d4076dddb4e0f3a52ada41429274bf558a3cc28030d324a3/faker-37.8.0.tar.gz", hash = "sha256:090bb5abbec2b30949a95ce1ba6b20d1d0ed222883d63483a0d4be4a970d6fb8", size = 1912113 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f5/11/02ebebb09ff2104b690457cb7bc6ed700c9e0ce88cf581486bb0a5d3c88b/faker-37.8.0-py3-none-any.whl", hash = "sha256:b08233118824423b5fc239f7dd51f145e7018082b4164f8da6a9994e1f1ae793", size = 1953940 },
+]
+
+[[package]]
+name = "fakeredis"
+version = "2.34.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "redis" },
+    { name = "sortedcontainers" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d8/44/c403963727d707e03f49a417712b0a23e853d33ae50729679040b6cfe281/fakeredis-2.34.0.tar.gz", hash = "sha256:72bc51a7ab39bedf5004f0cf1b5206822619c1be8c2657fd878d1f4250256c57", size = 177156 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1a/8e/af19c00753c432355f9b76cec3ab0842578de43ba575e82735b18c1b3ec9/fakeredis-2.34.0-py3-none-any.whl", hash = "sha256:bc45d362c6cc3a537f8287372d8ea532538dfbe7f5d635d0905d7b3464ec51d2", size = 122063 },
 ]
 
 [[package]]
@@ -1346,11 +1361,11 @@ wheels = [
 
 [[package]]
 name = "pyjwt"
-version = "2.10.1"
+version = "2.11.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/e7/46/bd74733ff231675599650d3e47f361794b22ef3e3770998dda30d3b63726/pyjwt-2.10.1.tar.gz", hash = "sha256:3cc5772eb20009233caf06e9d8a0577824723b44e6648ee0a2aedb6cf9381953", size = 87785 }
+sdist = { url = "https://files.pythonhosted.org/packages/5c/5a/b46fa56bf322901eee5b0454a34343cdbdae202cd421775a8ee4e42fd519/pyjwt-2.11.0.tar.gz", hash = "sha256:35f95c1f0fbe5d5ba6e43f00271c275f7a1a4db1dab27bf708073b75318ea623", size = 98019 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/61/ad/689f02752eeec26aed679477e80e632ef1b682313be70793d798c1d5fc8f/PyJWT-2.10.1-py3-none-any.whl", hash = "sha256:dcdd193e30abefd5debf142f9adfcdd2b58004e644f25406ffaebd50bd98dacb", size = 22997 },
+    { url = "https://files.pythonhosted.org/packages/6f/01/c26ce75ba460d5cd503da9e13b21a33804d38c2165dec7b716d06b13010c/pyjwt-2.11.0-py3-none-any.whl", hash = "sha256:94a6bde30eb5c8e04fee991062b534071fd1439ef58d2adc9ccb823e7bcd0469", size = 28224 },
 ]
 
 [[package]]
@@ -1665,6 +1680,15 @@ wheels = [
 ]
 
 [[package]]
+name = "sortedcontainers"
+version = "2.4.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e8/c4/ba2f8066cceb6f23394729afe52f3bf7adec04bf9ed2c820b39e19299111/sortedcontainers-2.4.0.tar.gz", hash = "sha256:25caa5a06cc30b6b83d11423433f65d1f9d76c4c6a0c90e3379eaa43b9bfdb88", size = 30594 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/32/46/9cb0e58b2deb7f82b84065f37f3bffeb12413f947f9388e4cac22c4621ce/sortedcontainers-2.4.0-py2.py3-none-any.whl", hash = "sha256:a163dcaede0f1c021485e957a39245190e74249897e2ae4b2aa38595db237ee0", size = 29575 },
+]
+
+[[package]]
 name = "sqlalchemy"
 version = "2.0.38"
 source = { registry = "https://pypi.org/simple" }
@@ -1707,24 +1731,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ff/fb/2984a686808b89a6781526129a4b51266f678b2d2b97ab2d325e56116df8/starlette-0.45.3.tar.gz", hash = "sha256:2cbcba2a75806f8a41c722141486f37c28e30a0921c5f6fe4346cb0dcee1302f", size = 2574076 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d9/61/f2b52e107b1fc8944b33ef56bf6ac4ebbe16d91b94d2b87ce013bf63fb84/starlette-0.45.3-py3-none-any.whl", hash = "sha256:dfb6d332576f136ec740296c7e8bb8c8a7125044e7c6da30744718880cdd059d", size = 71507 },
-]
-
-[[package]]
-name = "starsessions"
-version = "2.2.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "itsdangerous" },
-    { name = "starlette" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/86/a1/dd738cd47b7a1c681cae49c4f7c88cc953b2aca4de455c2aacda6652e7ce/starsessions-2.2.1.tar.gz", hash = "sha256:ce5e4448d9bf2c76222e56cd099ad92d22313e8a4def612e22b71a122cc11da0", size = 15048 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d2/ce/fc699345a3cdfb4425b5dc1e446f1b49702ac55907a6a4d5d806f2512dae/starsessions-2.2.1-py3-none-any.whl", hash = "sha256:8097b33d70017b2d2331307f0ea923620b5bfb847118d2e5872805d0c1c16f83", size = 14621 },
-]
-
-[package.optional-dependencies]
-redis = [
-    { name = "redis" },
 ]
 
 [[package]]

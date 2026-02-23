@@ -17,7 +17,6 @@ class OAuthClientFactory:
             authorize_url="https://github.com/login/oauth/authorize",
             access_token_url="https://github.com/login/oauth/access_token",
             userinfo_endpoint="https://api.github.com/user",
-            client_kwargs={"scope": "openid"},
         )
 
         self.oauth.register(

@@ -5,11 +5,13 @@ load_dotenv()
 
 
 class Settings(BaseSettings):
-    COOKIE_NAME: str = "session_id"
-    COOKIE_HTTPS_ONLY: bool = True
-    LIFETIME: int = 3600 * 24 * 30  # 30 days
-    ROLLING: bool = True
-    PREFIX: str = "session:"
+    SESSION_COOKIE_NAME: str = "session_id"
+    SESSION_COOKIE_HTTPS_ONLY: bool = True
+    SESSION_ROLLING_LIFETIME: int = 3600 * 24  # 24 hours
+    SESSION_ABSOLUTE_LIFETIME: int = 3600 * 24 * 30  # 30 days
+    SESSION_KEY_PREFIX: str = "session"
+    SESSION_INDEX_KEY_PREFIX: str = "user_sessions"
+    SESSION_TOKEN_BYTES: int = 32  # 32 bytes
 
 
 settings = Settings()  # type: ignore

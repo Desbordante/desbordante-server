@@ -7,7 +7,7 @@ load_dotenv()
 
 class Settings(BaseSettings):
     SECRET_KEY: SecretStr
-    ALGORITHM: str = "HS256"
+    JWT_ALGORITHM: str = "HS256"
 
 
 settings = Settings()  # type: ignore

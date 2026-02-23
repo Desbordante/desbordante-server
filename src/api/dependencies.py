@@ -2,23 +2,30 @@ from typing import Annotated
 
 from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.crud.dataset_crud import DatasetCrud
 from src.crud.task_crud import TaskCrud
 from src.crud.user_crud import UserCrud
 from src.db.session import get_session
-from src.domain.session.manager import SessionManager
 from src.exceptions import ForbiddenException, UnauthorizedException
-from src.infrastructure.session.manager import session_manager
+from src.infrastructure.session.manager import SessionManager
 from src.schemas.base_schemas import PaginationParamsSchema
-from src.schemas.session_schemas import UserSessionSchema
+from src.schemas.session_schemas import SessionSchema
 from src.usecases.session.get_user_session import GetUserSessionUseCase
 
 oauth2 = OAuth2PasswordBearer(tokenUrl="/auth/token", auto_error=False)
 TokenDep = Annotated[str, Depends(oauth2)]
 
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
+
+
+async def get_redis(request: Request) -> Redis:
+    return request.app.state.redis
+
+
+RedisDep = Annotated[Redis, Depends(get_redis)]
 
 
 async def get_user_crud(session: SessionDep) -> UserCrud:
@@ -42,8 +49,8 @@ async def get_task_crud(session: SessionDep) -> TaskCrud:
 TaskCrudDep = Annotated[TaskCrud, Depends(get_task_crud)]
 
 
-def get_session_manager() -> SessionManager:
-    return session_manager
+def get_session_manager(redis: RedisDep) -> SessionManager:
+    return SessionManager(redis=redis)
 
 
 SessionManagerDep = Annotated[SessionManager, Depends(get_session_manager)]
@@ -52,19 +59,19 @@ SessionManagerDep = Annotated[SessionManager, Depends(get_session_manager)]
 async def get_user_session(
     request: Request,
     session_manager: SessionManagerDep,
-) -> UserSessionSchema:
+) -> SessionSchema:
     """Get user session data."""
     get_user_session_use_case = GetUserSessionUseCase(session_manager=session_manager)
     return await get_user_session_use_case(request=request)
 
 
-UserSessionDep = Annotated[UserSessionSchema, Depends(get_user_session)]
+UserSessionDep = Annotated[SessionSchema, Depends(get_user_session)]
 
 
 async def get_optional_user_session(
     request: Request,
     session_manager: SessionManagerDep,
-) -> UserSessionSchema | None:
+) -> SessionSchema | None:
     """Get user session if exists, None otherwise (for optional auth)."""
     try:
         get_user_session_use_case = GetUserSessionUseCase(
@@ -76,18 +83,18 @@ async def get_optional_user_session(
 
 
 OptionalUserSessionDep = Annotated[
-    UserSessionSchema | None, Depends(get_optional_user_session)
+    SessionSchema | None, Depends(get_optional_user_session)
 ]
 
 
-async def get_admin_session(user_session: UserSessionDep) -> UserSessionSchema:
+async def get_admin_session(user_session: UserSessionDep) -> SessionSchema:
     """Require admin user from session."""
     if not user_session.is_admin:
         raise ForbiddenException("Admin access required")
     return user_session
 
 
-AdminSessionDep = Annotated[UserSessionSchema, Depends(get_admin_session)]
+AdminSessionDep = Annotated[SessionSchema, Depends(get_admin_session)]
 
 
 PaginationParamsDep = Annotated[PaginationParamsSchema, Depends(PaginationParamsSchema)]

@@ -1,93 +1,96 @@
-from fastapi import Request
+import secrets
+from datetime import datetime, timedelta, timezone
+
 from redis.asyncio import Redis
-from starsessions import load_session, regenerate_session_id
-from starsessions.stores.redis import RedisStore
 
 from src.domain.session.config import settings
-from src.infrastructure.redis.config import settings as redis_settings
-from src.schemas.session_schemas import UserSessionSchema
+from src.schemas.session_schemas import SessionSchema
 
 
 class SessionManager:
-    """Session manager for user session operations."""
+    def __init__(self, redis: Redis) -> None:
+        self.redis = redis
 
-    USER_ID_KEY = "user_id"
-    IS_ADMIN_KEY = "is_admin"
+    def _now(self) -> datetime:
+        return datetime.now(timezone.utc)
 
-    def __init__(self):
-        """Initialize SessionManager with its own Redis client."""
-        self.redis_client = Redis.from_url(
-            redis_settings.redis_sessions_dsn.unicode_string()
+    def _session_key(self, session_id: str) -> str:
+        return f"{settings.SESSION_KEY_PREFIX}:{session_id}"
+
+    def _user_index_key(self, user_id: int) -> str:
+        return f"{settings.SESSION_INDEX_KEY_PREFIX}:{user_id}"
+
+    def _compute_expire_at(self, session: SessionSchema) -> datetime:
+        now = self._now()
+        deadline = session.created_at + timedelta(
+            seconds=settings.SESSION_ABSOLUTE_LIFETIME
         )
-        self.redis_store = RedisStore(
-            connection=self.redis_client,
-            prefix=settings.PREFIX,
+        return min(
+            now + timedelta(seconds=settings.SESSION_ROLLING_LIFETIME),
+            deadline,
         )
 
-    def get_store(self) -> RedisStore:
-        """Get underlying RedisStore for middleware."""
-        return self.redis_store
+    async def create(self, *, user_id: int, is_admin: bool) -> str:
+        session_id = secrets.token_urlsafe(settings.SESSION_TOKEN_BYTES)
 
-    async def close(self) -> None:
-        """Close Redis connection."""
-        await self.redis_client.close()
+        session_data = SessionSchema(
+            user_id=user_id,
+            is_admin=is_admin,
+            created_at=self._now(),
+        )
 
-    async def _ensure_session_loaded(self, request: Request) -> None:
-        """Ensure session is loaded from request."""
-        if not hasattr(request.state, "_session_loaded"):
-            await load_session(request)
-            request.state._session_loaded = True
+        index_key = self._user_index_key(user_id)
+        pipe = self.redis.pipeline()
+        pipe.set(
+            self._session_key(session_id),
+            session_data.model_dump_json(),
+            ex=settings.SESSION_ROLLING_LIFETIME,
+        )
+        pipe.sadd(index_key, session_id)
+        pipe.expire(index_key, settings.SESSION_ROLLING_LIFETIME, gt=True)
+        await pipe.execute()
 
-    async def create(self, request: Request, session: UserSessionSchema) -> None:
-        """Create new session for user with regenerated ID."""
-        await self._ensure_session_loaded(request)
-        regenerate_session_id(request)
-        request.session[self.USER_ID_KEY] = session.id
-        request.session[self.IS_ADMIN_KEY] = session.is_admin
+        return session_id
 
-    async def get(self, request: Request) -> UserSessionSchema | None:
-        """Get current user session."""
-        await self._ensure_session_loaded(request)
+    async def get(self, *, session_id: str) -> SessionSchema | None:
+        key = self._session_key(session_id)
+        session_data = await self.redis.get(key)
 
-        user_id = request.session.get(self.USER_ID_KEY)
-        is_admin = bool(request.session.get(self.IS_ADMIN_KEY))
-
-        if user_id is None:
+        if not session_data:
             return None
 
-        return UserSessionSchema(id=user_id, is_admin=is_admin)
+        session = SessionSchema.model_validate_json(session_data)
+        expire_at = self._compute_expire_at(session)
 
-    async def destroy(self, request: Request) -> None:
-        """Destroy current session."""
-        await self._ensure_session_loaded(request)
-        request.session.clear()
+        pipe = self.redis.pipeline()
+        pipe.expireat(key, expire_at)
+        pipe.expireat(self._user_index_key(session.user_id), expire_at, gt=True)
+        await pipe.execute()
 
-    async def clear_all_user_sessions(self, *, user_id: int) -> int:
-        """
-        Clear all sessions for a specific user (admin operation).
-        Returns the number of sessions deleted.
-        """
-        deleted_count = 0
-        cursor = 0
+        return session
 
-        while True:
-            cursor, keys = await self.redis_client.scan(
-                cursor=cursor, match=f"{settings.PREFIX}*", count=100
-            )
+    async def delete(self, *, session_id: str) -> None:
+        session_data = await self.redis.get(self._session_key(session_id))
 
-            for key in keys:
-                session_data = await self.redis_client.hgetall(key)  # type: ignore
+        pipe = self.redis.pipeline()
+        pipe.delete(self._session_key(session_id))
 
-                if session_data and session_data.get(self.USER_ID_KEY.encode()):
-                    stored_user_id = int(session_data[self.USER_ID_KEY.encode()])
-                    if stored_user_id == user_id:
-                        await self.redis_client.delete(key)
-                        deleted_count += 1
+        if session_data:
+            user_id = SessionSchema.model_validate_json(session_data).user_id
+            pipe.srem(self._user_index_key(user_id), session_id)
 
-            if cursor == 0:
-                break
+        await pipe.execute()
 
-        return deleted_count
+    async def delete_all_user_sessions(self, *, user_id: int) -> None:
+        index_key = self._user_index_key(user_id)
+        session_ids = await self.redis.smembers(index_key)  # type: ignore
 
+        if not session_ids:
+            return
 
-session_manager = SessionManager()
+        session_keys = [self._session_key(sid) for sid in session_ids]
+
+        pipe = self.redis.pipeline()
+        pipe.delete(*session_keys)
+        pipe.delete(index_key)
+        await pipe.execute()

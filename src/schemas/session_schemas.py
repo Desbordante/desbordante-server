@@ -1,8 +1,9 @@
+from datetime import datetime
+
 from src.schemas.base_schemas import BaseSchema
 
 
-class UserSessionSchema(BaseSchema):
-    """Schema for user session data."""
-
-    id: int
+class SessionSchema(BaseSchema):
+    user_id: int
     is_admin: bool
+    created_at: datetime

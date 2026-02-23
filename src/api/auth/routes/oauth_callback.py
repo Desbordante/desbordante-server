@@ -43,7 +43,7 @@ async def oauth_callback(
 
     user = await get_or_create_user_via_oauth(creds=creds)
 
-    await create_session(request=request, user=UserAdapter(user=user))
+    await create_session(user=UserAdapter(user=user))
 
     return RedirectResponse(
         url=settings.OAUTH_SUCCESS_REDIRECT_URL, status_code=status.HTTP_302_FOUND

@@ -4,16 +4,17 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from redis.asyncio import Redis
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from starsessions import SessionMiddleware
+from starlette.middleware.sessions import SessionMiddleware
 
 from src.api import router as api_router
-from src.domain.session.config import settings as session_settings
+from src.domain.security.config import settings as security_settings
 from src.exceptions import BaseAppException
 from src.infrastructure.lock import lock_manager
 from src.infrastructure.rate_limit.limiter import limiter
-from src.infrastructure.session.manager import session_manager
+from src.infrastructure.redis.config import settings as redis_settings
 from src.logging import configure_logging
 
 configure_logging()
@@ -22,9 +23,13 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    redis = Redis.from_url(
+        redis_settings.redis_sessions_dsn.unicode_string(), decode_responses=True
+    )
+    app.state.redis = redis
     yield
+    await redis.aclose()
     await lock_manager.destroy()
-    await session_manager.close()
 
 
 app = FastAPI(
@@ -44,13 +49,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Session middleware for Authlib
 app.add_middleware(
     SessionMiddleware,
-    store=session_manager.get_store(),
-    cookie_name=session_settings.COOKIE_NAME,
-    cookie_https_only=session_settings.COOKIE_HTTPS_ONLY,
-    lifetime=session_settings.LIFETIME,
-    rolling=session_settings.ROLLING,
+    secret_key=security_settings.SECRET_KEY.get_secret_value(),
+    max_age=None,
 )
 
 
