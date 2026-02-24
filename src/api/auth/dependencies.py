@@ -1,13 +1,10 @@
 from typing import Annotated
 
-from fastapi import Depends
+from fastapi import Depends, Request
 
 from src.api.dependencies import SessionManagerDep, UserCrudDep
-from src.domain.auth.factory import OAuthClientFactory
-from src.usecases.auth.get_oauth_authorization_redirect import (
-    GetOAuthAuthorizationRedirectUseCase,
-)
-from src.usecases.auth.get_oauth_user_info import GetOAuthUserInfoUseCase
+from src.infrastructure.auth.oauth_service import AuthlibOAuthService
+from src.usecases.auth.authenticate_via_oauth import AuthenticateViaOAuthUseCase
 from src.usecases.auth.get_or_create_user_via_oauth import (
     GetOrCreateUserViaOAuthUseCase,
 )
@@ -17,34 +14,12 @@ from src.usecases.session.create_user_session import CreateUserSessionUseCase
 from src.usecases.session.destroy_session import DestroySessionUseCase
 
 
-async def get_oauth_client_factory() -> OAuthClientFactory:
-    return OAuthClientFactory()
+def get_oauth_service(request: Request) -> AuthlibOAuthService:
+    """Per-request OAuth service with request bound in constructor."""
+    return AuthlibOAuthService(request=request)
 
 
-OAuthClientFactoryDep = Annotated[OAuthClientFactory, Depends(get_oauth_client_factory)]
-
-
-async def get_oauth_authorization_redirect_use_case(
-    oauth_factory: OAuthClientFactoryDep,
-) -> GetOAuthAuthorizationRedirectUseCase:
-    return GetOAuthAuthorizationRedirectUseCase(oauth_factory=oauth_factory)
-
-
-GetOAuthAuthorizationRedirectUseCaseDep = Annotated[
-    GetOAuthAuthorizationRedirectUseCase,
-    Depends(get_oauth_authorization_redirect_use_case),
-]
-
-
-async def get_oauth_user_info_use_case(
-    oauth_factory: OAuthClientFactoryDep,
-) -> GetOAuthUserInfoUseCase:
-    return GetOAuthUserInfoUseCase(oauth_factory=oauth_factory)
-
-
-GetOAuthUserInfoUseCaseDep = Annotated[
-    GetOAuthUserInfoUseCase, Depends(get_oauth_user_info_use_case)
-]
+OAuthServiceDep = Annotated[AuthlibOAuthService, Depends(get_oauth_service)]
 
 
 async def get_get_user_by_oauth_use_case(
@@ -92,6 +67,23 @@ async def get_create_user_session_use_case(
 
 CreateUserSessionUseCaseDep = Annotated[
     CreateUserSessionUseCase, Depends(get_create_user_session_use_case)
+]
+
+
+async def get_authenticate_via_oauth_use_case(
+    oauth_service: OAuthServiceDep,
+    get_or_create_user_via_oauth: GetOrCreateUserViaOAuthUseCaseDep,
+    create_session: CreateUserSessionUseCaseDep,
+) -> AuthenticateViaOAuthUseCase:
+    return AuthenticateViaOAuthUseCase(
+        oauth_service=oauth_service,
+        get_or_create_user_via_oauth=get_or_create_user_via_oauth,
+        create_session=create_session,
+    )
+
+
+AuthenticateViaOAuthUseCaseDep = Annotated[
+    AuthenticateViaOAuthUseCase, Depends(get_authenticate_via_oauth_use_case)
 ]
 
 

@@ -1,39 +1,41 @@
-from typing import Protocol
+from typing import Any, Protocol
 
-from src.models.user_models import UserModel
-from src.schemas.auth_schemas import OAuthProvider
-
-
-class GetUserByOAuthUseCasePort(Protocol):
-    async def __call__(
-        self, *, provider: OAuthProvider, oauth_id: str
-    ) -> UserModel | None: ...
+from src.schemas.auth_schemas import (
+    OAuthCredsSchema,
+    OAuthProvider,
+    OAuthUserInfoSchema,
+)
 
 
-class RegisterUserViaOAuthUseCasePort(Protocol):
-    async def __call__(
-        self, *, provider: OAuthProvider, oauth_id: str
-    ) -> UserModel: ...
+class OAuthServicePort(Protocol):
+    async def get_userinfo(self, provider: OAuthProvider) -> OAuthUserInfoSchema: ...
 
 
-class GetOrCreateUserViaOAuthUseCase:
-    """Use case for getting or creating user via OAuth. Finds existing user or registers new one."""
+class GetOrCreateUserViaOAuthPort(Protocol):
+    async def __call__(self, *, creds: OAuthCredsSchema) -> Any: ...
+
+
+class CreateUserSessionPort(Protocol):
+    async def __call__(self, *, user: Any) -> str: ...
+
+
+class AuthenticateViaOAuthUseCase:
+    """Use case for OAuth callback: get creds, get/create user, create session."""
 
     def __init__(
         self,
         *,
-        get_user_by_oauth: GetUserByOAuthUseCasePort,
-        register_user_via_oauth: RegisterUserViaOAuthUseCasePort,
-    ):
-        self.get_user_by_oauth = get_user_by_oauth
-        self.register_user_via_oauth = register_user_via_oauth
+        oauth_service: OAuthServicePort,
+        get_or_create_user_via_oauth: GetOrCreateUserViaOAuthPort,
+        create_session: CreateUserSessionPort,
+    ) -> None:
+        self._oauth_service = oauth_service
+        self._get_or_create_user_via_oauth = get_or_create_user_via_oauth
+        self._create_session = create_session
 
-    async def __call__(self, *, provider: OAuthProvider, oauth_id: str) -> UserModel:
-        user = await self.get_user_by_oauth(provider=provider, oauth_id=oauth_id)
+    async def __call__(self, *, provider: OAuthProvider) -> str:
+        creds = await self._oauth_service.get_userinfo(provider=provider)
 
-        if user is None:
-            user = await self.register_user_via_oauth(
-                provider=provider, oauth_id=oauth_id
-            )
+        user = await self._get_or_create_user_via_oauth(creds=creds)
 
-        return user
+        return await self._create_session(user=user)

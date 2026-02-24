@@ -1,26 +1,14 @@
 from fastapi import APIRouter, Path, Request, status
 from fastapi.responses import RedirectResponse
 
-from src.api.auth.dependencies import (
-    CreateUserSessionUseCaseDep,
-    GetOAuthUserInfoUseCaseDep,
-    GetOrCreateUserViaOAuthUseCaseDep,
-)
+from src.api.auth.dependencies import AuthenticateViaOAuthUseCaseDep
 from src.api.auth.utils import set_session_cookie
 from src.domain.auth.config import settings
 from src.infrastructure.rate_limit.config import settings as rate_limit_settings
 from src.infrastructure.rate_limit.limiter import limiter
-from src.models.user_models import UserModel
-from src.schemas.auth_schemas import OAuthCredsSchema, OAuthProvider
+from src.schemas.auth_schemas import OAuthProvider
 
 router = APIRouter()
-
-
-class UserAdapter:
-    def __init__(self, user: UserModel):
-        self.id = user.id
-        self.is_admin = user.is_admin
-        self.is_banned = user.is_banned
 
 
 @router.get(
@@ -32,19 +20,11 @@ class UserAdapter:
 @limiter.limit(rate_limit_settings.AUTH_RATE_LIMIT)
 @limiter.limit(rate_limit_settings.AUTH_RATE_LIMIT_HOURLY)
 async def oauth_callback(
-    request: Request,
-    get_oauth_user_info: GetOAuthUserInfoUseCaseDep,
-    get_or_create_user_via_oauth: GetOrCreateUserViaOAuthUseCaseDep,
-    create_session: CreateUserSessionUseCaseDep,
+    request: Request,  # Used by rate limiter, don't remove
+    authenticate_via_oauth: AuthenticateViaOAuthUseCaseDep,
     provider: OAuthProvider = Path(..., description="OAuth provider name"),
 ) -> RedirectResponse:
-    oauth_user_info = await get_oauth_user_info(provider=provider, request=request)
-
-    creds = OAuthCredsSchema(provider=provider, oauth_id=oauth_user_info.id)
-
-    user = await get_or_create_user_via_oauth(creds=creds)
-
-    session_id = await create_session(user=UserAdapter(user=user))
+    session_id = await authenticate_via_oauth(provider=provider)
 
     response = RedirectResponse(
         url=settings.OAUTH_SUCCESS_REDIRECT_URL, status_code=status.HTTP_302_FOUND

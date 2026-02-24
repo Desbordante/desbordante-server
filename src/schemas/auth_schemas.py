@@ -8,10 +8,10 @@ class OAuthProvider(StrEnum):
     GOOGLE = "google"
 
 
-class OAuthUserInfoSchema(BaseSchema):
-    id: str
-
-
 class OAuthCredsSchema(BaseSchema):
     provider: OAuthProvider
     oauth_id: str
+
+
+class OAuthUserInfoSchema(OAuthCredsSchema):
+    pass
