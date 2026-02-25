@@ -5,7 +5,7 @@ import pytest
 from fastapi.responses import RedirectResponse
 from starlette.requests import Request
 
-from src.api.auth.dependencies import get_oauth_service
+from src.api.auth.dependencies import get_auth_service
 from src.main import app
 
 from tests.integration.auth.constants import (
@@ -40,6 +40,6 @@ def mock_oauth(
         return oauth_service_mock
 
     monkeypatch.setattr(Request, "url_for", url_for_mock)
-    app.dependency_overrides[get_oauth_service] = _override
+    app.dependency_overrides[get_auth_service] = _override
     yield
-    app.dependency_overrides.pop(get_oauth_service, None)
+    app.dependency_overrides.pop(get_auth_service, None)

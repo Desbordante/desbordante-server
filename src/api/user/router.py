@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from src.api.user.routes.create_task import router as create_task_router
+from src.api.user.routes.get_linked_accounts import router as get_linked_accounts_router
 from src.api.user.routes.get_me import router as get_me_router
 from src.api.user.routes.get_my_datasets import router as get_my_datasets_router
 from src.api.user.routes.get_my_stats import router as get_my_stats_router
@@ -14,6 +15,7 @@ router = APIRouter()
 
 
 router.include_router(get_me_router)
+router.include_router(get_linked_accounts_router)
 router.include_router(get_my_stats_router)
 router.include_router(get_my_datasets_router)
 router.include_router(upload_my_dataset_router)

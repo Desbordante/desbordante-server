@@ -46,7 +46,6 @@ class UnauthorizedException(BaseAppException):
         super().__init__(
             message,
             status_code=status.HTTP_401_UNAUTHORIZED,
-            headers={"WWW-Authenticate": "Bearer"},
         )
 
 

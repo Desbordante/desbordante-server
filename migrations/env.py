@@ -8,6 +8,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from src.db.config import settings
+from src.models.auth_models import AuthAccountModel  # type: ignore # noqa
 from src.models.base_models import BaseModel
 from src.models.dataset_models import DatasetModel  # type: ignore # noqa
 from src.models.user_models import UserModel  # type: ignore # noqa

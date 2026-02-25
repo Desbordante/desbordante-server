@@ -2,60 +2,48 @@ from typing import Annotated
 
 from fastapi import Depends, Request
 
-from src.api.dependencies import SessionManagerDep, UserCrudDep
-from src.infrastructure.auth.oauth_service import AuthlibOAuthService
-from src.usecases.auth.authenticate_via_oauth import AuthenticateViaOAuthUseCase
-from src.usecases.auth.get_or_create_user_via_oauth import (
-    GetOrCreateUserViaOAuthUseCase,
+from src.api.dependencies import AuthAccountCrudDep, SessionManagerDep, UserCrudDep
+from src.infrastructure.auth.auth_service import AuthService
+from src.usecases.auth.authenticate_via_provider import AuthenticateViaProviderUseCase
+from src.usecases.auth.get_or_create_user_via_provider import (
+    GetOrCreateUserViaProviderUseCase,
 )
-from src.usecases.auth.get_user_by_oauth import GetUserByOAuthUseCase
-from src.usecases.auth.register_user_via_oauth import RegisterUserViaOAuthUseCase
+from src.usecases.auth.register_user_via_provider import RegisterUserViaProviderUseCase
 from src.usecases.session.create_user_session import CreateUserSessionUseCase
 from src.usecases.session.destroy_session import DestroySessionUseCase
 
 
-def get_oauth_service(request: Request) -> AuthlibOAuthService:
-    """Per-request OAuth service with request bound in constructor."""
-    return AuthlibOAuthService(request=request)
+def get_auth_service(request: Request) -> AuthService:
+    """Per-request auth service with request bound in constructor."""
+    return AuthService(request=request)
 
 
-OAuthServiceDep = Annotated[AuthlibOAuthService, Depends(get_oauth_service)]
+AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]
 
 
-async def get_get_user_by_oauth_use_case(
+async def get_register_user_via_provider_use_case(
     user_crud: UserCrudDep,
-) -> GetUserByOAuthUseCase:
-    return GetUserByOAuthUseCase(user_crud=user_crud)
+) -> RegisterUserViaProviderUseCase:
+    return RegisterUserViaProviderUseCase(user_crud=user_crud)
 
 
-GetUserByOAuthUseCaseDep = Annotated[
-    GetUserByOAuthUseCase, Depends(get_get_user_by_oauth_use_case)
+RegisterUserViaProviderUseCaseDep = Annotated[
+    RegisterUserViaProviderUseCase, Depends(get_register_user_via_provider_use_case)
 ]
 
 
-async def get_register_user_via_oauth_use_case(
-    user_crud: UserCrudDep,
-) -> RegisterUserViaOAuthUseCase:
-    return RegisterUserViaOAuthUseCase(user_crud=user_crud)
-
-
-RegisterUserViaOAuthUseCaseDep = Annotated[
-    RegisterUserViaOAuthUseCase, Depends(get_register_user_via_oauth_use_case)
-]
-
-
-async def get_or_create_user_via_oauth_use_case(
-    get_user_by_oauth: GetUserByOAuthUseCaseDep,
-    register_user_via_oauth: RegisterUserViaOAuthUseCaseDep,
-) -> GetOrCreateUserViaOAuthUseCase:
-    return GetOrCreateUserViaOAuthUseCase(
-        get_user_by_oauth=get_user_by_oauth,
-        register_user_via_oauth=register_user_via_oauth,
+async def get_or_create_user_via_provider_use_case(
+    register_user_via_provider: RegisterUserViaProviderUseCaseDep,
+    auth_account_crud: AuthAccountCrudDep,
+) -> GetOrCreateUserViaProviderUseCase:
+    return GetOrCreateUserViaProviderUseCase(
+        auth_account_crud=auth_account_crud,
+        register_user_via_provider=register_user_via_provider,
     )
 
 
-GetOrCreateUserViaOAuthUseCaseDep = Annotated[
-    GetOrCreateUserViaOAuthUseCase, Depends(get_or_create_user_via_oauth_use_case)
+GetOrCreateUserViaProviderUseCaseDep = Annotated[
+    GetOrCreateUserViaProviderUseCase, Depends(get_or_create_user_via_provider_use_case)
 ]
 
 
@@ -70,20 +58,20 @@ CreateUserSessionUseCaseDep = Annotated[
 ]
 
 
-async def get_authenticate_via_oauth_use_case(
-    oauth_service: OAuthServiceDep,
-    get_or_create_user_via_oauth: GetOrCreateUserViaOAuthUseCaseDep,
+async def get_authenticate_via_provider_use_case(
+    auth_service: AuthServiceDep,
+    get_or_create_user_via_provider: GetOrCreateUserViaProviderUseCaseDep,
     create_session: CreateUserSessionUseCaseDep,
-) -> AuthenticateViaOAuthUseCase:
-    return AuthenticateViaOAuthUseCase(
-        oauth_service=oauth_service,
-        get_or_create_user_via_oauth=get_or_create_user_via_oauth,
+) -> AuthenticateViaProviderUseCase:
+    return AuthenticateViaProviderUseCase(
+        auth_service=auth_service,
+        get_or_create_user_via_provider=get_or_create_user_via_provider,
         create_session=create_session,
     )
 
 
-AuthenticateViaOAuthUseCaseDep = Annotated[
-    AuthenticateViaOAuthUseCase, Depends(get_authenticate_via_oauth_use_case)
+AuthenticateViaProviderUseCaseDep = Annotated[
+    AuthenticateViaProviderUseCase, Depends(get_authenticate_via_provider_use_case)
 ]
 
 

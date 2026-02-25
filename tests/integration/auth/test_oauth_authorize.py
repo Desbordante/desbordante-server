@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 from httpx import AsyncClient
 
-from src.schemas.auth_schemas import OAuthProvider
+from src.schemas.auth_schemas import AuthProvider
 
 from tests.integration.auth.constants import (
     FAKE_OAUTH_REDIRECT_URL,
@@ -14,14 +14,14 @@ from tests.integration.auth.constants import (
 pytestmark = pytest.mark.asyncio
 
 
-@pytest.mark.parametrize("provider", list(OAuthProvider))
-async def test_oauth_authorize_success(
+@pytest.mark.parametrize("provider", list(AuthProvider))
+async def test_provider_authorize_success(
     client: AsyncClient,
     oauth_service_mock: MagicMock,
     url_for_mock: MagicMock,
-    provider: OAuthProvider,
+    provider: AuthProvider,
 ) -> None:
-    """Returns 302, calls url_for and OAuthService.get_authorization_redirect with correct params."""
+    """Returns 302, calls url_for and AuthService.get_authorization_redirect with correct params."""
     response = await client.get(
         OAUTH_AUTHORIZE_PATH.format(provider=provider.value),
         follow_redirects=False,
@@ -29,7 +29,7 @@ async def test_oauth_authorize_success(
 
     assert response.status_code == 302
     assert response.headers["location"] == FAKE_OAUTH_REDIRECT_URL
-    url_for_mock.assert_called_once_with("oauth_callback", provider=provider.value)
+    url_for_mock.assert_called_once_with("provider_callback", provider=provider.value)
     oauth_service_mock.get_authorization_redirect.assert_called_once_with(
         provider=provider,
         redirect_uri=FAKE_REDIRECT_URI,
@@ -37,7 +37,7 @@ async def test_oauth_authorize_success(
     oauth_service_mock.get_userinfo.assert_not_called()
 
 
-async def test_oauth_authorize_invalid_provider_returns_422(
+async def test_provider_authorize_invalid_provider_returns_422(
     client: AsyncClient,
 ) -> None:
     """GET /v1/auth/{provider}/authorize/ returns 422 when provider is invalid."""

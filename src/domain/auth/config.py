@@ -5,7 +5,7 @@ load_dotenv()
 
 
 class Settings(BaseSettings):
-    OAUTH_SUCCESS_REDIRECT_URL: str
+    AUTH_SUCCESS_REDIRECT_URL: str
 
     GITHUB_CLIENT_ID: str
     GITHUB_CLIENT_SECRET: str

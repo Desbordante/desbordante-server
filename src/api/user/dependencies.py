@@ -4,6 +4,7 @@ from fastapi import Depends
 
 from src.api.dependencies import (
     AdminSessionDep,
+    AuthAccountCrudDep,
     DatasetCrudDep,
     SessionManagerDep,
     TaskCrudDep,
@@ -12,6 +13,7 @@ from src.api.dependencies import (
 )
 from src.models.user_models import UserModel
 from src.schemas.session_schemas import SessionSchema
+from src.usecases.user.get_linked_accounts import GetLinkedAccountsUseCase
 from src.usecases.dataset.get_my_datasets import GetMyDatasetsUseCase
 from src.usecases.dataset.get_user_datasets import GetUserDatasetsUseCase
 from src.usecases.dataset.upload_dataset import UploadDatasetUseCase
@@ -93,6 +95,21 @@ async def get_get_my_datasets_use_case(
 
 GetMyDatasetsUseCaseDep = Annotated[
     GetMyDatasetsUseCase, Depends(get_get_my_datasets_use_case)
+]
+
+
+async def get_get_linked_accounts_use_case(
+    auth_account_crud: AuthAccountCrudDep,
+    user_session: UserSessionDep,
+) -> GetLinkedAccountsUseCase:
+    return GetLinkedAccountsUseCase(
+        auth_account_crud=auth_account_crud,
+        user=UserAdapter(user_session),
+    )
+
+
+GetLinkedAccountsUseCaseDep = Annotated[
+    GetLinkedAccountsUseCase, Depends(get_get_linked_accounts_use_case)
 ]
 
 

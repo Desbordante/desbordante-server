@@ -1,6 +1,5 @@
 from abc import ABC
 from typing import Any, Sequence, TypedDict, Unpack
-from uuid import UUID
 
 from sqlalchemy import (
     ColumnElement,
@@ -23,17 +22,13 @@ from src.schemas.base_schemas import (
 )
 
 
-class BaseFindProps[T: int | UUID](TypedDict, total=False):
-    id: T
+class BaseFindProps(TypedDict, total=False): ...
 
 
 class BaseUpdateProps(TypedDict, total=False): ...
 
 
-class BaseCrud[
-    ModelType: BaseModel,
-    IdType: int | UUID = UUID,
-](ABC):
+class BaseCrud[ModelType: BaseModel](ABC):
     model: type[ModelType]
     _session: AsyncSession
 
@@ -52,7 +47,7 @@ class BaseCrud[
                 f"{self.model.__name__} already exists"
             )
 
-    async def get_by(self, **kwargs: Unpack[BaseFindProps[IdType]]) -> ModelType:
+    async def get_by(self, **kwargs: Unpack[BaseFindProps]) -> ModelType:
         try:
             query = select(self.model).filter_by(**kwargs)
             result = await self._session.execute(query)
@@ -75,7 +70,7 @@ class BaseCrud[
         *,
         pagination: PaginationParamsSchema,
         query_params: Any,
-        **kwargs: Unpack[BaseFindProps[IdType]],
+        **kwargs: Unpack[BaseFindProps],
     ) -> PaginatedResult[ModelType]:
         return await self._get_many(
             pagination=pagination, query_params=query_params, **kwargs
@@ -87,7 +82,7 @@ class BaseCrud[
         pagination: PaginationParamsSchema,
         query_params: Any,
         query: Select[tuple[ModelType]] | None = None,
-        **kwargs: Unpack[BaseFindProps[IdType]],
+        **kwargs: Unpack[BaseFindProps],
     ) -> PaginatedResult[ModelType]:
         query = select(self.model) if query is None else query
 

@@ -1,7 +1,6 @@
 from typing import TypedDict, Unpack
 from uuid import UUID
 
-
 from src.crud.base_crud import BaseCrud
 from src.models.task_models import TaskModel
 
@@ -11,7 +10,7 @@ class TaskFindProps(TypedDict, total=False):
     owner_id: int
 
 
-class TaskCrud(BaseCrud[TaskModel, UUID]):
+class TaskCrud(BaseCrud[TaskModel]):
     model = TaskModel
 
     async def get_by(self, **kwargs: Unpack[TaskFindProps]) -> TaskModel:

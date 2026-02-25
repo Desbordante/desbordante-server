@@ -6,6 +6,7 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.crud.dataset_crud import DatasetCrud
+from src.crud.auth_account_crud import AuthAccountCrud
 from src.crud.task_crud import TaskCrud
 from src.crud.user_crud import UserCrud
 from src.db.session import get_session
@@ -48,6 +49,13 @@ async def get_task_crud(session: SessionDep) -> TaskCrud:
 
 
 TaskCrudDep = Annotated[TaskCrud, Depends(get_task_crud)]
+
+
+async def get_auth_account_crud(session: SessionDep) -> AuthAccountCrud:
+    return AuthAccountCrud(session=session)
+
+
+AuthAccountCrudDep = Annotated[AuthAccountCrud, Depends(get_auth_account_crud)]
 
 
 def get_session_manager(redis: RedisDep) -> SessionManager:

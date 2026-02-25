@@ -25,7 +25,7 @@ class DatasetUpdateProps(TypedDict, total=False):
     pass
 
 
-class DatasetCrud(BaseCrud[DatasetModel, UUID]):
+class DatasetCrud(BaseCrud[DatasetModel]):
     model = DatasetModel
 
     async def get_by(self, **kwargs: Unpack[DatasetFindProps]) -> DatasetModel:
