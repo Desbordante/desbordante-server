@@ -5,13 +5,15 @@ from fastapi.security import OAuth2PasswordBearer
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.crud.dataset_crud import DatasetCrud
 from src.crud.auth_account_crud import AuthAccountCrud
+from src.crud.dataset_crud import DatasetCrud
 from src.crud.task_crud import TaskCrud
 from src.crud.user_crud import UserCrud
 from src.db.session import get_session
+from src.domain.authorization.entities import Actor
 from src.domain.session.config import settings
 from src.exceptions import ForbiddenException, UnauthorizedException
+from src.infrastructure.authorization.dataset_policy import DatasetPolicy
 from src.infrastructure.session.manager import SessionManager
 from src.schemas.base_schemas import PaginationParamsSchema
 from src.schemas.session_schemas import SessionSchema
@@ -119,5 +121,21 @@ async def get_admin_session(user_session: UserSessionDep) -> SessionSchema:
 
 AdminSessionDep = Annotated[SessionSchema, Depends(get_admin_session)]
 
-
 PaginationParamsDep = Annotated[PaginationParamsSchema, Depends(PaginationParamsSchema)]
+
+
+async def get_actor(user_session: OptionalUserSessionDep) -> Actor:
+    if user_session is None:
+        return Actor(user_id=None, is_admin=False)
+
+    return Actor(user_id=user_session.user_id, is_admin=user_session.is_admin)
+
+
+ActorDep = Annotated[Actor, Depends(get_actor)]
+
+
+async def get_dataset_policy() -> DatasetPolicy:
+    return DatasetPolicy()
+
+
+DatasetPolicyDep = Annotated[DatasetPolicy, Depends(get_dataset_policy)]

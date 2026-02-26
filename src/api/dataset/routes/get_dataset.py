@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, status
 
 from src.api.dataset.dependencies import GetDatasetUseCaseDep
-from src.api.dependencies import OptionalUserSessionDep
+from src.api.dependencies import ActorDep
 from src.schemas.base_schemas import ApiErrorSchema
 from src.schemas.dataset_schemas import DatasetSchema
 
@@ -26,10 +26,6 @@ router = APIRouter()
 async def get_dataset(
     id: UUID,
     get_dataset: GetDatasetUseCaseDep,
-    optional_session: OptionalUserSessionDep,
+    actor: ActorDep,
 ) -> Any:
-    return await get_dataset(
-        id=id,
-        current_user_id=optional_session.id if optional_session else None,
-        is_admin=optional_session.is_admin if optional_session else False,
-    )
+    return await get_dataset(id=id, actor=actor)

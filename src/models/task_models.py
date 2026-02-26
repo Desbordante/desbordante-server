@@ -29,6 +29,8 @@ class TaskModel(BaseModel):
         JSONB, default=None
     )
 
+    is_public: Mapped[bool] = mapped_column(default=False)
+
     dataset_id: Mapped[UUID] = mapped_column(
         ForeignKey("datasets.id", ondelete="CASCADE")
     )
