@@ -1,16 +1,15 @@
-from src.domain.authorization.entities import Actor
-from src.models.user_models import UserModel
+from src.domain.authorization.entities import Actor, User
 
 
 class UserPolicy:
     """Access policy for users."""
 
-    def can_read(self, actor: Actor, user: UserModel) -> bool:
+    def can_read(self, actor: Actor, user: User) -> bool:
         if actor.is_admin:
             return True
         return actor.user_id == user.id
 
-    def can_ban(self, actor: Actor, user: UserModel) -> bool:
+    def can_ban(self, actor: Actor, user: User) -> bool:
         if actor.user_id == user.id:
             return False
 

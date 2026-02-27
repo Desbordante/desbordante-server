@@ -1,8 +1,8 @@
-from typing import Protocol
+from typing import Protocol, cast
 from uuid import UUID
 
-from src.domain.authorization.entities import Actor
-from src.exceptions import ForbiddenException
+from src.domain.authorization.entities import Actor, Dataset
+from src.exceptions import ResourceNotFoundException
 from src.models.dataset_models import DatasetModel
 
 
@@ -11,7 +11,7 @@ class DatasetCrud(Protocol):
 
 
 class DatasetPolicy(Protocol):
-    def can_read(self, actor: Actor, dataset: DatasetModel) -> bool: ...
+    def can_read(self, actor: Actor, dataset: Dataset) -> bool: ...
 
 
 class GetDatasetUseCase:
@@ -32,7 +32,7 @@ class GetDatasetUseCase:
     ) -> DatasetModel:
         dataset = await self.dataset_crud.get_by(id=id)
 
-        if not self.dataset_policy.can_read(actor, dataset):
-            raise ForbiddenException("Access denied")
+        if not self.dataset_policy.can_read(actor, cast(Dataset, dataset)):
+            raise ResourceNotFoundException("Dataset not found")
 
         return dataset
