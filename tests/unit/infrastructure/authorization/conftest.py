@@ -1,9 +1,11 @@
 import pytest
 
-from src.domain.authorization.entities import Actor, Dataset, Task, User
+from src.domain.authorization.entities import Actor
 from src.infrastructure.authorization.dataset_policy import DatasetPolicy
 from src.infrastructure.authorization.task_policy import TaskPolicy
 from src.infrastructure.authorization.user_policy import UserPolicy
+
+from tests.unit.infrastructure.authorization.constants import ADMIN_USER_ID, USER_ID
 
 
 @pytest.fixture
@@ -13,12 +15,12 @@ def anonymous_actor() -> Actor:
 
 @pytest.fixture
 def user_actor() -> Actor:
-    return Actor(user_id=1, is_admin=False)
+    return Actor(user_id=USER_ID, is_admin=False)
 
 
 @pytest.fixture
 def admin_actor() -> Actor:
-    return Actor(user_id=2, is_admin=True)
+    return Actor(user_id=ADMIN_USER_ID, is_admin=True)
 
 
 @pytest.fixture
@@ -34,15 +36,3 @@ def task_policy() -> TaskPolicy:
 @pytest.fixture
 def user_policy() -> UserPolicy:
     return UserPolicy()
-
-
-def make_dataset(*, owner_id: int, is_public: bool) -> Dataset:
-    return Dataset(owner_id=owner_id, is_public=is_public)
-
-
-def make_task(*, owner_id: int, is_public: bool) -> Task:
-    return Task(owner_id=owner_id, is_public=is_public)
-
-
-def make_user(*, id: int, is_admin: bool = False) -> User:
-    return User(id=id, is_admin=is_admin)
