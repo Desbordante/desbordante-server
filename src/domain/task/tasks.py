@@ -10,9 +10,9 @@ from celery.signals import task_failure, task_postrun, task_prerun
 from src.crud.dataset_crud import DatasetCrud
 from src.crud.task_crud import TaskCrud
 from src.db.session import scoped_session
-from src.domain.dataset.storage import storage
 from src.domain.task.resource_intensive_task import ResourceIntensiveTask
 from src.domain.task.utils import match_task_by_primitive_name
+from src.infrastructure.storage.client import create_s3_storage
 from src.models.dataset_models import DatasetModel
 from src.models.task_models import TaskModel
 from src.schemas.base_schemas import TaskStatus
@@ -59,7 +59,8 @@ def data_profiling_task(
 
     dataset = task.dataset
 
-    data = storage.download_file_sync(path=dataset.path)
+    storage = create_s3_storage()
+    data = storage.download_sync(path=dataset.path)
 
     params = TabularDatasetParams.model_validate(dataset.params)
 

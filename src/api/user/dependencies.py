@@ -7,6 +7,7 @@ from src.api.dependencies import (
     AuthAccountCrudDep,
     DatasetCrudDep,
     SessionManagerDep,
+    StorageDep,
     TaskCrudDep,
     UserCrudDep,
     UserSessionDep,
@@ -115,10 +116,13 @@ GetLinkedAccountsUseCaseDep = Annotated[
 
 async def get_upload_my_dataset_use_case(
     dataset_crud: DatasetCrudDep,
+    storage: StorageDep,
     user_session: UserSessionDep,
 ) -> UploadDatasetUseCase:
     return UploadDatasetUseCase(
-        dataset_crud=dataset_crud, user=UserAdapter(user_session)
+        dataset_crud=dataset_crud,
+        storage=storage,
+        user=UserAdapter(user_session),
     )
 
 

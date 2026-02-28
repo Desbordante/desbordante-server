@@ -15,6 +15,7 @@ from src.domain.session.config import settings
 from src.exceptions import ForbiddenException, UnauthorizedException
 from src.infrastructure.authorization.dataset_policy import DatasetPolicy
 from src.infrastructure.session.manager import SessionManager
+from src.infrastructure.storage.client import S3Storage
 from src.schemas.base_schemas import PaginationParamsSchema
 from src.schemas.session_schemas import SessionSchema
 from src.usecases.session.get_user_session import GetUserSessionUseCase
@@ -30,6 +31,13 @@ async def get_redis(request: Request) -> Redis:
 
 
 RedisDep = Annotated[Redis, Depends(get_redis)]
+
+
+async def get_storage(request: Request) -> S3Storage:
+    return request.app.state.storage
+
+
+StorageDep = Annotated[S3Storage, Depends(get_storage)]
 
 
 async def get_user_crud(session: SessionDep) -> UserCrud:

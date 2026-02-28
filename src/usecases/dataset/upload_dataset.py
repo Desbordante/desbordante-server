@@ -5,8 +5,6 @@ from uuid import uuid4
 
 from aioredlock import LockError
 
-from src.domain.dataset.config import settings as dataset_settings
-from src.domain.dataset.storage import storage
 from src.domain.user.config import settings as user_settings
 from src.exceptions import (
     ConflictException,
@@ -14,6 +12,7 @@ from src.exceptions import (
     TooManyRequestsException,
 )
 from src.infrastructure.lock import lock_manager
+from src.infrastructure.storage.config import settings as storage_settings
 from src.models.dataset_models import DatasetModel
 from src.schemas.dataset_schemas import (
     DatasetsStatsSchema,
@@ -30,6 +29,11 @@ class DatasetCrud(Protocol):
     async def get_public_stats(self) -> DatasetsStatsSchema: ...
 
 
+class Storage(Protocol):
+    async def upload(self, *, file: File, path: str) -> str: ...
+    async def delete(self, *, path: str) -> None: ...
+
+
 class User(Protocol):
     id: int
 
@@ -39,9 +43,11 @@ class UploadDatasetUseCase:
         self,
         *,
         dataset_crud: DatasetCrud,
+        storage: Storage,
         user: User,
     ):
         self.dataset_crud = dataset_crud
+        self.storage = storage
         self.user = user
 
     async def __call__(
@@ -51,7 +57,7 @@ class UploadDatasetUseCase:
             async with await lock_manager.lock(f"user_upload_lock:{self.user.id}"):
                 if is_public:
                     public_stats = await self.dataset_crud.get_public_stats()
-                    storage_limit = dataset_settings.PUBLIC_STORAGE_LIMIT
+                    storage_limit = storage_settings.PUBLIC_STORAGE_LIMIT
                     total_size = public_stats.total_size
                 else:
                     user_stats = await self.dataset_crud.get_stats(user_id=self.user.id)
@@ -71,7 +77,7 @@ class UploadDatasetUseCase:
                 _, file_extension = os.path.splitext(file.name)
                 path = f"{'public' if is_public else self.user.id}/{uuid4()}{file_extension}"
 
-                await storage.upload_file(file=file, path=path)
+                await self.storage.upload(file=file, path=path)
 
                 dataset_entity = DatasetModel(
                     type=params.type,
@@ -90,7 +96,7 @@ class UploadDatasetUseCase:
 
                     return created_dataset
                 except Exception as e:
-                    await storage.delete_file(path=path)
+                    await self.storage.delete(path=path)
                     raise e
         except LockError as e:
             logger.exception(e)

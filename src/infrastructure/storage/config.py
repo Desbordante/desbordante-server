@@ -18,8 +18,9 @@ class Settings(BaseSettings):
     PUBLIC_STORAGE_LIMIT: int = 1024 * 1024 * 1024 * 10  # 10GB
 
     @cached_property
-    def minio_endpoint(self) -> str:
-        return f"{self.MINIO_HOST}:{self.MINIO_PORT}"
+    def endpoint_url(self) -> str:
+        protocol = "https" if self.MINIO_SECURE else "http"
+        return f"{protocol}://{self.MINIO_HOST}:{self.MINIO_PORT}"
 
 
 settings = Settings()  # type: ignore

@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from src.api.dependencies import AdminSessionDep, DatasetCrudDep
+from src.api.dependencies import AdminSessionDep, DatasetCrudDep, StorageDep
 from src.usecases.dataset.get_public_datasets import GetPublicDatasetsUseCase
 from src.usecases.dataset.upload_dataset import UploadDatasetUseCase
 
@@ -20,9 +20,14 @@ GetPublicDatasetsUseCaseDep = Annotated[
 
 async def get_upload_public_dataset_use_case(
     dataset_crud: DatasetCrudDep,
+    storage: StorageDep,
     admin_session: AdminSessionDep,
 ) -> UploadDatasetUseCase:
-    return UploadDatasetUseCase(dataset_crud=dataset_crud, user=admin_session)
+    return UploadDatasetUseCase(
+        dataset_crud=dataset_crud,
+        storage=storage,
+        user=admin_session,
+    )
 
 
 UploadPublicDatasetUseCaseDep = Annotated[

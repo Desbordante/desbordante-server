@@ -1,7 +1,6 @@
 from typing import Protocol
 from uuid import UUID
 
-from src.domain.dataset.storage import storage
 from src.exceptions import ForbiddenException
 from src.models.dataset_models import DatasetModel
 
@@ -11,13 +10,19 @@ class DatasetCrud(Protocol):
     async def delete(self, *, entity: DatasetModel) -> None: ...
 
 
+class Storage(Protocol):
+    async def delete(self, *, path: str) -> None: ...
+
+
 class DeleteDatasetUseCase:
     def __init__(
         self,
         *,
         dataset_crud: DatasetCrud,
+        storage: Storage,
     ):
         self.dataset_crud = dataset_crud
+        self.storage = storage
 
     async def __call__(
         self,
@@ -35,6 +40,6 @@ class DeleteDatasetUseCase:
             if dataset.owner_id != current_user_id and not is_admin:
                 raise ForbiddenException("Access denied")
 
-        await storage.delete_file(path=dataset.path)
+        await self.storage.delete(path=dataset.path)
 
         await self.dataset_crud.delete(entity=dataset)
