@@ -40,6 +40,7 @@ dev = [
     "celery-types>=0.23.0",
     "faker>=37.8.0",
     "fakeredis>=2.34.0",
+    "moto[s3,server]>=5.1.21",
     "mypy>=1.17.1",
     "pre-commit>=4.1.0",
     "pytest>=8.3.5",
@@ -55,6 +56,9 @@ dev = [
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "integration: marks tests as integration (require external services)",
+]
 testpaths = [
     "tests"
 ]
