@@ -2,6 +2,7 @@ from typing import Any
 
 from fastapi import APIRouter, File, Form, Request, UploadFile, status
 
+from src.api.dependencies import AuthenticatedActorDep
 from src.api.user.dependencies import UploadMyDatasetUseCaseDep
 from src.infrastructure.rate_limit.config import settings as rate_limit_settings
 from src.infrastructure.rate_limit.limiter import limiter
@@ -23,8 +24,8 @@ class UploadFileAdapter:
     "/me/datasets/",
     response_model=PrivateDatasetSchema,
     status_code=status.HTTP_201_CREATED,
-    summary="Upload my private dataset",
-    description="Upload private dataset for current user",
+    summary="Upload my dataset",
+    description="Upload dataset to current user's account",
     responses={
         status.HTTP_401_UNAUTHORIZED: {"model": ApiErrorSchema},
         status.HTTP_409_CONFLICT: {"model": ApiErrorSchema},
@@ -37,9 +38,13 @@ class UploadFileAdapter:
 async def upload_my_dataset(
     request: Request,
     upload_dataset: UploadMyDatasetUseCaseDep,
+    actor: AuthenticatedActorDep,
     file: UploadFile = File(...),
+    is_public: bool = Form(default=False),
     params: OneOfUploadDatasetParams = Form(...),
 ) -> Any:
     adapted_file = UploadFileAdapter(upload_file=file)
 
-    return await upload_dataset(file=adapted_file, params=params, is_public=False)
+    return await upload_dataset(
+        actor=actor, file=adapted_file, params=params, is_public=is_public
+    )

@@ -6,6 +6,7 @@ from src.api.dependencies import (
     AdminSessionDep,
     AuthAccountCrudDep,
     DatasetCrudDep,
+    DatasetPolicyDep,
     SessionManagerDep,
     StorageDep,
     TaskCrudDep,
@@ -14,11 +15,11 @@ from src.api.dependencies import (
 )
 from src.models.user_models import UserModel
 from src.schemas.session_schemas import SessionSchema
-from src.usecases.user.get_linked_accounts import GetLinkedAccountsUseCase
 from src.usecases.dataset.get_my_datasets import GetMyDatasetsUseCase
 from src.usecases.dataset.get_user_datasets import GetUserDatasetsUseCase
 from src.usecases.dataset.upload_dataset import UploadDatasetUseCase
 from src.usecases.task.create_task import CreateTaskUseCase
+from src.usecases.user.get_linked_accounts import GetLinkedAccountsUseCase
 from src.usecases.user.get_stats import GetStatsUseCase
 from src.usecases.user.get_user_by_id import GetUserByIdUseCase
 from src.usecases.user.get_user_stats import GetUserStatsUseCase
@@ -117,12 +118,12 @@ GetLinkedAccountsUseCaseDep = Annotated[
 async def get_upload_my_dataset_use_case(
     dataset_crud: DatasetCrudDep,
     storage: StorageDep,
-    user_session: UserSessionDep,
+    dataset_policy: DatasetPolicyDep,
 ) -> UploadDatasetUseCase:
     return UploadDatasetUseCase(
         dataset_crud=dataset_crud,
         storage=storage,
-        user=UserAdapter(user_session),
+        dataset_policy=dataset_policy,
     )
 
 

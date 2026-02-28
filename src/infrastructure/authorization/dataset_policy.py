@@ -12,6 +12,7 @@ class DatasetPolicy:
 
     def can_create(self, actor: Actor, dataset: Dataset) -> bool:
         is_anonymous = actor.user_id is None
+
         if is_anonymous:
             return False
 

@@ -45,11 +45,12 @@ class S3Storage:
     async def upload(self, *, file: File, path: str) -> str:
         """Upload file to S3 storage."""
         async with self.get_client() as client:
-            body = file.data.read()
+            file.data.seek(0)
+
             await client.put_object(
                 Bucket=self._bucket,
                 Key=path,
-                Body=body,
+                Body=file.data,
                 ContentType=file.content_type,
             )
         return path
@@ -69,7 +70,7 @@ class S3Storage:
 
 def create_s3_storage() -> S3Storage:
     return S3Storage(
-        endpoint_url=settings.endpoint_url,
+        endpoint_url=settings.minio_endpoint_url.unicode_string(),
         access_key=settings.MINIO_ROOT_USER,
         secret_key=settings.MINIO_ROOT_PASSWORD.get_secret_value(),
         bucket=settings.MINIO_BUCKET,

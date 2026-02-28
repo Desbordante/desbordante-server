@@ -102,12 +102,18 @@ OneOfUploadDatasetParams = Annotated[
 ]
 
 
+class DatasetStatus(StrEnum):
+    UPLOADING = auto()
+    READY = auto()
+
+
 class BaseDatasetSchema(BaseSchema):
     id: UUID
     type: DatasetType
     name: str
     size: int
     params: OneOfDatasetParams
+    status: DatasetStatus
 
     created_at: datetime
     updated_at: datetime

@@ -1,12 +1,22 @@
 from dataclasses import dataclass
+from typing import Literal, Protocol
 
 
-@dataclass(frozen=True)
-class Actor:
-    """Authorization subject."""
+class AnonymousActor(Protocol):
+    """Anonymous authorization subject."""
 
-    user_id: int | None  # None = anonymous
-    is_admin: bool = False
+    user_id: None
+    is_admin: Literal[False]
+
+
+class AuthenticatedActor(Protocol):
+    """Authenticated authorization subject."""
+
+    user_id: int
+    is_admin: bool
+
+
+Actor = AnonymousActor | AuthenticatedActor
 
 
 @dataclass(frozen=True)

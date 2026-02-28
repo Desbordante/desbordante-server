@@ -1,7 +1,6 @@
 from typing import Annotated
 
 from fastapi import Depends, Request
-from fastapi.security import OAuth2PasswordBearer
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,18 +9,19 @@ from src.crud.dataset_crud import DatasetCrud
 from src.crud.task_crud import TaskCrud
 from src.crud.user_crud import UserCrud
 from src.db.session import get_session
-from src.domain.authorization.entities import Actor
+from src.domain.authorization.entities import Actor, AuthenticatedActor
 from src.domain.session.config import settings
 from src.exceptions import ForbiddenException, UnauthorizedException
 from src.infrastructure.authorization.dataset_policy import DatasetPolicy
 from src.infrastructure.session.manager import SessionManager
 from src.infrastructure.storage.client import S3Storage
+from src.schemas.authorization_schemas import (
+    AnonymousActorSchema,
+    AuthenticatedActorSchema,
+)
 from src.schemas.base_schemas import PaginationParamsSchema
 from src.schemas.session_schemas import SessionSchema
 from src.usecases.session.get_user_session import GetUserSessionUseCase
-
-oauth2 = OAuth2PasswordBearer(tokenUrl="/auth/token", auto_error=False)
-TokenDep = Annotated[str, Depends(oauth2)]
 
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
 
@@ -134,12 +134,23 @@ PaginationParamsDep = Annotated[PaginationParamsSchema, Depends(PaginationParams
 
 async def get_actor(user_session: OptionalUserSessionDep) -> Actor:
     if user_session is None:
-        return Actor(user_id=None, is_admin=False)
+        return AnonymousActorSchema(user_id=None, is_admin=False)
 
-    return Actor(user_id=user_session.user_id, is_admin=user_session.is_admin)
+    return AuthenticatedActorSchema(
+        user_id=user_session.user_id, is_admin=user_session.is_admin
+    )
 
 
 ActorDep = Annotated[Actor, Depends(get_actor)]
+
+
+async def get_authenticated_actor(user_session: UserSessionDep) -> AuthenticatedActor:
+    return AuthenticatedActorSchema(
+        user_id=user_session.user_id, is_admin=user_session.is_admin
+    )
+
+
+AuthenticatedActorDep = Annotated[AuthenticatedActor, Depends(get_authenticated_actor)]
 
 
 async def get_dataset_policy() -> DatasetPolicy:

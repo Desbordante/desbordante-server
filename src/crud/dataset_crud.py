@@ -10,6 +10,7 @@ from src.schemas.dataset_schemas import (
     DatasetFiltersSchema,
     DatasetQueryParamsSchema,
     DatasetsStatsSchema,
+    DatasetStatus,
     DatasetType,
 )
 
@@ -22,16 +23,16 @@ class DatasetFindProps(TypedDict, total=False):
 
 
 class DatasetUpdateProps(TypedDict, total=False):
-    pass
+    status: DatasetStatus
 
 
 class DatasetCrud(BaseCrud[DatasetModel]):
     model = DatasetModel
 
-    async def get_by(self, **kwargs: Unpack[DatasetFindProps]) -> DatasetModel:
+    async def get_by(self, **kwargs: Unpack[DatasetFindProps]) -> DatasetModel:  # type: ignore
         return await super().get_by(**kwargs)
 
-    async def update(
+    async def update(  # type: ignore
         self, *, entity: DatasetModel, **kwargs: Unpack[DatasetUpdateProps]
     ) -> DatasetModel:
         return await super().update(entity=entity, **kwargs)
@@ -61,7 +62,7 @@ class DatasetCrud(BaseCrud[DatasetModel]):
             else None,
         ]
 
-    async def get_many(
+    async def get_many(  # type: ignore
         self,
         *,
         pagination: PaginationParamsSchema,
@@ -96,31 +97,3 @@ class DatasetCrud(BaseCrud[DatasetModel]):
             total_count=total_count,
             total_size=total_size,
         )
-
-    async def get_public_stats(self) -> DatasetsStatsSchema:
-        query = select(
-            func.count(self.model.id),
-            func.sum(self.model.size),
-        ).where(
-            self.model.is_public,
-        )
-        result = await self._session.execute(query)
-
-        row = result.first()
-
-        total_count = row[0] if row and row[0] else 0
-        total_size = row[1] if row and row[1] else 0
-
-        return DatasetsStatsSchema(
-            total_count=total_count,
-            total_size=total_size,
-        )
-
-    async def get_by_ids(
-        self, *, ids: list[UUID], **kwargs: Unpack[DatasetFindProps]
-    ) -> list[DatasetModel]:
-        query = select(self.model).filter_by(**kwargs).where(self.model.id.in_(ids))
-
-        result = await self._session.execute(query)
-
-        return list(result.scalars().all())
