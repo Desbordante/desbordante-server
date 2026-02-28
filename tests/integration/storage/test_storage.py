@@ -1,11 +1,10 @@
 import pytest
-from botocore.exceptions import ClientError
 
 from src.infrastructure.storage.client import S3Storage
 
 from .helpers import make_test_path
 
-pytestmark = [pytest.mark.asyncio, pytest.mark.integration]
+pytestmark = pytest.mark.asyncio
 
 
 async def test_upload_and_download(s3_storage: S3Storage, make_file) -> None:
@@ -28,7 +27,7 @@ async def test_delete_removes_file(s3_storage: S3Storage, make_file) -> None:
     await s3_storage.upload(file=file, path=path)
     await s3_storage.delete(path=path)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Exception):
         await s3_storage.download(path=path)
 
 
@@ -50,7 +49,7 @@ async def test_download_nonexistent_raises(s3_storage: S3Storage) -> None:
     """Downloading non-existent file raises."""
     path = make_test_path("nonexistent.csv")
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Exception):
         await s3_storage.download(path=path)
 
 

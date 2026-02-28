@@ -12,7 +12,6 @@ from src.exceptions import (
     TooManyRequestsException,
 )
 from src.infrastructure.lock import lock_manager
-from src.infrastructure.storage.config import settings as storage_settings
 from src.models.dataset_models import DatasetModel
 from src.schemas.dataset_schemas import (
     DatasetsStatsSchema,
@@ -55,14 +54,9 @@ class UploadDatasetUseCase:
     ) -> DatasetModel:
         try:
             async with await lock_manager.lock(f"user_upload_lock:{self.user.id}"):
-                if is_public:
-                    public_stats = await self.dataset_crud.get_public_stats()
-                    storage_limit = storage_settings.PUBLIC_STORAGE_LIMIT
-                    total_size = public_stats.total_size
-                else:
-                    user_stats = await self.dataset_crud.get_stats(user_id=self.user.id)
-                    storage_limit = user_settings.STORAGE_LIMIT
-                    total_size = user_stats.total_size
+                user_stats = await self.dataset_crud.get_stats(user_id=self.user.id)
+                storage_limit = user_settings.STORAGE_LIMIT
+                total_size = user_stats.total_size
 
                 if file.size > storage_limit:
                     raise PayloadTooLargeException(
