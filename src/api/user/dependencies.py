@@ -15,6 +15,7 @@ from src.api.dependencies import (
 )
 from src.models.user_models import UserModel
 from src.schemas.session_schemas import SessionSchema
+from src.usecases.dataset.check_content_type import CheckContentTypeUseCase
 from src.usecases.dataset.get_my_datasets import GetMyDatasetsUseCase
 from src.usecases.dataset.get_user_datasets import GetUserDatasetsUseCase
 from src.usecases.dataset.upload_dataset import UploadDatasetUseCase
@@ -155,3 +156,12 @@ async def get_create_task_use_case(
 
 
 CreateTaskUseCaseDep = Annotated[CreateTaskUseCase, Depends(get_create_task_use_case)]
+
+
+async def get_check_content_type_use_case() -> CheckContentTypeUseCase:
+    return CheckContentTypeUseCase()
+
+
+CheckContentTypeUseCaseDep = Annotated[
+    CheckContentTypeUseCase, Depends(get_check_content_type_use_case)
+]

@@ -3,7 +3,10 @@ from typing import Any
 from fastapi import APIRouter, File, Form, Request, UploadFile, status
 
 from src.api.dependencies import AuthenticatedActorDep
-from src.api.user.dependencies import UploadMyDatasetUseCaseDep
+from src.api.user.dependencies import (
+    CheckContentTypeUseCaseDep,
+    UploadMyDatasetUseCaseDep,
+)
 from src.infrastructure.rate_limit.config import settings as rate_limit_settings
 from src.infrastructure.rate_limit.limiter import limiter
 from src.schemas.base_schemas import ApiErrorSchema
@@ -38,12 +41,15 @@ class UploadFileAdapter:
 async def upload_my_dataset(
     request: Request,
     upload_dataset: UploadMyDatasetUseCaseDep,
+    check_content_type: CheckContentTypeUseCaseDep,
     actor: AuthenticatedActorDep,
     file: UploadFile = File(...),
     is_public: bool = Form(default=False),
     params: OneOfUploadDatasetParams = Form(...),
 ) -> Any:
     adapted_file = UploadFileAdapter(upload_file=file)
+
+    check_content_type(file=adapted_file)
 
     return await upload_dataset(
         actor=actor, file=adapted_file, params=params, is_public=is_public
