@@ -25,7 +25,6 @@ dependencies = [
     "pydantic>=2.10.6",
     "pydantic-settings>=2.8.1",
     "pydot>=4.0.1",
-    "pyjwt>=2.11.0",
     "python-multipart>=0.0.20",
     "redis>=7.0.1",
     "slowapi>=0.1.9",

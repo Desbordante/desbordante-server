@@ -10,11 +10,11 @@ from slowapi.errors import RateLimitExceeded
 from starlette.middleware.sessions import SessionMiddleware
 
 from src.api import router as api_router
-from src.domain.security.config import settings as security_settings
 from src.exceptions import BaseAppException
 from src.infrastructure.lock import lock_manager
 from src.infrastructure.rate_limit.limiter import limiter
 from src.infrastructure.redis.config import settings as redis_settings
+from src.infrastructure.security.config import settings as security_settings
 from src.infrastructure.storage.client import create_s3_storage
 from src.logging import configure_logging
 
@@ -37,7 +37,6 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    generate_unique_id_function=lambda route: route.name,
     redirect_slashes=False,
     lifespan=lifespan,
 )
