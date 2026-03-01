@@ -11,7 +11,7 @@ pytestmark = pytest.mark.asyncio
 
 
 @patch("src.infrastructure.auth.auth_service.OAuth")
-def test_auth_service_creates_github_and_google_providers(
+async def test_auth_service_creates_github_and_google_providers(
     mock_oauth_class: MagicMock,
     request_mock: MagicMock,
 ) -> None:

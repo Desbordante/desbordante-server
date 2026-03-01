@@ -1,0 +1,7 @@
+FAKE_ACCOUNT_ID = "12345"
+FAKE_ACCOUNT_ID_GOOGLE = "google-456"
+FAKE_EMAIL = "user@example.com"
+FAKE_EMAIL_ALT = "another@test.com"
+FAKE_SESSION_TOKEN = "session-token-abc123"
+FORBIDDEN_EMAIL_NOT_VERIFIED_MESSAGE = "User email is not verified"
+AUTH_ACCOUNT_NOT_FOUND_MESSAGE = "Auth account not found"
