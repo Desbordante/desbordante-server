@@ -25,17 +25,17 @@ class GetOrCreateUserViaProviderUseCase:
         register_user_via_provider: RegisterUserViaProviderUseCasePort,
         auth_account_crud: AuthAccountCrud,
     ):
-        self.auth_account_crud = auth_account_crud
-        self.register_user_via_provider = register_user_via_provider
+        self._auth_account_crud = auth_account_crud
+        self._register_user_via_provider = register_user_via_provider
 
     async def __call__(self, *, creds: AuthCredsSchema) -> UserModel:
         try:
-            auth_account = await self.auth_account_crud.get_by(
+            auth_account = await self._auth_account_crud.get_by(
                 provider=creds.provider,
                 account_id=creds.account_id,
             )
             user = auth_account.owner
         except ResourceNotFoundException:
-            user = await self.register_user_via_provider(creds=creds)
+            user = await self._register_user_via_provider(creds=creds)
 
         return user

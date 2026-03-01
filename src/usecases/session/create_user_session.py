@@ -17,7 +17,7 @@ class CreateUserSessionUseCase:
     """Use case for creating user session after authentication."""
 
     def __init__(self, session_manager: SessionManager):
-        self.session_manager = session_manager
+        self._session_manager = session_manager
 
     async def __call__(self, *, user: User) -> str:
         """Create session for authenticated user."""
@@ -25,6 +25,6 @@ class CreateUserSessionUseCase:
         if user.is_banned:
             raise ForbiddenException("User is banned")
 
-        return await self.session_manager.create(
+        return await self._session_manager.create(
             user_id=user.id, is_admin=user.is_admin
         )

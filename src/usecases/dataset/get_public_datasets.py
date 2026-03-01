@@ -21,7 +21,7 @@ class GetPublicDatasetsUseCase:
         *,
         dataset_crud: DatasetCrud,
     ):
-        self.dataset_crud = dataset_crud
+        self._dataset_crud = dataset_crud
 
     async def __call__(
         self,
@@ -29,7 +29,7 @@ class GetPublicDatasetsUseCase:
         pagination: PaginationParamsSchema,
         query_params: DatasetQueryParamsSchema,
     ) -> PaginatedResult[DatasetModel]:
-        return await self.dataset_crud.get_many(
+        return await self._dataset_crud.get_many(
             pagination=pagination,
             query_params=query_params,
             is_public=True,

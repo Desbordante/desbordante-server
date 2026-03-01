@@ -2,6 +2,7 @@ from typing import Any
 
 from fastapi import APIRouter, status
 
+from src.api.dependencies import AuthenticatedActorDep
 from src.api.user.dependencies import GetLinkedAccountsUseCaseDep
 from src.schemas.auth_schemas import AuthAccountSchema
 from src.schemas.base_schemas import ApiErrorSchema
@@ -21,5 +22,6 @@ router = APIRouter()
 )
 async def get_linked_accounts(
     get_linked_accounts_use_case: GetLinkedAccountsUseCaseDep,
+    actor: AuthenticatedActorDep,
 ) -> Any:
-    return await get_linked_accounts_use_case()
+    return await get_linked_accounts_use_case(actor=actor)

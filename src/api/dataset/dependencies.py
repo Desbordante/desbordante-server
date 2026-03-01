@@ -20,8 +20,11 @@ GetDatasetUseCaseDep = Annotated[GetDatasetUseCase, Depends(get_get_dataset_use_
 async def get_delete_dataset_use_case(
     dataset_crud: DatasetCrudDep,
     storage: StorageDep,
+    dataset_policy: DatasetPolicyDep,
 ) -> DeleteDatasetUseCase:
-    return DeleteDatasetUseCase(dataset_crud=dataset_crud, storage=storage)
+    return DeleteDatasetUseCase(
+        dataset_crud=dataset_crud, storage=storage, dataset_policy=dataset_policy
+    )
 
 
 DeleteDatasetUseCaseDep = Annotated[

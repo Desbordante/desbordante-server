@@ -13,8 +13,9 @@ class GetUserByIdUseCase:
         *,
         user_crud: UserCrud,
     ):
-        self.user_crud = user_crud
+        self._user_crud = user_crud
 
-    async def __call__(self, *, id: int) -> UserModel:
-        user = await self.user_crud.get_by(id=id)
+    async def __call__(self, *, user_id: int) -> UserModel:
+        user = await self._user_crud.get_by(id=user_id)
+
         return user

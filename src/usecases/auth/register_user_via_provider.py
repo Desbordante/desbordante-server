@@ -13,7 +13,7 @@ class RegisterUserViaProviderUseCase:
     """Use case for registering user via auth provider (OAuth/OIDC)."""
 
     def __init__(self, user_crud: UserCrud):
-        self.user_crud = user_crud
+        self._user_crud = user_crud
 
     async def __call__(self, *, creds: AuthCredsSchema) -> UserModel:
         user_model = UserModel(
@@ -26,4 +26,4 @@ class RegisterUserViaProviderUseCase:
             ],
         )
 
-        return await self.user_crud.create(entity=user_model)
+        return await self._user_crud.create(entity=user_model)

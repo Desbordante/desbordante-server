@@ -10,10 +10,11 @@ from src.crud.task_crud import TaskCrud
 from src.crud.user_crud import UserCrud
 from src.db.session import get_session
 from src.domain.authorization.entities import Actor, AuthenticatedActor
-from src.infrastructure.session.config import settings
 from src.exceptions import ForbiddenException, UnauthorizedException
 from src.infrastructure.authorization.dataset_policy import DatasetPolicy
 from src.infrastructure.authorization.task_policy import TaskPolicy
+from src.infrastructure.authorization.user_policy import UserPolicy
+from src.infrastructure.session.config import settings
 from src.infrastructure.session.manager import SessionManager
 from src.infrastructure.storage.client import S3Storage
 from src.schemas.authorization_schemas import (
@@ -120,16 +121,6 @@ OptionalUserSessionDep = Annotated[
     SessionSchema | None, Depends(get_optional_user_session)
 ]
 
-
-async def get_admin_session(user_session: UserSessionDep) -> SessionSchema:
-    """Require admin user from session."""
-    if not user_session.is_admin:
-        raise ForbiddenException("Admin access required")
-    return user_session
-
-
-AdminSessionDep = Annotated[SessionSchema, Depends(get_admin_session)]
-
 PaginationParamsDep = Annotated[PaginationParamsSchema, Depends(PaginationParamsSchema)]
 
 
@@ -154,6 +145,17 @@ async def get_authenticated_actor(user_session: UserSessionDep) -> Authenticated
 AuthenticatedActorDep = Annotated[AuthenticatedActor, Depends(get_authenticated_actor)]
 
 
+async def get_admin_actor(user_session: UserSessionDep) -> AuthenticatedActor:
+    if not user_session.is_admin:
+        raise ForbiddenException("Access denied")
+    return AuthenticatedActorSchema(
+        user_id=user_session.user_id, is_admin=user_session.is_admin
+    )
+
+
+AdminActorDep = Annotated[AuthenticatedActor, Depends(get_admin_actor)]
+
+
 async def get_dataset_policy() -> DatasetPolicy:
     return DatasetPolicy()
 
@@ -166,3 +168,10 @@ async def get_task_policy() -> TaskPolicy:
 
 
 TaskPolicyDep = Annotated[TaskPolicy, Depends(get_task_policy)]
+
+
+async def get_user_policy() -> UserPolicy:
+    return UserPolicy()
+
+
+UserPolicyDep = Annotated[UserPolicy, Depends(get_user_policy)]

@@ -1,6 +1,6 @@
 from fastapi import Response
 
-from src.domain.session.config import settings
+from src.infrastructure.session.config import settings
 
 
 def clear_session_cookie(response: Response) -> None:

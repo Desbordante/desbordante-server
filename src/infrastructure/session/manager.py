@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 from redis.asyncio import Redis
 
-from src.domain.session.config import settings
+from src.infrastructure.session.config import settings
 from src.schemas.session_schemas import SessionSchema
 
 

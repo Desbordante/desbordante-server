@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, status
 
 from src.api.dataset.dependencies import DeleteDatasetUseCaseDep
-from src.api.dependencies import UserSessionDep
+from src.api.dependencies import AuthenticatedActorDep
 from src.schemas.base_schemas import ApiErrorSchema
 
 router = APIRouter()
@@ -15,7 +15,7 @@ router = APIRouter()
     response_model=None,
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete dataset",
-    description="Delete dataset by id (public datasets: admin only, private datasets: owner or admin)",
+    description="Delete dataset by id",
     responses={
         status.HTTP_401_UNAUTHORIZED: {"model": ApiErrorSchema},
         status.HTTP_403_FORBIDDEN: {"model": ApiErrorSchema},
@@ -25,10 +25,9 @@ router = APIRouter()
 async def delete_dataset(
     dataset_id: UUID,
     delete_dataset: DeleteDatasetUseCaseDep,
-    user_session: UserSessionDep,
+    actor: AuthenticatedActorDep,
 ) -> Any:
     return await delete_dataset(
         id=dataset_id,
-        current_user_id=user_session.id,
-        is_admin=user_session.is_admin,
+        actor=actor,
     )

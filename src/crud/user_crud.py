@@ -27,7 +27,3 @@ class UserCrud(BaseCrud[UserModel]):
         self, *, entity: UserModel, **kwargs: Unpack[UserUpdateProps]
     ) -> UserModel:
         return await super().update(entity=entity, **kwargs)
-
-    async def update_is_banned(self, *, user_id: int, is_banned: bool) -> UserModel:
-        user = await self.get_by(id=user_id)
-        return await self.update(entity=user, is_banned=is_banned)

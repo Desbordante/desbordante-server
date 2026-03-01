@@ -1,6 +1,7 @@
-from typing import Protocol
+from typing import Protocol, cast
 from uuid import UUID
 
+from src.domain.authorization.entities import AuthenticatedActor, Dataset
 from src.exceptions import ForbiddenException
 from src.models.dataset_models import DatasetModel
 
@@ -14,32 +15,34 @@ class Storage(Protocol):
     async def delete(self, *, path: str) -> None: ...
 
 
+class DatasetPolicy(Protocol):
+    def can_delete(self, actor: AuthenticatedActor, dataset: Dataset) -> bool: ...
+
+
 class DeleteDatasetUseCase:
     def __init__(
         self,
         *,
         dataset_crud: DatasetCrud,
         storage: Storage,
+        dataset_policy: DatasetPolicy,
     ):
-        self.dataset_crud = dataset_crud
-        self.storage = storage
+        self._dataset_crud = dataset_crud
+        self._storage = storage
+        self._dataset_policy = dataset_policy
 
     async def __call__(
         self,
         *,
         id: UUID,
-        current_user_id: int,
-        is_admin: bool = False,
+        actor: AuthenticatedActor,
     ) -> None:
-        dataset = await self.dataset_crud.get_by(id=id)
+        dataset = await self._dataset_crud.get_by(id=id)
 
-        if dataset.is_public:
-            if not is_admin:
-                raise ForbiddenException("Only admin can delete public datasets")
-        else:
-            if dataset.owner_id != current_user_id and not is_admin:
-                raise ForbiddenException("Access denied")
+        if not self._dataset_policy.can_delete(
+            actor=actor, dataset=cast(Dataset, dataset)
+        ):
+            raise ForbiddenException("Access denied")
 
-        await self.storage.delete(path=dataset.path)
-
-        await self.dataset_crud.delete(entity=dataset)
+        await self._storage.delete(path=dataset.path)
+        await self._dataset_crud.delete(entity=dataset)

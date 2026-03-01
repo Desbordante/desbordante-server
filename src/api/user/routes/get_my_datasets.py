@@ -2,8 +2,8 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, status
 
-from src.api.dependencies import PaginationParamsDep
-from src.api.user.dependencies import GetMyDatasetsUseCaseDep
+from src.api.dependencies import AuthenticatedActorDep, PaginationParamsDep
+from src.api.user.dependencies import GetUserDatasetsUseCaseDep
 from src.schemas.base_schemas import ApiErrorSchema, PaginatedResult
 from src.schemas.dataset_schemas import DatasetQueryParamsSchema, PrivateDatasetSchema
 
@@ -25,11 +25,13 @@ DatasetQueryParamsDep = Annotated[
     },
 )
 async def get_my_datasets(
-    get_my_datasets: GetMyDatasetsUseCaseDep,
+    get_user_datasets: GetUserDatasetsUseCaseDep,
     pagination: PaginationParamsDep,
     query_params: DatasetQueryParamsDep,
+    actor: AuthenticatedActorDep,
 ) -> Any:
-    return await get_my_datasets(
+    return await get_user_datasets(
+        user_id=actor.user_id,
         pagination=pagination,
         query_params=query_params,
     )

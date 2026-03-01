@@ -4,9 +4,8 @@ import pytest
 import pytest_asyncio
 from fakeredis import FakeAsyncRedis
 
-from src.domain.session import config as session_config
+from src.infrastructure.session import config as session_config
 from src.infrastructure.session.manager import SessionManager
-
 from tests.integration.session.constants import (
     TEST_SESSION_ABSOLUTE_LIFETIME,
     TEST_SESSION_ROLLING_LIFETIME,

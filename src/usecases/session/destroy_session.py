@@ -9,7 +9,7 @@ class DestroySessionUseCase:
     """Use case for destroying user session (logout)."""
 
     def __init__(self, session_manager: SessionManager):
-        self.session_manager = session_manager
+        self._session_manager = session_manager
 
     async def __call__(self, *, session_id: str | None) -> None:
         """Destroy session by session id."""
@@ -17,4 +17,4 @@ class DestroySessionUseCase:
         if session_id is None:
             return
 
-        await self.session_manager.destroy(session_id=session_id)
+        await self._session_manager.destroy(session_id=session_id)

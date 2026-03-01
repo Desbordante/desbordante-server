@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 import pytest
 from fakeredis import FakeAsyncRedis
 
-from src.domain.session.config import settings
+from src.infrastructure.session.config import settings
 from src.infrastructure.session.manager import SessionManager
 from src.schemas.session_schemas import SessionSchema
 from tests.integration.session.constants import (

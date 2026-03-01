@@ -21,8 +21,8 @@ class GetDatasetUseCase:
         dataset_crud: DatasetCrud,
         dataset_policy: DatasetPolicy,
     ):
-        self.dataset_crud = dataset_crud
-        self.dataset_policy = dataset_policy
+        self._dataset_crud = dataset_crud
+        self._dataset_policy = dataset_policy
 
     async def __call__(
         self,
@@ -30,9 +30,9 @@ class GetDatasetUseCase:
         id: UUID,
         actor: Actor,
     ) -> DatasetModel:
-        dataset = await self.dataset_crud.get_by(id=id)
+        dataset = await self._dataset_crud.get_by(id=id)
 
-        if not self.dataset_policy.can_read(actor, cast(Dataset, dataset)):
+        if not self._dataset_policy.can_read(actor, cast(Dataset, dataset)):
             raise ResourceNotFoundException("Dataset not found")
 
         return dataset
