@@ -1,3 +1,4 @@
+from functools import cache
 from typing import Annotated
 
 from fastapi import Depends, Request
@@ -17,6 +18,7 @@ from src.infrastructure.authorization.user_policy import UserPolicy
 from src.infrastructure.session.config import settings
 from src.infrastructure.session.manager import SessionManager
 from src.infrastructure.storage.client import S3Storage
+from src.infrastructure.storage.client import get_storage as create_storage
 from src.schemas.authorization_schemas import (
     AnonymousActorSchema,
     AuthenticatedActorSchema,
@@ -35,8 +37,9 @@ async def get_redis(request: Request) -> Redis:
 RedisDep = Annotated[Redis, Depends(get_redis)]
 
 
-async def get_storage(request: Request) -> S3Storage:
-    return request.app.state.storage
+@cache
+async def get_storage() -> S3Storage:
+    return create_storage()
 
 
 StorageDep = Annotated[S3Storage, Depends(get_storage)]

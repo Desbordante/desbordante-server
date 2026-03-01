@@ -1,9 +1,10 @@
 from typing import Sequence, TypedDict, Unpack
 from uuid import UUID
 
-from sqlalchemy import ColumnExpressionArgument, func, select
+from sqlalchemy import ColumnExpressionArgument, func, select, text
 
 from src.crud.base_crud import BaseCrud
+from src.exceptions import ConflictException
 from src.models.dataset_models import DatasetModel
 from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema
 from src.schemas.dataset_schemas import (
@@ -97,3 +98,25 @@ class DatasetCrud(BaseCrud[DatasetModel]):
             total_count=total_count,
             total_size=total_size,
         )
+
+    async def create_with_storage_check(
+        self,
+        *,
+        entity: DatasetModel,
+        user_id: int,
+        storage_limit: int,
+    ) -> DatasetModel:
+        """Create dataset atomically with storage limit check under advisory lock."""
+        await self._session.execute(
+            text("SELECT pg_advisory_xact_lock(1, :user_id)"),
+            {"user_id": user_id},
+        )
+
+        stats = await self.get_stats(user_id=user_id)
+
+        if stats.total_size + entity.size > storage_limit:
+            raise ConflictException(
+                "Storage limit reached. Delete some datasets to upload a new one."
+            )
+
+        return await self.create(entity=entity)

@@ -15,7 +15,6 @@ from src.infrastructure.lock import lock_manager
 from src.infrastructure.rate_limit.limiter import limiter
 from src.infrastructure.redis.config import settings as redis_settings
 from src.infrastructure.security.config import settings as security_settings
-from src.infrastructure.storage.client import get_storage
 from src.logging import configure_logging
 
 configure_logging()
@@ -28,8 +27,6 @@ async def lifespan(app: FastAPI):
         redis_settings.redis_sessions_dsn.unicode_string(), decode_responses=True
     )
     app.state.redis = redis
-
-    app.state.storage = get_storage()
 
     yield
     await redis.aclose()

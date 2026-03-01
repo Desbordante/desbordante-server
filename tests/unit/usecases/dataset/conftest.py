@@ -48,8 +48,7 @@ def upload_params() -> UploadTabularDatasetParams:
 @pytest.fixture
 def dataset_crud_mock(mocker: MockerFixture, created_dataset):
     mock = mocker.Mock()
-    mock.get_stats = mocker.AsyncMock()
-    mock.create = mocker.AsyncMock(return_value=created_dataset)
+    mock.create_with_storage_check = mocker.AsyncMock(return_value=created_dataset)
     mock.update = mocker.AsyncMock()
     mock.delete = mocker.AsyncMock()
     return mock

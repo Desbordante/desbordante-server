@@ -7,13 +7,8 @@ from src.exceptions import (
     ForbiddenException,
     PayloadTooLargeException,
 )
-from src.schemas.dataset_schemas import (
-    DatasetStatus,
-    DatasetType,
-    DatasetsStatsSchema,
-)
+from src.schemas.dataset_schemas import DatasetStatus, DatasetType
 from src.usecases.dataset.upload_dataset import UploadDatasetUseCase
-
 from tests.unit.usecases.dataset.constants import (
     FAKE_FILE_NAME,
     FAKE_FILE_SIZE,
@@ -34,11 +29,8 @@ async def test_upload_dataset_success(
     actor,
     file,
     upload_params,
-    user_stats_empty,
     created_dataset,
 ) -> None:
-    dataset_crud_mock.get_stats.return_value = user_stats_empty
-
     result = await upload_dataset_use_case(
         actor=actor,
         file=file,
@@ -47,8 +39,7 @@ async def test_upload_dataset_success(
     )
 
     assert result == created_dataset
-    dataset_crud_mock.get_stats.assert_awaited_once_with(user_id=FAKE_USER_ID)
-    dataset_crud_mock.create.assert_awaited_once()
+    dataset_crud_mock.create_with_storage_check.assert_awaited_once()
     storage_mock.upload.assert_awaited_once()
     dataset_crud_mock.update.assert_awaited_once_with(
         entity=created_dataset, status=DatasetStatus.READY
@@ -63,9 +54,7 @@ async def test_upload_dataset_raises_payload_too_large_when_file_exceeds_limit(
     actor,
     file,
     upload_params,
-    user_stats_empty,
 ) -> None:
-    dataset_crud_mock.get_stats.return_value = user_stats_empty
     file.size = STORAGE_LIMIT + 1
 
     with pytest.raises(PayloadTooLargeException) as exc_info:
@@ -77,8 +66,7 @@ async def test_upload_dataset_raises_payload_too_large_when_file_exceeds_limit(
         )
 
     assert exc_info.value.detail == PAYLOAD_TOO_LARGE_MESSAGE
-    dataset_crud_mock.get_stats.assert_awaited_once()
-    dataset_crud_mock.create.assert_not_called()
+    dataset_crud_mock.create_with_storage_check.assert_not_called()
     storage_mock.upload.assert_not_called()
 
 
@@ -90,11 +78,9 @@ async def test_upload_dataset_raises_conflict_when_storage_limit_reached(
     file,
     upload_params,
 ) -> None:
-    user_stats = DatasetsStatsSchema(
-        total_count=1,
-        total_size=STORAGE_LIMIT - file.size + 1,
+    dataset_crud_mock.create_with_storage_check.side_effect = ConflictException(
+        STORAGE_LIMIT_REACHED_MESSAGE
     )
-    dataset_crud_mock.get_stats.return_value = user_stats
 
     with pytest.raises(ConflictException) as exc_info:
         await upload_dataset_use_case(
@@ -105,7 +91,7 @@ async def test_upload_dataset_raises_conflict_when_storage_limit_reached(
         )
 
     assert exc_info.value.detail == STORAGE_LIMIT_REACHED_MESSAGE
-    dataset_crud_mock.create.assert_not_called()
+    dataset_crud_mock.create_with_storage_check.assert_awaited_once()
     storage_mock.upload.assert_not_called()
 
 
@@ -116,9 +102,7 @@ async def test_upload_dataset_raises_forbidden_when_policy_denies(
     actor,
     file,
     upload_params,
-    user_stats_empty,
 ) -> None:
-    dataset_crud_mock.get_stats.return_value = user_stats_empty
     dataset_policy_mock.can_create.return_value = False
 
     with pytest.raises(ForbiddenException) as exc_info:
@@ -130,7 +114,7 @@ async def test_upload_dataset_raises_forbidden_when_policy_denies(
         )
 
     assert exc_info.value.detail == FORBIDDEN_CREATE_DATASET_MESSAGE
-    dataset_crud_mock.create.assert_not_called()
+    dataset_crud_mock.create_with_storage_check.assert_not_called()
 
 
 async def test_upload_dataset_deletes_created_dataset_when_storage_upload_fails(
@@ -140,10 +124,8 @@ async def test_upload_dataset_deletes_created_dataset_when_storage_upload_fails(
     actor,
     file,
     upload_params,
-    user_stats_empty,
     created_dataset,
 ) -> None:
-    dataset_crud_mock.get_stats.return_value = user_stats_empty
     storage_mock.upload.side_effect = Exception("Storage unavailable")
 
     with pytest.raises(Exception):
@@ -165,10 +147,7 @@ async def test_upload_dataset_creates_entity_with_correct_data(
     actor,
     file,
     upload_params,
-    user_stats_empty,
 ) -> None:
-    dataset_crud_mock.get_stats.return_value = user_stats_empty
-
     await upload_dataset_use_case(
         actor=actor,
         file=file,
@@ -176,8 +155,10 @@ async def test_upload_dataset_creates_entity_with_correct_data(
         is_public=True,
     )
 
-    call_args = dataset_crud_mock.create.await_args
+    call_args = dataset_crud_mock.create_with_storage_check.await_args
     entity = call_args.kwargs["entity"]
+    assert call_args.kwargs["user_id"] == FAKE_USER_ID
+    assert call_args.kwargs["storage_limit"] == STORAGE_LIMIT
     assert entity.type == DatasetType.TABULAR
     assert entity.name == FAKE_FILE_NAME
     assert entity.size == FAKE_FILE_SIZE
@@ -196,10 +177,7 @@ async def test_upload_dataset_calls_storage_upload_with_correct_path(
     actor,
     file,
     upload_params,
-    user_stats_empty,
 ) -> None:
-    dataset_crud_mock.get_stats.return_value = user_stats_empty
-
     await upload_dataset_use_case(
         actor=actor,
         file=file,
@@ -207,7 +185,9 @@ async def test_upload_dataset_calls_storage_upload_with_correct_path(
         is_public=False,
     )
 
-    create_entity = dataset_crud_mock.create.await_args.kwargs["entity"]
+    create_entity = dataset_crud_mock.create_with_storage_check.await_args.kwargs[
+        "entity"
+    ]
     storage_mock.upload.assert_awaited_once_with(
         file=file,
         path=create_entity.path,
