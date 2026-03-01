@@ -1,4 +1,4 @@
-.PHONY: env install list format app services dev revision migrate downgrade test
+.PHONY: env install list format app services dev revision migrate downgrade test make-admin
 
 ifeq ($(shell test -e '.env' && echo -n yes), yes)
 	include .env
@@ -59,6 +59,11 @@ migrate:
 ## Downgrade database
 downgrade:
 	uv run alembic downgrade $(args)
+
+## Make user admin by ID. Usage: make make-admin USER_ID=123 (requires services running)
+make-admin:
+	@if [ -z "$(USER_ID)" ]; then echo "Error: USER_ID is required. Usage: make make-admin USER_ID=123"; exit 1; fi
+	docker compose -f dev-docker-compose.yaml exec postgres psql -U admin -d desbordante -c "UPDATE users SET is_admin = true WHERE id = $(USER_ID)"
 
 ## Run all tests in project
 test:
