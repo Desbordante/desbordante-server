@@ -136,7 +136,6 @@ DatasetSchema = Annotated[
 
 class DatasetFiltersSchema(FiltersParamsSchema):
     type: DatasetType | None = None
-    is_public: bool | None = None
     min_size: int | None = None
     max_size: int | None = None
     created_after: datetime | None = None

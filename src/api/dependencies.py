@@ -13,6 +13,7 @@ from src.domain.authorization.entities import Actor, AuthenticatedActor
 from src.domain.session.config import settings
 from src.exceptions import ForbiddenException, UnauthorizedException
 from src.infrastructure.authorization.dataset_policy import DatasetPolicy
+from src.infrastructure.authorization.task_policy import TaskPolicy
 from src.infrastructure.session.manager import SessionManager
 from src.infrastructure.storage.client import S3Storage
 from src.schemas.authorization_schemas import (
@@ -158,3 +159,10 @@ async def get_dataset_policy() -> DatasetPolicy:
 
 
 DatasetPolicyDep = Annotated[DatasetPolicy, Depends(get_dataset_policy)]
+
+
+async def get_task_policy() -> TaskPolicy:
+    return TaskPolicy()
+
+
+TaskPolicyDep = Annotated[TaskPolicy, Depends(get_task_policy)]

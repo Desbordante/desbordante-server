@@ -1,17 +1,17 @@
-from typing import Protocol
+from typing import Protocol, cast
 from uuid import UUID
 
-from src.exceptions import ForbiddenException
+from src.domain.authorization.entities import Actor, Task
+from src.exceptions import ResourceNotFoundException
 from src.models.task_models import TaskModel
 
 
 class TaskCrud(Protocol):
-    async def get_by(self, *, id: UUID, owner_id: int | None = None) -> TaskModel: ...
+    async def get_by(self, *, id: UUID) -> TaskModel: ...
 
 
-class User(Protocol):
-    id: int
-    is_admin: bool
+class TaskPolicy(Protocol):
+    def can_read(self, actor: Actor, task: Task) -> bool: ...
 
 
 class GetTaskUseCase:
@@ -19,19 +19,20 @@ class GetTaskUseCase:
         self,
         *,
         task_crud: TaskCrud,
-        user: User,
+        task_policy: TaskPolicy,
     ):
-        self.task_crud = task_crud
-        self.user = user
+        self._task_crud = task_crud
+        self._task_policy = task_policy
 
     async def __call__(
         self,
         *,
         id: UUID,
+        actor: Actor,
     ) -> TaskModel:
-        task = await self.task_crud.get_by(id=id)
+        task = await self._task_crud.get_by(id=id)
 
-        if task.owner_id != self.user.id and not self.user.is_admin:
-            raise ForbiddenException("Access denied")
+        if not self._task_policy.can_read(actor, cast(Task, task)):
+            raise ResourceNotFoundException("Task not found")
 
         return task

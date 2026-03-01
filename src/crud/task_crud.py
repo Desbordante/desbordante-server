@@ -27,7 +27,7 @@ class TaskCrud(BaseCrud[TaskModel]):
     async def get_by(self, **kwargs: Unpack[TaskFindProps]) -> TaskModel:  # type: ignore
         return await super().get_by(**kwargs)
 
-    async def update(
+    async def update(  # type: ignore
         self, *, entity: TaskModel, **kwargs: Unpack[TaskUpdateProps]
-    ) -> TaskModel:  # type: ignore
+    ) -> TaskModel:
         return await super().update(entity=entity, **kwargs)

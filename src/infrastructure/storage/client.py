@@ -3,7 +3,7 @@ from typing import Any
 
 from aiobotocore.session import get_session
 from botocore.config import Config
-from botocore.exceptions import DataNotFoundError
+from botocore.exceptions import ClientError
 
 from src.exceptions import ResourceNotFoundException
 from src.schemas.dataset_schemas import File
@@ -67,8 +67,10 @@ class S3Storage:
         async with self.get_client() as client:
             try:
                 response = await client.get_object(Bucket=self._bucket, Key=path)
-            except DataNotFoundError as e:
-                raise ResourceNotFoundException("File not found in storage") from e
+            except ClientError as e:
+                if e.response.get("Error", {}).get("Code") == "NoSuchKey":
+                    raise ResourceNotFoundException("File not found in storage") from e
+                raise
             body: Any = response["Body"]
             return await body.read()
 

@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -41,9 +41,9 @@ async def test_github_provider_get_userinfo(
     mock_oauth.register.return_value = mock_client
 
     userinfo = {"id": 46863908}
-    mock_client.authorize_access_token = pytest.AsyncMock(return_value={})
-    mock_client.userinfo = pytest.AsyncMock(return_value=userinfo)
-    mock_client.get = pytest.AsyncMock(
+    mock_client.authorize_access_token = AsyncMock(return_value={})
+    mock_client.userinfo = AsyncMock(return_value=userinfo)
+    mock_client.get = AsyncMock(
         return_value=MagicMock(
             raise_for_status=MagicMock(),
             json=MagicMock(
@@ -78,9 +78,7 @@ async def test_google_provider_get_userinfo(
     mock_oauth.register.return_value = mock_client
 
     userinfo = {"sub": "google-123", "email": "user@gmail.com", "email_verified": True}
-    mock_client.authorize_access_token = pytest.AsyncMock(
-        return_value={"userinfo": userinfo}
-    )
+    mock_client.authorize_access_token = AsyncMock(return_value={"userinfo": userinfo})
 
     provider = GoogleAuthProvider(mock_oauth)
     result = await provider.get_userinfo(request_mock)

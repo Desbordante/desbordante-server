@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/{id}/",
+    "/{dataset_id}/",
     response_model=DatasetSchema,
     status_code=status.HTTP_200_OK,
     summary="Get dataset",
@@ -24,8 +24,8 @@ router = APIRouter()
     },
 )
 async def get_dataset(
-    id: UUID,
+    dataset_id: UUID,
     get_dataset: GetDatasetUseCaseDep,
     actor: ActorDep,
 ) -> Any:
-    return await get_dataset(id=id, actor=actor)
+    return await get_dataset(id=dataset_id, actor=actor)

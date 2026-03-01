@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.delete(
-    "/{id}/",
+    "/{dataset_id}/",
     response_model=None,
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete dataset",
@@ -23,12 +23,12 @@ router = APIRouter()
     },
 )
 async def delete_dataset(
-    id: UUID,
+    dataset_id: UUID,
     delete_dataset: DeleteDatasetUseCaseDep,
     user_session: UserSessionDep,
 ) -> Any:
     return await delete_dataset(
-        id=id,
+        id=dataset_id,
         current_user_id=user_session.id,
         is_admin=user_session.is_admin,
     )
