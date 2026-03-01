@@ -1,30 +1,17 @@
 from datetime import datetime
-from enum import StrEnum, auto
 from typing import Annotated, Literal, Union
 from uuid import UUID
 
 from pydantic import Field
 
-from src.schemas.base_schemas import BaseSchema, TaskErrorSchema, TaskStatus
+from src.domain.task.value_objects import (
+    OneOfTaskConfig,
+    OneOfTaskResult,
+    TaskStatus,
+)
+from src.domain.task.value_objects.task_failure_reason import TaskFailureReason
+from src.schemas.base_schemas import BaseSchema
 from src.schemas.dataset_schemas import DatasetSchema
-from src.schemas.task_schemas.primitives.afd import AfdTaskConfig, AfdTaskResult
-from src.schemas.task_schemas.primitives.fd import FdTaskConfig, FdTaskResult
-
-OneOfTaskConfig = Annotated[
-    Union[
-        FdTaskConfig,
-        AfdTaskConfig,
-    ],
-    Field(discriminator="primitive_name"),
-]
-
-OneOfTaskResult = Annotated[
-    Union[
-        FdTaskResult,
-        AfdTaskResult,
-    ],
-    Field(discriminator="primitive_name"),
-]
 
 
 class BaseTaskSchema(BaseSchema):
@@ -42,19 +29,15 @@ class ProcessingTaskSchema(BaseTaskSchema):
 
 class FailedTaskSchema(BaseTaskSchema):
     status: Literal[TaskStatus.FAILED]
-    result: TaskErrorSchema
+    result: None
+    raised_exception_name: str
+    failure_reason: TaskFailureReason
+    traceback: str
 
 
 class SuccessTaskSchema(BaseTaskSchema):
     status: Literal[TaskStatus.SUCCESS]
     result: OneOfTaskResult
-
-
-class TaskFailureReason(StrEnum):
-    MEMORY_LIMIT_EXCEEDED = auto()
-    TIME_LIMIT_EXCEEDED = auto()
-    WORKER_KILLED_BY_SIGNAL = auto()
-    OTHER = auto()
 
 
 TaskSchema = Annotated[

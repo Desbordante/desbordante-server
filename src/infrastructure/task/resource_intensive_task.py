@@ -1,8 +1,7 @@
+from celery import Task
 import resource
 
-from celery import Task
-
-from src.domain.task.config import settings
+from src.infrastructure.task.config import settings
 
 
 class ResourceIntensiveTask(Task):

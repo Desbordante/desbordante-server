@@ -1,10 +1,11 @@
-from typing import Protocol
+from typing import Protocol, cast
 from uuid import UUID
 
-from src.domain.task.tasks import data_profiling_task
+from src.domain.authorization.entities import Actor, Dataset, Task
+from src.domain.task.value_objects import OneOfTaskConfig
+from src.exceptions import ForbiddenException, ResourceNotFoundException
 from src.models.dataset_models import DatasetModel
 from src.models.task_models import TaskModel
-from src.schemas.task_schemas.base_schemas import OneOfTaskConfig
 
 
 class TaskCrud(Protocol):
@@ -12,11 +13,21 @@ class TaskCrud(Protocol):
 
 
 class DatasetCrud(Protocol):
-    async def get_by(self, *, id: UUID, owner_id: int) -> DatasetModel: ...
+    async def get_by(self, *, id: UUID) -> DatasetModel: ...
 
 
-class User(Protocol):
-    id: int
+class ProfilingTaskWorker(Protocol):
+    def set(
+        self, *, task_id: UUID, dataset_id: UUID, config: OneOfTaskConfig
+    ) -> None: ...
+
+
+class DatasetPolicy(Protocol):
+    def can_read(self, actor: Actor, dataset: Dataset) -> bool: ...
+
+
+class TaskPolicy(Protocol):
+    def can_create(self, actor: Actor, task: Task) -> bool: ...
 
 
 class CreateTaskUseCase:
@@ -25,27 +36,37 @@ class CreateTaskUseCase:
         *,
         task_crud: TaskCrud,
         dataset_crud: DatasetCrud,
-        user: User,
+        profiling_task_worker: ProfilingTaskWorker,
+        dataset_policy: DatasetPolicy,
+        task_policy: TaskPolicy,
     ):
-        self.task_crud = task_crud
-        self.dataset_crud = dataset_crud
-        self.user = user
+        self._task_crud = task_crud
+        self._dataset_crud = dataset_crud
+        self._profiling_task_worker = profiling_task_worker
+        self._dataset_policy = dataset_policy
+        self._task_policy = task_policy
 
-    async def __call__(self, *, dataset_id: UUID, config: OneOfTaskConfig) -> TaskModel:
-        dataset = await self.dataset_crud.get_by(
-            id=dataset_id,
-            owner_id=self.user.id,
-        )
+    async def __call__(
+        self, *, actor: Actor, dataset_id: UUID, config: OneOfTaskConfig
+    ) -> TaskModel:
+        dataset = await self._dataset_crud.get_by(id=dataset_id)
+
+        if not self._dataset_policy.can_read(actor, cast(Dataset, dataset)):
+            raise ResourceNotFoundException("Dataset not found")
 
         task_entity = TaskModel(
-            owner_id=self.user.id,
+            owner_id=actor.user_id,
+            is_public=actor.user_id is None,
             dataset_id=dataset.id,
             config=config,
         )
 
-        created_task = await self.task_crud.create(entity=task_entity)
+        if not self._task_policy.can_create(actor, cast(Task, task_entity)):
+            raise ForbiddenException("You are not allowed to create this task.")
 
-        data_profiling_task.delay(
+        created_task = await self._task_crud.create(entity=task_entity)
+
+        self._profiling_task_worker.set(
             task_id=created_task.id,
             dataset_id=dataset_id,
             config=config,

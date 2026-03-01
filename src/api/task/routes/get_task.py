@@ -5,7 +5,7 @@ from fastapi import APIRouter, status
 
 from src.api.task.dependencies import GetTaskUseCaseDep
 from src.schemas.base_schemas import ApiErrorSchema
-from src.schemas.task_schemas.base_schemas import TaskSchema
+from src.schemas.task_schemas import TaskSchema
 
 router = APIRouter()
 

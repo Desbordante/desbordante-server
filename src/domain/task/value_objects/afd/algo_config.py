@@ -2,12 +2,14 @@ from typing import Annotated, Literal, Union
 
 from pydantic import Field
 
+from src.domain.task.value_objects.afd.algo_name import AfdAlgoName
 from src.schemas.base_schemas import BaseSchema
-from src.schemas.task_schemas.primitives.afd.algo_name import AfdAlgoName
 
 
 class BaseAfdConfig(BaseSchema):
-    pass
+    __non_optional_fields__ = {
+        "algo_name",
+    }
 
 
 class PyroConfig(BaseAfdConfig):

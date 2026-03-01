@@ -3,7 +3,9 @@ from typing import Any
 
 from aiobotocore.session import get_session
 from botocore.config import Config
+from botocore.exceptions import DataNotFoundError
 
+from src.exceptions import ResourceNotFoundException
 from src.schemas.dataset_schemas import File
 
 from .config import settings
@@ -63,12 +65,15 @@ class S3Storage:
     async def download(self, *, path: str) -> bytes:
         """Download file from S3 storage."""
         async with self.get_client() as client:
-            response = await client.get_object(Bucket=self._bucket, Key=path)
+            try:
+                response = await client.get_object(Bucket=self._bucket, Key=path)
+            except DataNotFoundError as e:
+                raise ResourceNotFoundException("File not found in storage") from e
             body: Any = response["Body"]
             return await body.read()
 
 
-def create_s3_storage() -> S3Storage:
+def get_storage() -> S3Storage:
     return S3Storage(
         endpoint_url=settings.minio_endpoint_url.unicode_string(),
         access_key=settings.MINIO_ROOT_USER,

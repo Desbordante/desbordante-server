@@ -1,13 +1,15 @@
-from typing import Annotated, Literal, Union
+from typing import Literal, Annotated, Union
 
 from pydantic import Field
 
 from src.schemas.base_schemas import BaseSchema
-from src.schemas.task_schemas.primitives.fd.algo_name import FdAlgoName
+from src.domain.task.value_objects.fd.algo_name import FdAlgoName
 
 
 class BaseFdConfig(BaseSchema):
-    pass
+    __non_optional_fields__ = {
+        "algo_name",
+    }
 
 
 class AidConfig(BaseFdConfig):

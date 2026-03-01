@@ -1,5 +1,6 @@
 import pytest
 
+from src.exceptions import ResourceNotFoundException
 from src.infrastructure.storage.client import S3Storage
 
 from .helpers import make_test_path
@@ -27,7 +28,7 @@ async def test_delete_removes_file(s3_storage: S3Storage, make_file) -> None:
     await s3_storage.upload(file=file, path=path)
     await s3_storage.delete(path=path)
 
-    with pytest.raises(Exception):
+    with pytest.raises(ResourceNotFoundException):
         await s3_storage.download(path=path)
 
 
@@ -49,7 +50,7 @@ async def test_download_nonexistent_raises(s3_storage: S3Storage) -> None:
     """Downloading non-existent file raises."""
     path = make_test_path("nonexistent.csv")
 
-    with pytest.raises(Exception):
+    with pytest.raises(ResourceNotFoundException):
         await s3_storage.download(path=path)
 
 
