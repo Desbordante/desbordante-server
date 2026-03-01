@@ -10,7 +10,7 @@ from src.crud.task_crud import TaskCrud
 from src.crud.user_crud import UserCrud
 from src.db.session import get_session
 from src.domain.authorization.entities import Actor, AuthenticatedActor
-from src.domain.session.config import settings
+from src.infrastructure.session.config import settings
 from src.exceptions import ForbiddenException, UnauthorizedException
 from src.infrastructure.authorization.dataset_policy import DatasetPolicy
 from src.infrastructure.authorization.task_policy import TaskPolicy

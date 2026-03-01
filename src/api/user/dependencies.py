@@ -12,6 +12,7 @@ from src.api.dependencies import (
     UserCrudDep,
     UserSessionDep,
 )
+from src.infrastructure.storage.config import settings as storage_settings
 from src.models.user_models import UserModel
 from src.schemas.session_schemas import SessionSchema
 from src.usecases.dataset.check_content_type import CheckContentTypeUseCase
@@ -123,6 +124,7 @@ async def get_upload_my_dataset_use_case(
         dataset_crud=dataset_crud,
         storage=storage,
         dataset_policy=dataset_policy,
+        settings=storage_settings,
     )
 
 

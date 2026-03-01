@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     MINIO_BUCKET: str = "bucket"
     MINIO_SECURE: bool = False
 
+    STORAGE_LIMIT: int = 1024 * 1024 * 200  # 200Mb
+
     @cached_property
     def minio_endpoint_url(self) -> HttpUrl:
         return HttpUrl.build(

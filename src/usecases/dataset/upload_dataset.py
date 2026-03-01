@@ -3,7 +3,6 @@ from typing import Protocol, cast
 from uuid import uuid4
 
 from src.domain.authorization.entities import AuthenticatedActor, Dataset
-from src.domain.user.config import settings as user_settings
 from src.exceptions import (
     ConflictException,
     ForbiddenException,
@@ -42,6 +41,10 @@ class User(Protocol):
     id: int
 
 
+class Settings(Protocol):
+    STORAGE_LIMIT: int
+
+
 class UploadDatasetUseCase:
     def __init__(
         self,
@@ -49,10 +52,12 @@ class UploadDatasetUseCase:
         dataset_crud: DatasetCrud,
         storage: Storage,
         dataset_policy: DatasetPolicy,
+        settings: Settings,
     ):
         self._dataset_crud = dataset_crud
         self._storage = storage
         self._dataset_policy = dataset_policy
+        self._settings = settings
 
     async def __call__(
         self,
@@ -64,7 +69,7 @@ class UploadDatasetUseCase:
     ) -> DatasetModel:
         user_stats = await self._dataset_crud.get_stats(user_id=actor.user_id)
 
-        storage_limit = user_settings.STORAGE_LIMIT
+        storage_limit = self._settings.STORAGE_LIMIT
 
         total_size = user_stats.total_size
 

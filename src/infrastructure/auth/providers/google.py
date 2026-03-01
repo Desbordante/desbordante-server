@@ -5,7 +5,7 @@ from typing import Any
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 from fastapi import Request
 
-from src.domain.auth.config import settings
+from src.infrastructure.auth.config import settings
 from src.infrastructure.auth.providers.base import AuthProviderClient
 from src.schemas.auth_schemas import AuthProvider, AuthUserInfoSchema
 

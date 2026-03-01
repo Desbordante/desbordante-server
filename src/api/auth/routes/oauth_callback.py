@@ -3,7 +3,7 @@ from fastapi.responses import RedirectResponse
 
 from src.api.auth.dependencies import AuthenticateViaProviderUseCaseDep
 from src.api.auth.utils import set_session_cookie
-from src.domain.auth.config import settings
+from src.infrastructure.auth.config import settings
 from src.infrastructure.rate_limit.config import settings as rate_limit_settings
 from src.infrastructure.rate_limit.limiter import limiter
 from src.schemas.auth_schemas import AuthProvider
