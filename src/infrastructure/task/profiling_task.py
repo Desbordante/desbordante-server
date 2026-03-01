@@ -7,6 +7,7 @@ from uuid import UUID
 from celery.exceptions import SoftTimeLimitExceeded, TimeLimitExceeded, WorkerLostError
 from celery.signals import task_failure, task_postrun, task_prerun
 
+from src.db.session import async_session_factory_without_pool
 from src.domain.task.value_objects import (
     OneOfTaskConfig,
     OneOfTaskResult,
@@ -37,8 +38,9 @@ def profiling_task(
     config: OneOfTaskConfig,
 ) -> Any:
     async def _run() -> OneOfTaskResult:
-        profile_task = await get_profile_task_use_case()
-        return await profile_task(dataset_id=dataset_id, config=config)
+        async with async_session_factory_without_pool() as session:
+            profile_task = await get_profile_task_use_case(session=session)
+            return await profile_task(dataset_id=dataset_id, config=config)
 
     return _run_async(_run())
 
@@ -49,9 +51,10 @@ def task_prerun_notifier(
     **_,
 ) -> None:
     async def _run() -> None:
-        update_task_info = await get_update_task_info_use_case()
-        db_task_id: UUID = kwargs["task_id"]
-        await update_task_info(task_id=db_task_id, status=TaskStatus.PROCESSING)
+        async with async_session_factory_without_pool() as session:
+            update_task_info = await get_update_task_info_use_case(session=session)
+            db_task_id: UUID = kwargs["task_id"]
+            await update_task_info(task_id=db_task_id, status=TaskStatus.PROCESSING)
 
     _run_async(_run())
 
@@ -63,13 +66,14 @@ def task_postrun_notifier(
     **_,
 ) -> None:
     async def _run() -> None:
-        update_task_info = await get_update_task_info_use_case()
-        db_task_id: UUID = kwargs["task_id"]
-        await update_task_info(
-            task_id=db_task_id,
-            status=TaskStatus.SUCCESS,
-            result=retval,
-        )
+        async with async_session_factory_without_pool() as session:
+            update_task_info = await get_update_task_info_use_case(session=session)
+            db_task_id: UUID = kwargs["task_id"]
+            await update_task_info(
+                task_id=db_task_id,
+                status=TaskStatus.SUCCESS,
+                result=retval,
+            )
 
     _run_async(_run())
 
@@ -95,14 +99,15 @@ def task_failure_notifier(
     )
 
     async def _run() -> None:
-        update_task_info = await get_update_task_info_use_case()
-        db_task_id: UUID = kwargs["task_id"]
-        await update_task_info(
-            task_id=db_task_id,
-            status=TaskStatus.FAILED,
-            raised_exception_name=exception.__class__.__name__,
-            failure_reason=task_failure_reason,
-            traceback=formatted_traceback,
-        )
+        async with async_session_factory_without_pool() as session:
+            update_task_info = await get_update_task_info_use_case(session=session)
+            db_task_id: UUID = kwargs["task_id"]
+            await update_task_info(
+                task_id=db_task_id,
+                status=TaskStatus.FAILED,
+                raised_exception_name=exception.__class__.__name__,
+                failure_reason=task_failure_reason,
+                traceback=formatted_traceback,
+            )
 
     _run_async(_run())

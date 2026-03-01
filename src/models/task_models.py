@@ -2,19 +2,18 @@ from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import ForeignKey
-from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.annotations import uuid_pk
-from src.models.base_models import BaseModel
-from src.models.user_models import UserModel
-from src.schemas.base_schemas import PydanticType
 from src.domain.task.value_objects import (
     OneOfTaskConfig,
     OneOfTaskResult,
-    TaskStatus,
     TaskFailureReason,
+    TaskStatus,
 )
+from src.models.base_models import BaseModel
+from src.models.user_models import UserModel
+from src.schemas.base_schemas import PydanticType
 
 if TYPE_CHECKING:
     from src.models.dataset_models import DatasetModel
@@ -26,7 +25,9 @@ class TaskModel(BaseModel):
     config: Mapped[OneOfTaskConfig] = mapped_column(PydanticType(OneOfTaskConfig))
 
     status: Mapped[TaskStatus] = mapped_column(default=TaskStatus.PENDING)
-    result: Mapped[OneOfTaskResult | None] = mapped_column(JSONB, default=None)
+    result: Mapped[OneOfTaskResult | None] = mapped_column(
+        PydanticType(OneOfTaskResult), default=None
+    )
 
     is_public: Mapped[bool] = mapped_column(default=False)
 

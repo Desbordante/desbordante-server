@@ -38,7 +38,7 @@ RedisDep = Annotated[Redis, Depends(get_redis)]
 
 
 @cache
-async def get_storage() -> S3Storage:
+def get_storage() -> S3Storage:
     return create_storage()
 
 
