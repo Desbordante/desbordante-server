@@ -13,7 +13,6 @@ class Settings(BaseSettings):
 
     REDIS_SESSIONS_DB: int = 0
     REDIS_RATE_LIMIT_DB: int = 1
-    REDIS_LOCK_DB: int = 2
 
     @cached_property
     def redis_sessions_dsn(self) -> RedisDsn:
@@ -33,16 +32,6 @@ class Settings(BaseSettings):
             host=self.REDIS_HOST,
             port=self.REDIS_PORT,
             path=str(self.REDIS_RATE_LIMIT_DB),
-        )
-
-    @cached_property
-    def redis_lock_dsn(self) -> RedisDsn:
-        """Redis DSN for locks."""
-        return RedisDsn.build(
-            scheme="redis",
-            host=self.REDIS_HOST,
-            port=self.REDIS_PORT,
-            path=str(self.REDIS_LOCK_DB),
         )
 
 

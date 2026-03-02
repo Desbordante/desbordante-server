@@ -11,7 +11,6 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from src.api import router as api_router
 from src.exceptions import BaseAppException
-from src.infrastructure.lock import lock_manager
 from src.infrastructure.rate_limit.limiter import limiter
 from src.infrastructure.redis.config import settings as redis_settings
 from src.infrastructure.security.config import settings as security_settings
@@ -30,7 +29,6 @@ async def lifespan(app: FastAPI):
 
     yield
     await redis.aclose()
-    await lock_manager.destroy()
 
 
 app = FastAPI(
