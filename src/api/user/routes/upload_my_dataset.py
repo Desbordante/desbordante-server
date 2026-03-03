@@ -10,7 +10,7 @@ from src.api.user.dependencies import (
 from src.infrastructure.rate_limit.config import settings as rate_limit_settings
 from src.infrastructure.rate_limit.limiter import limiter
 from src.schemas.base_schemas import ApiErrorSchema
-from src.schemas.dataset_schemas import OneOfUploadDatasetParams, PrivateDatasetSchema
+from src.schemas.dataset_schemas import DatasetSchema, OneOfUploadDatasetParams
 
 router = APIRouter()
 
@@ -25,7 +25,7 @@ class UploadFileAdapter:
 
 @router.post(
     "/me/datasets/",
-    response_model=PrivateDatasetSchema,
+    response_model=DatasetSchema,
     status_code=status.HTTP_201_CREATED,
     summary="Upload my dataset",
     description="Upload dataset to current user's account",

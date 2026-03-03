@@ -18,8 +18,8 @@ DatasetQueryParamsDep = Annotated[
     "/me/datasets/",
     response_model=PaginatedResult[PrivateDatasetSchema],
     status_code=status.HTTP_200_OK,
-    summary="Get my private datasets",
-    description="Get list of current user's private datasets",
+    summary="Get my datasets",
+    description="Get list of current user's datasets",
     responses={
         status.HTTP_401_UNAUTHORIZED: {"model": ApiErrorSchema},
     },
