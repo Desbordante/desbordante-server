@@ -21,7 +21,7 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
 
   minio:
-    image: bitnami/minio:2025.2.18-debian-12-r2
+    image: bitnamilegacy/minio:2025.2.18-debian-12-r2
     ports:
       - '${MINIO_PORT}:9000'
       - '${MINIO_UI_PORT}:9001'
