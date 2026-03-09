@@ -1,7 +1,6 @@
 from typing import Protocol
 
 from src.models.task_models import TaskModel
-from src.models.user_models import UserModel
 from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema
 from src.schemas.task_schemas.base_schemas import TaskQueryParamsSchema
 
@@ -16,24 +15,23 @@ class TaskCrud(Protocol):
     ) -> PaginatedResult[TaskModel]: ...
 
 
-class GetTasksUseCase:
+class GetUserTasksUseCase:
     def __init__(
         self,
         *,
         task_crud: TaskCrud,
-        user: UserModel,
     ):
-        self.task_crud = task_crud
-        self.user = user
+        self._task_crud = task_crud
 
     async def __call__(
         self,
         *,
         pagination: PaginationParamsSchema,
         query_params: TaskQueryParamsSchema,
+        user_id: int,
     ) -> PaginatedResult[TaskModel]:
-        return await self.task_crud.get_many(
+        return await self._task_crud.get_many(
             pagination=pagination,
             query_params=query_params,
-            owner_id=self.user.id,
+            owner_id=user_id,
         )

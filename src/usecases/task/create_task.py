@@ -1,11 +1,10 @@
 import logging
-from typing import Protocol
+from typing import Protocol, cast
 from uuid import UUID
 
-from src.domain.authorization.entities import Actor
-from src.domain.task.tasks import profile_task
+from src.domain.authorization.entities import Actor, Dataset, Task
 from src.domain.task.utils import get_primitive_class_by_name
-from src.exceptions import BaseAppException
+from src.exceptions import BadRequestException, ForbiddenException
 from src.models.dataset_models import DatasetModel
 from src.models.task_models import TaskModel
 from src.schemas.base_schemas import TaskStatus
@@ -27,38 +26,70 @@ class DatasetCrud(Protocol):
     ) -> list[DatasetModel]: ...
 
 
+class DatasetPolicy(Protocol):
+    def can_read(self, actor: Actor, dataset: Dataset) -> bool: ...
+
+
+class TaskPolicy(Protocol):
+    def can_create(self, actor: Actor, task: Task) -> bool: ...
+
+
+class ProfilingTask(Protocol):
+    def set(self, *, task_id: UUID) -> None: ...
+
+
 class CreateTaskUseCase:
     def __init__(
         self,
         *,
         task_crud: TaskCrud,
         dataset_crud: DatasetCrud,
+        dataset_policy: DatasetPolicy,
+        task_policy: TaskPolicy,
+        profiling_task: ProfilingTask,
     ):
-        self.task_crud = task_crud
-        self.dataset_crud = dataset_crud
+        self._task_crud = task_crud
+        self._dataset_crud = dataset_crud
+        self._dataset_policy = dataset_policy
+        self._task_policy = task_policy
+        self._profiling_task = profiling_task
 
     async def __call__(self, *, actor: Actor, params: OneOfTaskParams) -> TaskModel:
         dataset_ids = list(params.datasets.model_dump().values())
 
         primitive_class = get_primitive_class_by_name(params.primitive_name)
 
-        datasets = await self.dataset_crud.get_by_ids(
+        datasets = await self._dataset_crud.get_by_ids(
             ids=dataset_ids,
             type=primitive_class.allowed_dataset_type,
             status=TaskStatus.SUCCESS,
         )
 
         if len(datasets) != len(set(dataset_ids)):
-            raise BaseAppException("Some datasets were not found or have invalid type")
+            raise BadRequestException(
+                "Some datasets were not found or have invalid type"
+            )
+
+        for dataset in datasets:
+            if not self._dataset_policy.can_read(
+                actor=actor, dataset=cast(Dataset, dataset)
+            ):
+                raise BadRequestException(
+                    "Some datasets were not found or have invalid type"
+                )
 
         task_entity = TaskModel(
             owner_id=actor.user_id,
+            is_public=actor.user_id is None,
             params=params,
             datasets=datasets,
         )
 
-        created_task = await self.task_crud.create(task_entity)
+        if not self._task_policy.can_create(actor, cast(Task, task_entity)):
+            raise ForbiddenException("You are not allowed to create this task.")
 
-        profile_task.delay(created_task.id)
+        created_task = await self._task_crud.create(task_entity)
+
+        self._profiling_task.set(task_id=created_task.id)
 
         return created_task
