@@ -29,7 +29,7 @@ class TaskResultUpdateProps(TypedDict, total=False):
     pass
 
 
-class TaskResultCrud(BaseCrud[TaskResultModel, UUID]):
+class TaskResultCrud(BaseCrud[TaskResultModel]):
     model = TaskResultModel
     _query_helper: BaseQueryHelper
 

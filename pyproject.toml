@@ -28,8 +28,6 @@ dependencies = [
     "redis>=7.0.1",
     "slowapi>=0.1.9",
     "sqlalchemy>=2.0.38",
-    "sqlalchemy-utils>=0.41.2",
-    "types-aiobotocore[essential]>=3.2.0",
 ]
 
 
@@ -50,6 +48,7 @@ dev = [
     "ruff>=0.9.6",
     "types-sqlalchemy-utils>=1.1.0",
     "watchdog>=6.0.0",
+    "types-aiobotocore[essential]>=3.2.0",
 ]
 
 [tool.pytest.ini_options]

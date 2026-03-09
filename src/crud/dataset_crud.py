@@ -6,12 +6,11 @@ from sqlalchemy import ColumnExpressionArgument, func, select, text
 from src.crud.base_crud import BaseCrud
 from src.exceptions import ConflictException
 from src.models.dataset_models import DatasetModel
-from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema
+from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema, TaskStatus
 from src.schemas.dataset_schemas import (
     DatasetFiltersSchema,
     DatasetQueryParamsSchema,
     DatasetsStatsSchema,
-    DatasetStatus,
     DatasetType,
 )
 
@@ -21,10 +20,11 @@ class DatasetFindProps(TypedDict, total=False):
     owner_id: int
     type: DatasetType
     is_public: bool
+    status: TaskStatus
 
 
 class DatasetUpdateProps(TypedDict, total=False):
-    status: DatasetStatus
+    status: TaskStatus
 
 
 class DatasetCrud(BaseCrud[DatasetModel]):

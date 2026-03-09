@@ -8,12 +8,6 @@ from celery.exceptions import SoftTimeLimitExceeded, TimeLimitExceeded, WorkerLo
 from celery.signals import task_failure, task_postrun, task_prerun
 
 from src.db.session import async_session_factory_without_pool
-from src.domain.task.value_objects import (
-    OneOfTaskConfig,
-    OneOfTaskResult,
-    TaskFailureReason,
-    TaskStatus,
-)
 from src.infrastructure.task.dependencies import (
     get_profile_task_use_case,
     get_update_task_info_use_case,
@@ -21,6 +15,7 @@ from src.infrastructure.task.dependencies import (
 from src.infrastructure.task.resource_intensive_task import (
     ResourceIntensiveTask,
 )
+from src.schemas.task_schemas.base_schemas import OneOfTaskParams
 from src.worker import worker
 
 T = TypeVar("T")
@@ -35,9 +30,9 @@ def _run_async(coro: Coroutine[Any, Any, T]) -> T:
 def profiling_task(
     task_id: UUID,
     dataset_id: UUID,
-    config: OneOfTaskConfig,
+    config: OneOfTaskParams,
 ) -> Any:
-    async def _run() -> OneOfTaskResult:
+    async def _run():
         async with async_session_factory_without_pool() as session:
             profile_task = await get_profile_task_use_case(session=session)
             return await profile_task(dataset_id=dataset_id, config=config)
@@ -62,7 +57,7 @@ def task_prerun_notifier(
 @task_postrun.connect(sender=profiling_task)
 def task_postrun_notifier(
     kwargs,
-    retval: OneOfTaskResult,
+    retval,
     **_,
 ) -> None:
     async def _run() -> None:

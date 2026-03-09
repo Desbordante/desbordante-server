@@ -1,24 +1,18 @@
 from typing import Annotated
+from uuid import UUID
 
-from fastapi import Depends
+from fastapi import Depends, Request
 
 from src.api.dependencies import (
+    ActorDep,
     DatasetCrudDep,
     DatasetPolicyDep,
+    SessionDep,
     TaskCrudDep,
     TaskPolicyDep,
 )
-from src.infrastructure.task.profiling_task_worker import ProfilingTaskWorker
-from src.usecases.task.create_task import CreateTaskUseCase
-from src.usecases.task.get_task import GetTaskUseCase
-from uuid import UUID
-
-from fastapi import Request
-
-from src.api.dependencies import (
-    SessionDep,
-)
 from src.crud.task_result_crud.task_result_crud import TaskResultCrud
+from src.infrastructure.task.profiling_task_worker import ProfilingTaskWorker
 from src.models.task_models import TaskModel
 from src.schemas.task_schemas.base_schemas import (
     OneOfTaskResultFiltersSchema,
@@ -26,8 +20,9 @@ from src.schemas.task_schemas.base_schemas import (
     TaskResultQueryParamsSchema,
 )
 from src.schemas.task_schemas.utils import get_filters_schema_by_primitive_name
+from src.usecases.task.create_task import CreateTaskUseCase
+from src.usecases.task.get_task import GetTaskUseCase
 from src.usecases.task.get_task_results import GetTaskResultsUseCase
-from src.usecases.task.get_tasks import GetTasksUseCase
 
 
 async def get_get_task_use_case(
@@ -59,26 +54,16 @@ async def get_create_task_use_case(
     return CreateTaskUseCase(
         task_crud=task_crud,
         dataset_crud=dataset_crud,
-        profiling_task_worker=profiling_task_worker,
-        dataset_policy=dataset_policy,
-        task_policy=task_policy,
     )
 
 
 CreateTaskUseCaseDep = Annotated[CreateTaskUseCase, Depends(get_create_task_use_case)]
 
 
-async def get_get_tasks_use_case(
-    task_crud: TaskCrudDep,
-) -> GetTasksUseCase:
-    return GetTasksUseCase(task_crud=task_crud)
-
-
-GetTasksUseCaseDep = Annotated[GetTasksUseCase, Depends(get_get_tasks_use_case)]
-
-
-async def get_task(get_task: GetTaskUseCaseDep, task_id: UUID) -> TaskModel:
-    return await get_task(task_id=task_id)
+async def get_task(
+    get_task: GetTaskUseCaseDep, task_id: UUID, actor: ActorDep
+) -> TaskModel:
+    return await get_task(id=task_id, actor=actor)
 
 
 TaskDep = Annotated[TaskModel, Depends(get_task)]
