@@ -49,6 +49,9 @@ class DatasetCrud(BaseCrud[DatasetModel]):
             self.model.is_public == filters_params.is_public
             if filters_params.is_public is not None
             else None,
+            self.model.status == filters_params.status
+            if filters_params.status
+            else None,
             self.model.size >= filters_params.min_size
             if filters_params.min_size
             else None,
@@ -83,10 +86,7 @@ class DatasetCrud(BaseCrud[DatasetModel]):
         query = select(
             func.count(self.model.id),
             func.sum(self.model.size),
-        ).where(
-            self.model.owner_id == user_id,
-            ~self.model.is_public,
-        )
+        ).where(self.model.owner_id == user_id)
         result = await self._session.execute(query)
 
         row = result.first()
@@ -120,3 +120,12 @@ class DatasetCrud(BaseCrud[DatasetModel]):
             )
 
         return await self.create(entity=entity)
+
+    async def get_by_ids(
+        self, *, ids: list[UUID], **kwargs: Unpack[DatasetFindProps]
+    ) -> list[DatasetModel]:
+        query = select(self.model).filter_by(**kwargs).where(self.model.id.in_(ids))
+
+        result = await self._session.execute(query)
+
+        return list(result.scalars().all())

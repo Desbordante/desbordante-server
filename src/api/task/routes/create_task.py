@@ -6,7 +6,7 @@ from fastapi import APIRouter, status
 from src.api.dependencies import ActorDep
 from src.api.task.dependencies import CreateTaskUseCaseDep
 from src.schemas.base_schemas import ApiErrorSchema
-from src.schemas.task_schemas import OneOfTaskConfig, TaskSchema
+from src.schemas.task_schemas.base_schemas import OneOfTaskParams, TaskSchema
 
 router = APIRouter()
 
@@ -23,7 +23,7 @@ router = APIRouter()
 )
 async def create_task(
     dataset_id: UUID,
-    config: OneOfTaskConfig,
+    config: OneOfTaskParams,
     create_task: CreateTaskUseCaseDep,
     actor: ActorDep,
 ) -> Any:
