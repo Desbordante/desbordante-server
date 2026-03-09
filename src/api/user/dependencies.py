@@ -8,6 +8,7 @@ from src.api.dependencies import (
     DatasetPolicyDep,
     SessionManagerDep,
     StorageDep,
+    TaskCrudDep,
     UserCrudDep,
     UserPolicyDep,
 )
@@ -15,6 +16,7 @@ from src.infrastructure.storage.config import settings as storage_settings
 from src.usecases.dataset.check_content_type import CheckContentTypeUseCase
 from src.usecases.dataset.get_user_datasets import GetUserDatasetsUseCase
 from src.usecases.dataset.upload_dataset import UploadDatasetUseCase
+from src.usecases.task.get_user_tasks import GetUserTasksUseCase
 from src.usecases.user.get_linked_accounts import GetLinkedAccountsUseCase
 from src.usecases.user.get_user_by_id import GetUserByIdUseCase
 from src.usecases.user.get_user_stats import GetUserStatsUseCase
@@ -104,4 +106,15 @@ async def get_check_content_type_use_case() -> CheckContentTypeUseCase:
 
 CheckContentTypeUseCaseDep = Annotated[
     CheckContentTypeUseCase, Depends(get_check_content_type_use_case)
+]
+
+
+async def get_get_user_tasks_use_case(
+    task_crud: TaskCrudDep,
+) -> GetUserTasksUseCase:
+    return GetUserTasksUseCase(task_crud=task_crud)
+
+
+GetUserTasksUseCaseDep = Annotated[
+    GetUserTasksUseCase, Depends(get_get_user_tasks_use_case)
 ]

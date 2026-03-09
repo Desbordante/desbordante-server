@@ -49,11 +49,14 @@ async def get_create_task_use_case(
     dataset_crud: DatasetCrudDep,
     dataset_policy: DatasetPolicyDep,
     task_policy: TaskPolicyDep,
-    profiling_task_worker: ProfilingTaskWorkerDep,
+    profiling_task: ProfilingTaskWorkerDep,
 ) -> CreateTaskUseCase:
     return CreateTaskUseCase(
         task_crud=task_crud,
         dataset_crud=dataset_crud,
+        dataset_policy=dataset_policy,
+        task_policy=task_policy,
+        profiling_task=profiling_task,
     )
 
 
