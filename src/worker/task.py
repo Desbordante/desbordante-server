@@ -6,7 +6,6 @@ from billiard.einfo import ExceptionInfo
 from celery import Task
 
 from src.crud.base_crud import BaseCrud
-from src.db.session import scoped_session
 from src.models.base_models import BaseModel
 from src.schemas.base_schemas import TaskErrorSchema, TaskStatus
 
@@ -24,7 +23,7 @@ class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type:
 
     abstract = True
 
-    crud_class: type[BaseCrud[ModelType, IdType]]
+    crud_class: type[BaseCrud[ModelType]]
     status_field: str = "status"
     result_field: str = "result"
     error_field: str = "info"

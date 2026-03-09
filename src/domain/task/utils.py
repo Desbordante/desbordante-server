@@ -4,7 +4,6 @@ import networkx as nx
 import pandas as pd
 from networkx.drawing import nx_pydot
 
-from src.domain.dataset.storage import storage
 from src.domain.task.constants import primitives_map
 from src.models.dataset_models import DatasetModel
 from src.schemas.dataset_schemas import (

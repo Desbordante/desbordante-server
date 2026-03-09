@@ -1,5 +1,4 @@
 from typing import Any
-from uuid import UUID
 
 from fastapi import APIRouter, status
 
@@ -22,9 +21,8 @@ router = APIRouter()
     },
 )
 async def create_task(
-    dataset_id: UUID,
-    config: OneOfTaskParams,
+    params: OneOfTaskParams,
     create_task: CreateTaskUseCaseDep,
     actor: ActorDep,
 ) -> Any:
-    return await create_task(actor=actor, dataset_id=dataset_id, config=config)
+    return await create_task(actor=actor, params=params)
