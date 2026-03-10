@@ -6,12 +6,11 @@ from sqlalchemy import ColumnExpressionArgument, func, select, text
 from src.crud.base_crud import BaseCrud
 from src.exceptions import ConflictException
 from src.models.dataset_models import DatasetModel
-from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema
+from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema, TaskStatus
 from src.schemas.dataset_schemas import (
     DatasetFiltersSchema,
     DatasetQueryParamsSchema,
     DatasetsStatsSchema,
-    DatasetStatus,
     DatasetType,
 )
 
@@ -21,10 +20,11 @@ class DatasetFindProps(TypedDict, total=False):
     owner_id: int
     type: DatasetType
     is_public: bool
+    status: TaskStatus
 
 
 class DatasetUpdateProps(TypedDict, total=False):
-    status: DatasetStatus
+    status: TaskStatus
 
 
 class DatasetCrud(BaseCrud[DatasetModel]):
@@ -48,6 +48,9 @@ class DatasetCrud(BaseCrud[DatasetModel]):
             self.model.type == filters_params.type if filters_params.type else None,
             self.model.is_public == filters_params.is_public
             if filters_params.is_public is not None
+            else None,
+            self.model.status == filters_params.status
+            if filters_params.status
             else None,
             self.model.size >= filters_params.min_size
             if filters_params.min_size
@@ -83,10 +86,7 @@ class DatasetCrud(BaseCrud[DatasetModel]):
         query = select(
             func.count(self.model.id),
             func.sum(self.model.size),
-        ).where(
-            self.model.owner_id == user_id,
-            ~self.model.is_public,
-        )
+        ).where(self.model.owner_id == user_id)
         result = await self._session.execute(query)
 
         row = result.first()
@@ -120,3 +120,12 @@ class DatasetCrud(BaseCrud[DatasetModel]):
             )
 
         return await self.create(entity=entity)
+
+    async def get_by_ids(
+        self, *, ids: list[UUID], **kwargs: Unpack[DatasetFindProps]
+    ) -> list[DatasetModel]:
+        query = select(self.model).filter_by(**kwargs).where(self.model.id.in_(ids))
+
+        result = await self._session.execute(query)
+
+        return list(result.scalars().all())

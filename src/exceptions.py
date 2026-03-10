@@ -92,3 +92,10 @@ class IncorrectFileFormatException(BaseAppException):
 
     def __init__(self, message: str):
         super().__init__(message, status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+
+class BadRequestException(BaseAppException):
+    """Raised when the request is invalid"""
+
+    def __init__(self, message: str):
+        super().__init__(message, status_code=status.HTTP_400_BAD_REQUEST)
