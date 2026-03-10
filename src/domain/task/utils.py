@@ -1,3 +1,4 @@
+import asyncio
 from io import BytesIO
 
 import networkx as nx
@@ -5,6 +6,7 @@ import pandas as pd
 from networkx.drawing import nx_pydot
 
 from src.domain.task.constants import primitives_map
+from src.infrastructure.storage.client import get_storage
 from src.models.dataset_models import DatasetModel
 from src.schemas.dataset_schemas import (
     DatasetType,
@@ -29,7 +31,11 @@ def get_primitive_class_by_name(primitive_name: PrimitiveName):
 
 
 def download_dataset(dataset: DatasetModel) -> OneOfDownloadedDatasetSchema:
-    data = storage.download_file_sync(path=dataset.path)
+    async def _run():
+        storage = get_storage()
+        return await storage.download(path=dataset.path)
+
+    data = asyncio.run(_run())
 
     match dataset.type:
         case DatasetType.TABULAR:
