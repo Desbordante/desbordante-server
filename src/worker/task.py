@@ -6,6 +6,7 @@ from billiard.einfo import ExceptionInfo
 from celery import Task
 
 from src.crud.base_crud import BaseCrud
+from src.db.session import async_session_factory_without_pool
 from src.models.base_models import BaseModel
 from src.schemas.base_schemas import TaskErrorSchema, TaskStatus
 
@@ -74,12 +75,11 @@ class DatabaseTaskBase[ModelType: BaseModel, IdType: int | UUID](Task):  # type:
         return TaskErrorSchema(error=str(exc))
 
     def _update_object_sync(self, id: IdType, **kwargs: Any) -> ModelType:
-        loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self._update_object_async(id, **kwargs))
+        return asyncio.run(self._update_object_async(id, **kwargs))
 
     async def _update_object_async(self, id: IdType, **kwargs: Any) -> ModelType:
-        async with scoped_session() as session:
+        async with async_session_factory_without_pool() as session:
             crud = self.crud_class(session=session)
-            entity = await crud.get_by(id=id)
+            entity = await crud.get_by(id=id)  # type: ignore
             return await crud.update(entity=entity, **kwargs)
         raise RuntimeError("Failed to get database session")

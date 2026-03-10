@@ -1,12 +1,12 @@
 import logging
 from typing import Protocol, cast
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from src.domain.authorization.entities import AuthenticatedActor, Dataset
 from src.exceptions import ForbiddenException, PayloadTooLargeException
 from src.models.dataset_models import DatasetModel
+from src.schemas.base_schemas import TaskStatus
 from src.schemas.dataset_schemas import (
-    DatasetStatus,
     File,
     OneOfUploadDatasetParams,
 )
@@ -24,7 +24,7 @@ class DatasetCrud(Protocol):
         storage_limit: int,
     ) -> DatasetModel: ...
     async def update(
-        self, *, entity: DatasetModel, status: DatasetStatus
+        self, *, entity: DatasetModel, status: TaskStatus
     ) -> DatasetModel: ...
     async def delete(self, *, entity: DatasetModel) -> None: ...
 
@@ -46,6 +46,10 @@ class Settings(Protocol):
     STORAGE_LIMIT: int
 
 
+class PreprocessDatasetTask(Protocol):
+    def set(self, *, dataset_id: UUID) -> None: ...
+
+
 class UploadDatasetUseCase:
     def __init__(
         self,
@@ -54,11 +58,13 @@ class UploadDatasetUseCase:
         storage: Storage,
         dataset_policy: DatasetPolicy,
         settings: Settings,
+        preprocess_dataset_task: PreprocessDatasetTask,
     ):
         self._dataset_crud = dataset_crud
         self._storage = storage
         self._dataset_policy = dataset_policy
         self._settings = settings
+        self._preprocess_dataset_task = preprocess_dataset_task
 
     async def __call__(
         self,
@@ -107,7 +113,9 @@ class UploadDatasetUseCase:
             raise e
 
         await self._dataset_crud.update(
-            entity=created_dataset, status=DatasetStatus.READY
+            entity=created_dataset, status=TaskStatus.PENDING
         )
+
+        self._preprocess_dataset_task.set(dataset_id=created_dataset.id)
 
         return created_dataset
