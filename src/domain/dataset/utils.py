@@ -1,4 +1,3 @@
-# type: ignore
 from io import BytesIO
 
 import networkx as nx
@@ -64,5 +63,5 @@ def get_transactional_info(
         number_of_columns=df.shape[1],
         number_of_rows=df.shape[0],
         column_names=list(map(str, df.columns)),
-        unique_values=unique_values,
+        unique_values=list(unique_values),
     )

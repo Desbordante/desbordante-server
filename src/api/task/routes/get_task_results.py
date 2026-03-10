@@ -21,7 +21,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/{id}/results/",
+    "/{task_id}/results/",
     response_model=OneOfPaginatedTaskResponseSchema,
     status_code=status.HTTP_200_OK,
     summary="Get profiling task results by task id",
@@ -32,14 +32,14 @@ router = APIRouter()
     },
 )
 async def get_task_results(
-    id: UUID,
+    task_id: UUID,
     get_task_results: GetTaskResultsUseCaseDep,
     pagination: PaginationParamsDep,
     query_params: TaskResultQueryParamsDep,
     task: TaskDep,
 ) -> Any:
     results = await get_task_results(
-        task_id=id,
+        task_id=task_id,
         pagination=pagination,
         query_params=query_params,
     )
