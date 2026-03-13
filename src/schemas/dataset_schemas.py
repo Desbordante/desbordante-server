@@ -130,6 +130,14 @@ class GraphDatasetInfo(BaseSchema):
 OneOfDatasetInfo = TabularDatasetInfo | TransactionalDatasetInfo | GraphDatasetInfo
 
 
+class DatasetTaskSchema(BaseSchema):
+    id: int
+    task_id: str
+    status: str
+    result: dict | None
+    date_done: datetime | None
+
+
 class BaseDatasetSchema(BaseSchema):
     id: UUID
     type: DatasetType
@@ -139,6 +147,7 @@ class BaseDatasetSchema(BaseSchema):
 
     info: OneOfDatasetInfo | TaskErrorSchema | None
     status: TaskStatus
+    preprocess_task: DatasetTaskSchema | None
 
     created_at: datetime
     updated_at: datetime

@@ -25,6 +25,7 @@ class DatasetFindProps(TypedDict, total=False):
 
 class DatasetUpdateProps(TypedDict, total=False):
     status: TaskStatus
+    preprocess_task_id: str | None
 
 
 class DatasetCrud(BaseCrud[DatasetModel]):

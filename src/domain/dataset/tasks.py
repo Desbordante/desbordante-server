@@ -2,6 +2,8 @@ import asyncio
 from uuid import UUID
 
 from src.crud.dataset_crud import DatasetCrud
+from src.worker.dataset_task_backend import DatasetTaskBackend
+from src.worker.config import settings
 from src.domain.dataset.dependencies import get_storage
 from src.domain.dataset.utils import (
     get_graph_info,
@@ -25,7 +27,12 @@ class PreprocessDatasetTask(DatabaseTaskBase[DatasetModel, UUID]):
     result_field = "info"
 
 
-@worker.task(name="tasks.preprocess_dataset", base=PreprocessDatasetTask, bind=True)
+@worker.task(
+    name="tasks.preprocess_dataset",
+    base=PreprocessDatasetTask,
+    bind=True,
+    backend=DatasetTaskBackend(app=worker, url=settings.database_url),
+)
 def preprocess_dataset(
     self: PreprocessDatasetTask, dataset_id: UUID
 ) -> OneOfDatasetInfo:

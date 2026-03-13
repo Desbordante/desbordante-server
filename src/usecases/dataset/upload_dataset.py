@@ -24,7 +24,11 @@ class DatasetCrud(Protocol):
         storage_limit: int,
     ) -> DatasetModel: ...
     async def update(
-        self, *, entity: DatasetModel, status: TaskStatus
+        self,
+        *,
+        entity: DatasetModel,
+        status: TaskStatus,
+        preprocess_task_id: str | None = None,
     ) -> DatasetModel: ...
     async def delete(self, *, entity: DatasetModel) -> None: ...
 
@@ -47,7 +51,7 @@ class Settings(Protocol):
 
 
 class PreprocessDatasetTask(Protocol):
-    def set(self, *, dataset_id: UUID) -> None: ...
+    def set(self, *, dataset_id: UUID) -> str: ...
 
 
 class UploadDatasetUseCase:
@@ -112,10 +116,14 @@ class UploadDatasetUseCase:
             await self._dataset_crud.delete(entity=created_dataset)
             raise e
 
-        await self._dataset_crud.update(
-            entity=created_dataset, status=TaskStatus.PENDING
+        preprocess_task_id = self._preprocess_dataset_task.set(
+            dataset_id=created_dataset.id
         )
 
-        self._preprocess_dataset_task.set(dataset_id=created_dataset.id)
+        await self._dataset_crud.update(
+            entity=created_dataset,
+            status=TaskStatus.PENDING,
+            preprocess_task_id=preprocess_task_id,
+        )
 
         return created_dataset
