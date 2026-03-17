@@ -5,9 +5,10 @@ from uuid import UUID, uuid4
 from src.domain.authorization.entities import AuthenticatedActor, Dataset
 from src.exceptions import ForbiddenException, PayloadTooLargeException
 from src.models.dataset_models import DatasetModel, PreprocessingTaskModel
-from src.schemas.base_schemas import TaskStatus
 from src.schemas.dataset_schemas import (
+    DatasetType,
     File,
+    OneOfDatasetParams,
     OneOfUploadDatasetParams,
 )
 
@@ -22,13 +23,6 @@ class DatasetCrud(Protocol):
         entity: DatasetModel,
         user_id: int,
         storage_limit: int,
-    ) -> DatasetModel: ...
-    async def update(
-        self,
-        *,
-        entity: DatasetModel,
-        status: TaskStatus,
-        preprocess_task_id: str | None = None,
     ) -> DatasetModel: ...
     async def delete(self, *, entity: DatasetModel) -> None: ...
 
@@ -51,7 +45,9 @@ class Settings(Protocol):
 
 
 class PreprocessDatasetTask(Protocol):
-    def run(self, *, task_id: UUID, dataset_id: UUID) -> None: ...
+    def run(
+        self, *, type: DatasetType, params: OneOfDatasetParams, path: str, task_id: UUID
+    ) -> None: ...
 
 
 class UploadDatasetUseCase:
@@ -118,7 +114,10 @@ class UploadDatasetUseCase:
             raise e
 
         self._preprocess_dataset_task.run(
-            task_id=created_dataset.preprocessing.id, dataset_id=created_dataset.id
+            type=created_dataset.type,
+            params=created_dataset.params,
+            path=path,
+            task_id=created_dataset.preprocessing.id,
         )
 
         return created_dataset
