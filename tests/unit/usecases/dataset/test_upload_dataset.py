@@ -7,7 +7,7 @@ from src.exceptions import (
     ForbiddenException,
     PayloadTooLargeException,
 )
-from src.schemas.dataset_schemas import DatasetStatus, DatasetType
+from src.schemas.dataset_schemas import DatasetType
 from src.usecases.dataset.upload_dataset import UploadDatasetUseCase
 from tests.unit.usecases.dataset.constants import (
     FAKE_FILE_NAME,
@@ -26,6 +26,7 @@ async def test_upload_dataset_success(
     upload_dataset_use_case: UploadDatasetUseCase,
     dataset_crud_mock,
     storage_mock,
+    preprocess_dataset_task_mock,
     actor,
     file,
     upload_params,
@@ -41,8 +42,9 @@ async def test_upload_dataset_success(
     assert result == created_dataset
     dataset_crud_mock.create_with_storage_check.assert_awaited_once()
     storage_mock.upload.assert_awaited_once()
-    dataset_crud_mock.update.assert_awaited_once_with(
-        entity=created_dataset, status=DatasetStatus.READY
+    preprocess_dataset_task_mock.run.assert_called_once_with(
+        task_id=created_dataset.preprocessing.id,
+        dataset_id=created_dataset.id,
     )
     dataset_crud_mock.delete.assert_not_called()
 
@@ -121,6 +123,7 @@ async def test_upload_dataset_deletes_created_dataset_when_storage_upload_fails(
     upload_dataset_use_case: UploadDatasetUseCase,
     dataset_crud_mock,
     storage_mock,
+    preprocess_dataset_task_mock,
     actor,
     file,
     upload_params,
@@ -137,7 +140,7 @@ async def test_upload_dataset_deletes_created_dataset_when_storage_upload_fails(
         )
 
     dataset_crud_mock.delete.assert_awaited_once_with(entity=created_dataset)
-    dataset_crud_mock.update.assert_not_called()
+    preprocess_dataset_task_mock.run.assert_not_called()
 
 
 async def test_upload_dataset_creates_entity_with_correct_data(

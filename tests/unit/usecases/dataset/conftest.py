@@ -1,4 +1,5 @@
 from io import BytesIO
+from uuid import uuid4
 
 import pytest
 from pytest_mock import MockerFixture
@@ -76,6 +77,13 @@ def settings_mock(mocker: MockerFixture):
 
 
 @pytest.fixture
+def preprocess_dataset_task_mock(mocker: MockerFixture):
+    mock = mocker.Mock()
+    mock.run = mocker.Mock()
+    return mock
+
+
+@pytest.fixture
 def user_stats_empty(mocker: MockerFixture):
     stats = mocker.Mock()
     stats.total_size = 0
@@ -85,7 +93,11 @@ def user_stats_empty(mocker: MockerFixture):
 
 @pytest.fixture
 def created_dataset(mocker: MockerFixture):
-    return mocker.Mock()
+    mock = mocker.Mock()
+    mock.id = uuid4()
+    mock.preprocessing = mocker.Mock()
+    mock.preprocessing.id = uuid4()
+    return mock
 
 
 @pytest.fixture
@@ -94,10 +106,12 @@ def upload_dataset_use_case(
     storage_mock,
     dataset_policy_mock,
     settings_mock,
+    preprocess_dataset_task_mock,
 ) -> UploadDatasetUseCase:
     return UploadDatasetUseCase(
         dataset_crud=dataset_crud_mock,
         storage=storage_mock,
         dataset_policy=dataset_policy_mock,
         settings=settings_mock,
+        preprocess_dataset_task=preprocess_dataset_task_mock,
     )
