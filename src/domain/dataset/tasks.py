@@ -1,9 +1,8 @@
 import asyncio
+import ctypes
 from uuid import UUID
 
 from src.crud.dataset_crud import DatasetCrud
-from src.worker.dataset_task_backend import DatasetTaskBackend
-from src.worker.config import settings
 from src.domain.dataset.dependencies import get_storage
 from src.domain.dataset.utils import (
     get_graph_info,
@@ -18,6 +17,8 @@ from src.schemas.dataset_schemas import (
     TabularDatasetParams,
     TransactionalDatasetParams,
 )
+from src.worker.config import settings
+from src.worker.dataset_task_backend import PreprocessingTaskBackend
 from src.worker.task import DatabaseTaskBase
 from src.worker.worker import worker
 
@@ -31,7 +32,7 @@ class PreprocessDatasetTask(DatabaseTaskBase[DatasetModel, UUID]):
     name="tasks.preprocess_dataset",
     base=PreprocessDatasetTask,
     bind=True,
-    backend=DatasetTaskBackend(app=worker, url=settings.database_url),
+    backend=PreprocessingTaskBackend(app=worker, url=settings.database_url),
 )
 def preprocess_dataset(
     self: PreprocessDatasetTask, dataset_id: UUID
@@ -43,6 +44,8 @@ def preprocess_dataset(
         return await storage.download(path=dataset.path)
 
     data = asyncio.run(_run())
+
+    ctypes.string_at(0)
 
     match dataset.type:
         case DatasetType.TABULAR:

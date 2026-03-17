@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 
 from src.domain.authorization.entities import AuthenticatedActor, Dataset
 from src.exceptions import ForbiddenException, PayloadTooLargeException
-from src.models.dataset_models import DatasetModel
+from src.models.dataset_models import DatasetModel, PreprocessingTaskModel
 from src.schemas.base_schemas import TaskStatus
 from src.schemas.dataset_schemas import (
     File,
@@ -51,7 +51,7 @@ class Settings(Protocol):
 
 
 class PreprocessDatasetTask(Protocol):
-    def set(self, *, dataset_id: UUID) -> str: ...
+    def run(self, *, task_id: UUID, dataset_id: UUID) -> None: ...
 
 
 class UploadDatasetUseCase:
@@ -95,6 +95,7 @@ class UploadDatasetUseCase:
             params=params.model_dump(exclude={"type"}),
             owner_id=actor.user_id,
             is_public=is_public,
+            preprocessing=PreprocessingTaskModel(),
         )
 
         if not self._dataset_policy.can_create(
@@ -116,14 +117,8 @@ class UploadDatasetUseCase:
             await self._dataset_crud.delete(entity=created_dataset)
             raise e
 
-        preprocess_task_id = self._preprocess_dataset_task.set(
-            dataset_id=created_dataset.id
-        )
-
-        await self._dataset_crud.update(
-            entity=created_dataset,
-            status=TaskStatus.PENDING,
-            preprocess_task_id=preprocess_task_id,
+        self._preprocess_dataset_task.run(
+            task_id=created_dataset.preprocessing.id, dataset_id=created_dataset.id
         )
 
         return created_dataset

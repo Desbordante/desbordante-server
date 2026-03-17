@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from enum import StrEnum, auto
 from typing import Annotated, Any
 
+from celery import states
 from fastapi import Depends
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, model_validator
@@ -176,6 +177,16 @@ class TaskStatus(StrEnum):
     PROCESSING = auto()
     SUCCESS = auto()
     FAILED = auto()
+
+
+class CeleryTaskStatus(StrEnum):
+    PENDING = states.PENDING
+    RECEIVED = states.RECEIVED
+    STARTED = states.STARTED
+    SUCCESS = states.SUCCESS
+    FAILURE = states.FAILURE
+    RETRY = states.RETRY
+    REVOKED = states.REVOKED
 
 
 class TaskErrorSchema(BaseSchema):

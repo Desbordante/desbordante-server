@@ -4,6 +4,5 @@ from src.domain.dataset.tasks import preprocess_dataset
 
 
 class PreprocessDatasetWorker:
-    def set(self, *, dataset_id: UUID) -> str:
-        result = preprocess_dataset.delay(dataset_id)
-        return result.id
+    def run(self, *, task_id: UUID, dataset_id: UUID) -> None:
+        preprocess_dataset.apply_async(args=(dataset_id,), task_id=str(task_id))

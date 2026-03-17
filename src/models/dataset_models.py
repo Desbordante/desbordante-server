@@ -1,9 +1,12 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
+from uuid import UUID
 
-from celery import states
-from sqlalchemy import BigInteger, DateTime, Enum, ForeignKey, Sequence, String, Text
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import (
+    TIMESTAMP,
+    Enum,
+    ForeignKey,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.annotations import str_non_nullable, uuid_pk
@@ -11,7 +14,12 @@ from src.models.base_models import BaseModel
 from src.models.links import TaskDatasetLink
 from src.models.task_models import TaskModel
 from src.models.user_models import UserModel
-from src.schemas.base_schemas import PydanticType, TaskErrorSchema, TaskStatus
+from src.schemas.base_schemas import (
+    CeleryTaskStatus,
+    PydanticType,
+    TaskErrorSchema,
+    TaskStatus,
+)
 from src.schemas.dataset_schemas import (
     DatasetType,
     OneOfDatasetInfo,
@@ -22,41 +30,20 @@ if TYPE_CHECKING:
     from src.models.task_models import TaskModel
 
 
-class DatasetTask(BaseModel):
-    """Celery task result for preprocess_dataset. Result stored as JSONB OneOfDatasetInfo."""
-
-    id: Mapped[int] = mapped_column(
-        BigInteger,
-        Sequence("task_id_sequence"),
-        primary_key=True,
-        autoincrement=True,
+class PreprocessingTaskModel(BaseModel):
+    id: Mapped[uuid_pk]
+    status: Mapped[CeleryTaskStatus] = mapped_column(default=CeleryTaskStatus.PENDING)
+    result: Mapped[OneOfDatasetInfo | dict | None] = mapped_column(
+        PydanticType(OneOfDatasetInfo | dict | None), default=None
     )
-    task_id: Mapped[str] = mapped_column(String(155), unique=True)
-    status: Mapped[str] = mapped_column(String(50), default=states.PENDING)
-    result: Mapped[dict | None] = mapped_column(
-        JSONB(astext_type=Text()), nullable=True
+    finished_at: Mapped[datetime | None] = mapped_column(
+        TIMESTAMP(timezone=True), nullable=True
     )
-    date_done: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
+
+    dataset_id: Mapped[UUID] = mapped_column(
+        ForeignKey("datasets.id", ondelete="CASCADE"), index=True, unique=True
     )
-    traceback: Mapped[str | None] = mapped_column(Text(), nullable=True)
-
-    def __init__(self, task_id: str, **kwargs) -> None:
-        super().__init__(**kwargs)
-        self.task_id = task_id
-
-    def to_dict(self) -> dict:
-        return {
-            "task_id": self.task_id,
-            "status": self.status,
-            "result": self.result,
-            "traceback": self.traceback,
-            "date_done": self.date_done,
-        }
-
-    @classmethod
-    def configure(cls, schema: str | None = None, name: str | None = None) -> None:
-        pass
+    dataset: Mapped["DatasetModel"] = relationship(back_populates="preprocessing")
 
 
 class DatasetModel(BaseModel):
@@ -82,14 +69,8 @@ class DatasetModel(BaseModel):
         PydanticType(OneOfDatasetInfo | TaskErrorSchema | None), default=None
     )
 
-    preprocess_task_id: Mapped[str | None] = mapped_column(
-        String(155), nullable=True, index=True
-    )
-    preprocess_task: Mapped[DatasetTask | None] = relationship(
-        "DatasetTask",
-        primaryjoin="DatasetModel.preprocess_task_id == DatasetTask.task_id",
-        lazy="selectin",
-        viewonly=True,
+    preprocessing: Mapped[PreprocessingTaskModel] = relationship(
+        back_populates="dataset", lazy="selectin", uselist=False
     )
 
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
