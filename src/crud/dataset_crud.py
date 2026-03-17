@@ -24,8 +24,7 @@ class DatasetFindProps(TypedDict, total=False):
 
 
 class DatasetUpdateProps(TypedDict, total=False):
-    status: TaskStatus
-    preprocess_task_id: str | None
+    pass
 
 
 class DatasetCrud(BaseCrud[DatasetModel]):
@@ -50,7 +49,7 @@ class DatasetCrud(BaseCrud[DatasetModel]):
             self.model.is_public == filters_params.is_public
             if filters_params.is_public is not None
             else None,
-            self.model.status == filters_params.status
+            self.model.preprocessing.status == filters_params.status
             if filters_params.status
             else None,
             self.model.size >= filters_params.min_size

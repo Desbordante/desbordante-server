@@ -7,7 +7,7 @@ from src.domain.task.utils import get_primitive_class_by_name
 from src.exceptions import BadRequestException, ForbiddenException
 from src.models.dataset_models import DatasetModel
 from src.models.task_models import TaskModel
-from src.schemas.base_schemas import TaskStatus
+from src.schemas.base_schemas import CeleryTaskStatus
 from src.schemas.dataset_schemas import (
     DatasetType,
 )
@@ -22,7 +22,7 @@ class TaskCrud(Protocol):
 
 class DatasetCrud(Protocol):
     async def get_by_ids(
-        self, *, ids: list[UUID], type: DatasetType, status: TaskStatus
+        self, *, ids: list[UUID], type: DatasetType
     ) -> list[DatasetModel]: ...
 
 
@@ -62,7 +62,6 @@ class CreateTaskUseCase:
         datasets = await self._dataset_crud.get_by_ids(
             ids=dataset_ids,
             type=primitive_class.allowed_dataset_type,
-            status=TaskStatus.SUCCESS,
         )
 
         if len(datasets) != len(set(dataset_ids)):
@@ -76,6 +75,11 @@ class CreateTaskUseCase:
             ):
                 raise BadRequestException(
                     "Some datasets were not found or have invalid type"
+                )
+
+            if dataset.preprocessing.status != CeleryTaskStatus.SUCCESS:
+                raise BadRequestException(
+                    f"Dataset {dataset.id} preprocessing has inappropriate status"
                 )
 
         task_entity = TaskModel(

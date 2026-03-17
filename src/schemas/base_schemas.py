@@ -189,8 +189,19 @@ class CeleryTaskStatus(StrEnum):
     REVOKED = states.REVOKED
 
 
+class TaskFailureReason(StrEnum):
+    MEMORY_LIMIT_EXCEEDED = auto()
+    TIME_LIMIT_EXCEEDED = auto()
+    WORKER_LOST = auto()
+    OTHER = auto()
+
+
 class TaskErrorSchema(BaseSchema):
-    error: str
+    reason: TaskFailureReason
+    exc_type: str
+    exc_module: str
+    exc_message: list[str]
+    traceback: str | None
 
 
 @dataclass

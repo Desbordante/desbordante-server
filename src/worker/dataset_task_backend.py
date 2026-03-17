@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from celery import states
 from celery.backends.base import BaseBackend
 from celery.backends.database import (  # type: ignore[import-untyped]
     retry,
@@ -8,26 +9,29 @@ from celery.backends.database import (  # type: ignore[import-untyped]
 from celery.backends.database.session import (  # type: ignore[import-untyped]
     SessionManager,
 )
+from celery.exceptions import SoftTimeLimitExceeded, TimeLimitExceeded, WorkerLostError
 from sqlalchemy import update
 from sqlalchemy.orm import Session
 
 from src.models.dataset_models import PreprocessingTaskModel
-from src.schemas.base_schemas import CeleryTaskStatus
+from src.schemas.base_schemas import (
+    CeleryTaskStatus,
+    TaskErrorSchema,
+    TaskFailureReason,
+)
 
 
 class PreprocessingTaskBackend(BaseBackend):
     task_cls = PreprocessingTaskModel
 
     def __init__(self, url: str, **kwargs):
-        # The `url` argument was added later and is used by
-        # the app to set backend by url (celery.app.backends.by_url)
         super().__init__(url=url, **kwargs)
 
         self.url = url
         self.session_manager = SessionManager()
 
     def _get_session(self) -> Session:
-        engine, session = self.session_manager.create_session(dburi=self.url)
+        _, session = self.session_manager.create_session(dburi=self.url)
         return session()
 
     @retry
@@ -52,12 +56,38 @@ class PreprocessingTaskBackend(BaseBackend):
                 format_date=False,
             )
 
+            result = meta["result"]
+
+            if state == states.STARTED:
+                result = None  # Celery tries to store worker name and pid in the result, but we don't want to store it
+            elif state in states.EXCEPTION_STATES:
+                exc_type = result["exc_type"]
+
+                reason = TaskFailureReason.OTHER
+                if exc_type in [
+                    TimeLimitExceeded.__name__,
+                    SoftTimeLimitExceeded.__name__,
+                ]:
+                    reason = TaskFailureReason.TIME_LIMIT_EXCEEDED
+                elif exc_type == MemoryError.__name__:
+                    reason = TaskFailureReason.MEMORY_LIMIT_EXCEEDED
+                elif exc_type == WorkerLostError.__name__:
+                    reason = TaskFailureReason.WORKER_LOST
+
+                result = TaskErrorSchema(
+                    reason=reason,
+                    exc_type=exc_type,
+                    exc_module=result["exc_module"],
+                    exc_message=result["exc_message"],
+                    traceback=meta["traceback"],
+                )
+
             stmt = (
                 update(self.task_cls)
                 .where(self.task_cls.id == UUID(task_id))
                 .values(
                     status=CeleryTaskStatus(meta["status"]),
-                    result=meta["result"],
+                    result=result,
                     finished_at=meta["date_done"],
                 )
             )

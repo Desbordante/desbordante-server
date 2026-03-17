@@ -131,10 +131,33 @@ class GraphDatasetInfo(BaseSchema):
 OneOfDatasetInfo = TabularDatasetInfo | TransactionalDatasetInfo | GraphDatasetInfo
 
 
-class PreprocessingTaskSchema(BaseSchema):
-    status: CeleryTaskStatus
-    result: OneOfDatasetInfo | dict | None
-    finished_at: datetime | None
+class ProcessingPreprocessingTaskSchema(BaseSchema):
+    status: Literal[
+        CeleryTaskStatus.PENDING,
+        CeleryTaskStatus.STARTED,
+        CeleryTaskStatus.RECEIVED,
+    ]
+    result: None
+
+
+class SuccessPreprocessingTaskSchema(BaseSchema):
+    status: Literal[CeleryTaskStatus.SUCCESS]
+    result: OneOfDatasetInfo
+    finished_at: datetime
+
+
+class FailedPreprocessingTaskSchema(BaseSchema):
+    status: Literal[CeleryTaskStatus.FAILURE]
+    result: TaskErrorSchema
+    finished_at: datetime
+
+
+PreprocessingTaskSchema = Annotated[
+    ProcessingPreprocessingTaskSchema
+    | SuccessPreprocessingTaskSchema
+    | FailedPreprocessingTaskSchema,
+    Field(discriminator="status"),
+]
 
 
 class BaseDatasetSchema(BaseSchema):
@@ -144,8 +167,6 @@ class BaseDatasetSchema(BaseSchema):
     size: int
     params: OneOfDatasetParams
 
-    info: OneOfDatasetInfo | TaskErrorSchema | None
-    status: TaskStatus
     preprocessing: PreprocessingTaskSchema
 
     created_at: datetime

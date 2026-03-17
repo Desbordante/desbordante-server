@@ -1,5 +1,4 @@
 import asyncio
-import ctypes
 from uuid import UUID
 
 from src.crud.dataset_crud import DatasetCrud
@@ -44,8 +43,6 @@ def preprocess_dataset(
         return await storage.download(path=dataset.path)
 
     data = asyncio.run(_run())
-
-    ctypes.string_at(0)
 
     match dataset.type:
         case DatasetType.TABULAR:

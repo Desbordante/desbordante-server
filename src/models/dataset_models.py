@@ -4,7 +4,6 @@ from uuid import UUID
 
 from sqlalchemy import (
     TIMESTAMP,
-    Enum,
     ForeignKey,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -18,7 +17,6 @@ from src.schemas.base_schemas import (
     CeleryTaskStatus,
     PydanticType,
     TaskErrorSchema,
-    TaskStatus,
 )
 from src.schemas.dataset_schemas import (
     DatasetType,
@@ -33,8 +31,8 @@ if TYPE_CHECKING:
 class PreprocessingTaskModel(BaseModel):
     id: Mapped[uuid_pk]
     status: Mapped[CeleryTaskStatus] = mapped_column(default=CeleryTaskStatus.PENDING)
-    result: Mapped[OneOfDatasetInfo | dict | None] = mapped_column(
-        PydanticType(OneOfDatasetInfo | dict | None), default=None
+    result: Mapped[OneOfDatasetInfo | TaskErrorSchema | None] = mapped_column(
+        PydanticType(OneOfDatasetInfo | TaskErrorSchema | None), default=None
     )
     finished_at: Mapped[datetime | None] = mapped_column(
         TIMESTAMP(timezone=True), nullable=True
@@ -54,20 +52,6 @@ class DatasetModel(BaseModel):
     path: Mapped[str_non_nullable]
     params: Mapped[OneOfDatasetParams] = mapped_column(PydanticType(OneOfDatasetParams))
     is_public: Mapped[bool] = mapped_column(default=False, index=True)
-
-    status: Mapped[TaskStatus] = mapped_column(
-        Enum(
-            TaskStatus,
-            native_enum=False,
-            values_callable=lambda x: [e.value for e in x],
-        ),
-        nullable=False,
-        default=TaskStatus.PENDING,
-    )
-
-    info: Mapped[OneOfDatasetInfo | TaskErrorSchema | None] = mapped_column(
-        PydanticType(OneOfDatasetInfo | TaskErrorSchema | None), default=None
-    )
 
     preprocessing: Mapped[PreprocessingTaskModel] = relationship(
         back_populates="dataset", lazy="selectin", uselist=False
