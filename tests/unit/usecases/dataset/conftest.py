@@ -1,9 +1,11 @@
 from io import BytesIO
+from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
 from pytest_mock import MockerFixture
 
+from src.schemas.base_schemas import TaskStatus
 from src.schemas.dataset_schemas import (
     DatasetSeparator,
     DatasetType,
@@ -92,12 +94,20 @@ def user_stats_empty(mocker: MockerFixture):
 
 
 @pytest.fixture
-def created_dataset(mocker: MockerFixture):
-    mock = mocker.Mock()
-    mock.id = uuid4()
-    mock.preprocessing = mocker.Mock()
-    mock.preprocessing.id = uuid4()
-    return mock
+def created_dataset(upload_params: UploadTabularDatasetParams):
+    preprocessing_id = uuid4()
+    preprocessing = SimpleNamespace(
+        status=TaskStatus.PENDING,
+        result=None,
+        id=preprocessing_id,
+    )
+    return SimpleNamespace(
+        id=uuid4(),
+        type=DatasetType.TABULAR,
+        params=upload_params.model_dump(exclude={"type"}),
+        path=f"{FAKE_USER_ID}/{uuid4()}",
+        preprocessing=preprocessing,
+    )
 
 
 @pytest.fixture
