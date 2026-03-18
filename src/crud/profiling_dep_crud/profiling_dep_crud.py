@@ -34,9 +34,9 @@ class ProfilingDepCrud(BaseCrud[ProfilingDepModel]):
 
         super().__init__(session=session)
 
-    async def get_by(
+    async def get_by(  # type: ignore
         self, **kwargs: Unpack[ProfilingDepFindProps]
-    ) -> ProfilingDepModel:  # type: ignore
+    ) -> ProfilingDepModel:
         return await super().get_by(**kwargs)
 
     def _get_ordering_field(self, order_by: str) -> ColumnElement[ProfilingDepModel]:
