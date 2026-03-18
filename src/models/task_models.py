@@ -1,32 +1,20 @@
-from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import (
-    TIMESTAMP,
-    Enum,
-    ForeignKey,
-)
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.db.annotations import uuid_pk
-from src.models.base_models import BaseModel
+from src.models.base_models import BaseTaskModel
 from src.models.links import TaskDatasetLink
 from src.models.task_result_models import TaskResultModel
 from src.models.user_models import UserModel
-from src.schemas.base_schemas import (
-    CeleryTaskStatus,
-    PydanticType,
-    TaskErrorSchema,
-)
+from src.schemas.base_schemas import PydanticType
 from src.schemas.task_schemas.base_schemas import OneOfTaskParams, OneOfTaskResultSchema
 
 if TYPE_CHECKING:
     from src.models.dataset_models import DatasetModel
 
 
-class TaskModel(BaseModel):
-    id: Mapped[uuid_pk]
-
+class TaskModel(BaseTaskModel[OneOfTaskResultSchema]):
     is_public: Mapped[bool] = mapped_column(default=False)
 
     owner_id: Mapped[int | None] = mapped_column(
@@ -35,21 +23,6 @@ class TaskModel(BaseModel):
     owner: Mapped["UserModel | None"] = relationship(back_populates="tasks")
 
     params: Mapped[OneOfTaskParams] = mapped_column(PydanticType(OneOfTaskParams))
-
-    status: Mapped[CeleryTaskStatus] = mapped_column(
-        Enum(
-            CeleryTaskStatus,
-            native_enum=False,
-            values_callable=lambda x: [e.value for e in x],
-        ),
-        default=CeleryTaskStatus.PENDING,
-    )
-    result: Mapped[OneOfTaskResultSchema | TaskErrorSchema | None] = mapped_column(
-        PydanticType(OneOfTaskResultSchema | TaskErrorSchema | None), default=None
-    )
-    finished_at: Mapped[datetime | None] = mapped_column(
-        TIMESTAMP(timezone=True), nullable=True
-    )
 
     results: Mapped[list["TaskResultModel"]] = relationship(back_populates="task")
 

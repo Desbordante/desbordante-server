@@ -1,51 +1,22 @@
-from datetime import datetime
-from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import (
-    TIMESTAMP,
-    Enum,
-    ForeignKey,
-)
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.annotations import str_non_nullable, uuid_pk
-from src.models.base_models import BaseModel
+from src.models.base_models import BaseModel, BaseTaskModel
 from src.models.links import TaskDatasetLink
 from src.models.task_models import TaskModel
 from src.models.user_models import UserModel
-from src.schemas.base_schemas import (
-    CeleryTaskStatus,
-    PydanticType,
-    TaskErrorSchema,
-)
+from src.schemas.base_schemas import PydanticType
 from src.schemas.dataset_schemas import (
     DatasetType,
     OneOfDatasetInfo,
     OneOfDatasetParams,
 )
 
-if TYPE_CHECKING:
-    from src.models.task_models import TaskModel
 
-
-class PreprocessingTaskModel(BaseModel):
-    id: Mapped[uuid_pk]
-    status: Mapped[CeleryTaskStatus] = mapped_column(
-        Enum(
-            CeleryTaskStatus,
-            native_enum=False,
-            values_callable=lambda x: [e.value for e in x],
-        ),
-        default=CeleryTaskStatus.PENDING,
-    )
-    result: Mapped[OneOfDatasetInfo | TaskErrorSchema | None] = mapped_column(
-        PydanticType(OneOfDatasetInfo | TaskErrorSchema | None), default=None
-    )
-    finished_at: Mapped[datetime | None] = mapped_column(
-        TIMESTAMP(timezone=True), nullable=True
-    )
-
+class PreprocessingTaskModel(BaseTaskModel[OneOfDatasetInfo]):
     dataset_id: Mapped[UUID] = mapped_column(
         ForeignKey("datasets.id", ondelete="CASCADE"), index=True, unique=True
     )
