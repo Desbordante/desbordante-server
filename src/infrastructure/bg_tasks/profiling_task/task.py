@@ -1,11 +1,11 @@
 from pydantic import TypeAdapter
 
-from src.infrastructure.bg_tasks.profiling_task.utils import (
-    download_dataset,
-    get_primitive_class_by_name,
-)
+from src.domain.task.utils import get_primitive_class_by_name
 from src.infrastructure.bg_tasks.config import settings
 from src.infrastructure.bg_tasks.profiling_task.backend import ProfilingTaskBackend
+from src.infrastructure.bg_tasks.profiling_task.utils import (
+    download_dataset,
+)
 from src.infrastructure.bg_tasks.resource_intensive_task import ResourceIntensiveTask
 from src.schemas.dataset_schemas import DatasetForTaskSchema
 from src.schemas.task_schemas.base_schemas import (
