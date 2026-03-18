@@ -1,13 +1,14 @@
 import asyncio
 
-from src.domain.dataset.dependencies import get_storage
-from src.domain.dataset.utils import (
+from src.infrastructure.bg_tasks.config import settings
+from src.infrastructure.bg_tasks.preprocess_dataset.backend import (
+    PreprocessDatasetBackend,
+)
+from src.infrastructure.bg_tasks.preprocess_dataset.dependencies import get_storage
+from src.infrastructure.bg_tasks.preprocess_dataset.utils import (
     get_graph_info,
     get_tabular_info,
     get_transactional_info,
-)
-from src.infrastructure.bg_tasks.preprocess_dataset.backend import (
-    PreprocessDatasetBackend,
 )
 from src.infrastructure.bg_tasks.resource_intensive_task import ResourceIntensiveTask
 from src.schemas.dataset_schemas import (
@@ -18,7 +19,6 @@ from src.schemas.dataset_schemas import (
     TabularDatasetParams,
     TransactionalDatasetParams,
 )
-from src.infrastructure.bg_tasks.config import settings
 from src.worker.worker import worker
 
 
@@ -32,7 +32,7 @@ from src.worker.worker import worker
 def preprocess_dataset(self, *, dataset: DatasetForTaskSchema) -> OneOfDatasetInfo:
 
     async def _run():
-        storage = await get_storage()
+        storage = get_storage()
         return await storage.download(path=dataset.path)
 
     data = asyncio.run(_run())

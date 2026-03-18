@@ -5,10 +5,10 @@ import networkx as nx
 import pandas as pd
 from networkx.drawing import nx_pydot
 
-from src.domain.task.constants import primitives_map
+from src.infrastructure.bg_tasks.profiling_task.constants import primitives_map
 from src.infrastructure.storage.client import get_storage
-from src.schemas.dataset_schemas import DatasetForTaskSchema
 from src.schemas.dataset_schemas import (
+    DatasetForTaskSchema,
     DatasetType,
     GraphDatasetInfo,
     GraphDatasetParams,
