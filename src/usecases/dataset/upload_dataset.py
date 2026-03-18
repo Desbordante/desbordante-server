@@ -23,6 +23,9 @@ class DatasetCrud(Protocol):
         user_id: int,
         storage_limit: int,
     ) -> DatasetModel: ...
+    async def update(
+        self, *, entity: DatasetModel, is_uploaded: bool
+    ) -> DatasetModel: ...
     async def delete(self, *, entity: DatasetModel) -> None: ...
 
 
@@ -109,6 +112,8 @@ class UploadDatasetUseCase:
         except Exception as e:
             await self._dataset_crud.delete(entity=created_dataset)
             raise e
+
+        await self._dataset_crud.update(entity=created_dataset, is_uploaded=True)
 
         self._preprocess_dataset_runner.run(
             dataset=DatasetForTaskSchema.model_validate(created_dataset),

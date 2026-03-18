@@ -24,7 +24,7 @@ class DatasetFindProps(TypedDict, total=False):
 
 
 class DatasetUpdateProps(TypedDict, total=False):
-    pass
+    is_uploaded: bool
 
 
 class DatasetCrud(BaseCrud[DatasetModel]):

@@ -35,6 +35,8 @@ class DatasetModel(BaseModel):
     params: Mapped[OneOfDatasetParams] = mapped_column(PydanticType(OneOfDatasetParams))
     is_public: Mapped[bool] = mapped_column(default=False, index=True)
 
+    is_uploaded: Mapped[bool] = mapped_column(default=False, index=True)
+
     preprocessing: Mapped[PreprocessingTaskModel] = relationship(
         back_populates="dataset", lazy="selectin", uselist=False
     )
