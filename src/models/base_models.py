@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, Mapped, declared_attr, mapped_column
 
 from src.db.annotations import created_at, updated_at, uuid_pk
-from src.schemas.base_schemas import CeleryTaskStatus, PydanticType, TaskErrorSchema
+from src.schemas.base_schemas import PydanticType, TaskErrorSchema, TaskStatus
 
 
 def _get_result_type(cls: Any) -> type:
@@ -23,10 +23,6 @@ def _get_result_type(cls: Any) -> type:
 class BaseModel(AsyncAttrs, DeclarativeBase):
     __abstract__ = True
 
-    @declared_attr.directive
-    def __tablename__(cls) -> str:
-        return f"{cls.__name__.lower().replace('model', '')}s"
-
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
 
@@ -37,13 +33,13 @@ class BaseTaskModel[T](BaseModel):
     __abstract__ = True
 
     id: Mapped[uuid_pk]
-    status: Mapped[CeleryTaskStatus] = mapped_column(
+    status: Mapped[TaskStatus] = mapped_column(
         Enum(
-            CeleryTaskStatus,
+            TaskStatus,
             native_enum=False,
             values_callable=lambda x: [e.value for e in x],
         ),
-        default=CeleryTaskStatus.PENDING,
+        default=TaskStatus.PENDING,
     )
 
     @declared_attr

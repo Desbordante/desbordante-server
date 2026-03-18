@@ -1,4 +1,4 @@
-from src.crud.task_result_crud.constants import query_helpers_map
+from src.crud.profiling_dep_crud.constants import query_helpers_map
 from src.schemas.task_schemas.types import PrimitiveName
 
 

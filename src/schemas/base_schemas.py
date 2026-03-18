@@ -173,13 +173,6 @@ class QueryParamsSchema[T: FiltersParamsSchema, U: str](BaseSchema):
 
 
 class TaskStatus(StrEnum):
-    PENDING = auto()
-    PROCESSING = auto()
-    SUCCESS = auto()
-    FAILED = auto()
-
-
-class CeleryTaskStatus(StrEnum):
     PENDING = states.PENDING
     RECEIVED = states.RECEIVED
     STARTED = states.STARTED

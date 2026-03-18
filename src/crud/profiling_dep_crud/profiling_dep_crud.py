@@ -6,9 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Bundle
 
 from src.crud.base_crud import BaseCrud
-from src.crud.task_result_crud.query_helpers.base_query_helper import BaseQueryHelper
-from src.crud.task_result_crud.utils import get_query_helper_by_primitive_name
-from src.models.task_result_models import TaskResultModel
+from src.crud.profiling_dep_crud.query_helpers.base_query_helper import BaseQueryHelper
+from src.crud.profiling_dep_crud.utils import get_query_helper_by_primitive_name
+from src.models.task_models import ProfilingDepModel
 from src.schemas.base_schemas import (
     FiltersParamsSchema,
     PaginatedResult,
@@ -20,17 +20,13 @@ from src.schemas.task_schemas.base_schemas import (
 from src.schemas.task_schemas.types import PrimitiveName
 
 
-class TaskResultFindProps(TypedDict, total=False):
+class ProfilingDepFindProps(TypedDict, total=False):
     id: UUID
     task_id: UUID
 
 
-class TaskResultUpdateProps(TypedDict, total=False):
-    pass
-
-
-class TaskResultCrud(BaseCrud[TaskResultModel]):
-    model = TaskResultModel
+class ProfilingDepCrud(BaseCrud[ProfilingDepModel]):
+    model = ProfilingDepModel
     _query_helper: BaseQueryHelper
 
     def __init__(self, *, session: AsyncSession, primitive_name: PrimitiveName):
@@ -38,10 +34,12 @@ class TaskResultCrud(BaseCrud[TaskResultModel]):
 
         super().__init__(session=session)
 
-    async def get_by(self, **kwargs: Unpack[TaskResultFindProps]) -> TaskResultModel:
+    async def get_by(
+        self, **kwargs: Unpack[ProfilingDepFindProps]
+    ) -> ProfilingDepModel:  # type: ignore
         return await super().get_by(**kwargs)
 
-    def _get_ordering_field(self, order_by: str) -> ColumnElement[TaskResultModel]:
+    def _get_ordering_field(self, order_by: str) -> ColumnElement[ProfilingDepModel]:
         return self._query_helper.get_ordering_field(order_by)
 
     def _make_filters(
@@ -49,13 +47,13 @@ class TaskResultCrud(BaseCrud[TaskResultModel]):
     ) -> Sequence[ColumnExpressionArgument[bool] | None]:
         return self._query_helper.make_filters(filters_params)
 
-    async def get_many(
+    async def get_many(  # type: ignore
         self,
         *,
         pagination: PaginationParamsSchema,
         query_params: TaskResultQueryParamsSchema,
-        **kwargs: Unpack[TaskResultFindProps],
-    ) -> PaginatedResult[TaskResultModel]:
+        **kwargs: Unpack[ProfilingDepFindProps],
+    ) -> PaginatedResult[ProfilingDepModel]:
         filtered_result_column = self._query_helper.get_filtered_result_column(
             query_params.filters
         )
@@ -64,17 +62,17 @@ class TaskResultCrud(BaseCrud[TaskResultModel]):
             return await super()._get_many(
                 pagination=pagination,
                 query_params=query_params,
-                query=select(TaskResultModel),
+                query=select(ProfilingDepModel),
                 **kwargs,
             )
 
         cte = (
             select(
-                TaskResultModel.id,
+                ProfilingDepModel.id,
                 filtered_result_column.label("result"),
-                TaskResultModel.task_id,
-                TaskResultModel.created_at,
-                TaskResultModel.updated_at,
+                ProfilingDepModel.task_id,
+                ProfilingDepModel.created_at,
+                ProfilingDepModel.updated_at,
             )
             .filter_by(**kwargs)
             .cte("filtered_results")
@@ -97,8 +95,3 @@ class TaskResultCrud(BaseCrud[TaskResultModel]):
             query=query,
             **kwargs,
         )
-
-    async def update(
-        self, *, entity: TaskResultModel, **kwargs: Unpack[TaskResultUpdateProps]
-    ) -> TaskResultModel:
-        return await super().update(entity=entity, **kwargs)

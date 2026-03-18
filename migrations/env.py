@@ -11,9 +11,11 @@ from src.db.config import settings
 from src.models.auth_models import AuthAccountModel  # type: ignore # noqa
 from src.models.base_models import BaseModel
 from src.models.dataset_models import DatasetModel  # type: ignore # noqa
-from src.models.links import TaskDatasetLink  # type: ignore # noqa
-from src.models.task_models import TaskModel  # type: ignore # noqa
-from src.models.task_result_models import TaskResultModel  # type: ignore # noqa
+from src.models.task_models import (
+    ProfilingDepModel,  # type: ignore # noqa
+    ProfilingTaskDatasetLink,  # type: ignore # noqa
+    ProfilingTaskModel,  # type: ignore # noqa
+)
 from src.models.user_models import UserModel  # type: ignore # noqa
 from src.schemas.base_schemas import PydanticType  # type: ignore # noqa
 

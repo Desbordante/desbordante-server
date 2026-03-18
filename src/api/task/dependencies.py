@@ -11,9 +11,9 @@ from src.api.dependencies import (
     TaskCrudDep,
     TaskPolicyDep,
 )
-from src.crud.task_result_crud.task_result_crud import TaskResultCrud
+from src.crud.profiling_dep_crud.profiling_dep_crud import ProfilingDepCrud
 from src.infrastructure.task.profiling_task_worker import ProfilingTaskWorker
-from src.models.task_models import TaskModel
+from src.models.task_models import ProfilingTaskModel
 from src.schemas.task_schemas.base_schemas import (
     OneOfTaskResultFiltersSchema,
     TaskQueryParamsSchema,
@@ -65,27 +65,27 @@ CreateTaskUseCaseDep = Annotated[CreateTaskUseCase, Depends(get_create_task_use_
 
 async def get_task(
     get_task: GetTaskUseCaseDep, task_id: UUID, actor: ActorDep
-) -> TaskModel:
+) -> ProfilingTaskModel:
     return await get_task(id=task_id, actor=actor)
 
 
-TaskDep = Annotated[TaskModel, Depends(get_task)]
+TaskDep = Annotated[ProfilingTaskModel, Depends(get_task)]
 
 
-async def get_task_result_crud(
+async def get_profiling_dep_crud(
     session: SessionDep,
     task: TaskDep,
-) -> TaskResultCrud:
-    return TaskResultCrud(session=session, primitive_name=task.params.primitive_name)
+) -> ProfilingDepCrud:
+    return ProfilingDepCrud(session=session, primitive_name=task.params.primitive_name)
 
 
-TaskResultCrudDep = Annotated[TaskResultCrud, Depends(get_task_result_crud)]
+TaskResultCrudDep = Annotated[ProfilingDepCrud, Depends(get_profiling_dep_crud)]
 
 
 async def get_get_task_results_use_case(
-    task_result_crud: TaskResultCrudDep,
+    profiling_dep_crud: TaskResultCrudDep,
 ) -> GetTaskResultsUseCase:
-    return GetTaskResultsUseCase(task_result_crud=task_result_crud)
+    return GetTaskResultsUseCase(profiling_dep_crud=profiling_dep_crud)
 
 
 GetTaskResultsUseCaseDep = Annotated[

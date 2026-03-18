@@ -1,8 +1,8 @@
 import sqlalchemy as sa
 from sqlalchemy import func
 
-from src.crud.task_result_crud.query_helpers.base_query_helper import BaseQueryHelper
-from src.models.task_result_models import TaskResultModel
+from src.crud.profiling_dep_crud.query_helpers.base_query_helper import BaseQueryHelper
+from src.models.task_models import ProfilingDepModel
 from src.schemas.task_schemas.primitives.fd_verification.task_result import (
     FdVerificationTaskResultFiltersSchema,
     FdVerificationTaskResultItemField,
@@ -19,7 +19,7 @@ class FdVerificationQueryHelper(
         match order_by:
             case FdVerificationTaskResultOrderingField.NUMBER_OF_DISTINCT_RHS_VALUES:
                 return func.cast(
-                    TaskResultModel.result[
+                    ProfilingDepModel.result[
                         FdVerificationTaskResultItemField.NUMBER_OF_DISTINCT_RHS_VALUES
                     ],
                     sa.Integer,
@@ -28,14 +28,14 @@ class FdVerificationQueryHelper(
                 FdVerificationTaskResultOrderingField.MOST_FREQUENT_RHS_VALUE_PROPORTION
             ):
                 return func.cast(
-                    TaskResultModel.result[
+                    ProfilingDepModel.result[
                         FdVerificationTaskResultItemField.MOST_FREQUENT_RHS_VALUE_PROPORTION
                     ],
                     sa.Float,
                 )
             case FdVerificationTaskResultOrderingField.NUMBER_OF_ROWS:
                 return func.jsonb_array_length(
-                    TaskResultModel.result[FdVerificationTaskResultItemField.ROWS]
+                    ProfilingDepModel.result[FdVerificationTaskResultItemField.ROWS]
                 )
 
         super().get_ordering_field(order_by)
@@ -43,12 +43,12 @@ class FdVerificationQueryHelper(
     def make_filters(self, filters: FdVerificationTaskResultFiltersSchema):
         return [
             # search
-            TaskResultModel.result.astext.icontains(filters.search)
+            ProfilingDepModel.result.astext.icontains(filters.search)
             if filters.search
             else None,
             # min_number_of_distinct_rhs_values
             func.cast(
-                TaskResultModel.result[
+                ProfilingDepModel.result[
                     FdVerificationTaskResultItemField.NUMBER_OF_DISTINCT_RHS_VALUES
                 ],
                 sa.Integer,
@@ -58,7 +58,7 @@ class FdVerificationQueryHelper(
             else None,
             # max_number_of_distinct_rhs_values
             func.cast(
-                TaskResultModel.result[
+                ProfilingDepModel.result[
                     FdVerificationTaskResultItemField.NUMBER_OF_DISTINCT_RHS_VALUES
                 ],
                 sa.Integer,
@@ -68,7 +68,7 @@ class FdVerificationQueryHelper(
             else None,
             # min_most_frequent_rhs_value_proportion
             func.cast(
-                TaskResultModel.result[
+                ProfilingDepModel.result[
                     FdVerificationTaskResultItemField.MOST_FREQUENT_RHS_VALUE_PROPORTION
                 ],
                 sa.Float,
@@ -78,7 +78,7 @@ class FdVerificationQueryHelper(
             else None,
             # max_most_frequent_rhs_value_proportion
             func.cast(
-                TaskResultModel.result[
+                ProfilingDepModel.result[
                     FdVerificationTaskResultItemField.MOST_FREQUENT_RHS_VALUE_PROPORTION
                 ],
                 sa.Float,

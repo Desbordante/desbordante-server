@@ -10,7 +10,6 @@ from pydantic import ConfigDict, Field, model_validator
 
 from src.schemas.base_schemas import (
     BaseSchema,
-    CeleryTaskStatus,
     FiltersParamsSchema,
     QueryParamsSchema,
     TaskErrorSchema,
@@ -135,9 +134,9 @@ class ProcessingPreprocessingTaskSchema(BaseSchema):
     model_config = ConfigDict(from_attributes=True)
 
     status: Literal[
-        CeleryTaskStatus.PENDING,
-        CeleryTaskStatus.STARTED,
-        CeleryTaskStatus.RECEIVED,
+        TaskStatus.PENDING,
+        TaskStatus.STARTED,
+        TaskStatus.RECEIVED,
     ]
     result: None
 
@@ -145,7 +144,7 @@ class ProcessingPreprocessingTaskSchema(BaseSchema):
 class SuccessPreprocessingTaskSchema(BaseSchema):
     model_config = ConfigDict(from_attributes=True)
 
-    status: Literal[CeleryTaskStatus.SUCCESS]
+    status: Literal[TaskStatus.SUCCESS]
     result: OneOfDatasetInfo
     finished_at: datetime
 
@@ -153,7 +152,7 @@ class SuccessPreprocessingTaskSchema(BaseSchema):
 class FailedPreprocessingTaskSchema(BaseSchema):
     model_config = ConfigDict(from_attributes=True)
 
-    status: Literal[CeleryTaskStatus.FAILURE]
+    status: Literal[TaskStatus.FAILURE]
     result: TaskErrorSchema
     finished_at: datetime
 

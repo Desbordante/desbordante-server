@@ -6,8 +6,8 @@ from src.domain.authorization.entities import Actor, Dataset, Task
 from src.domain.task.utils import get_primitive_class_by_name
 from src.exceptions import BadRequestException, ForbiddenException
 from src.models.dataset_models import DatasetModel
-from src.models.task_models import TaskModel
-from src.schemas.base_schemas import CeleryTaskStatus
+from src.models.task_models import ProfilingTaskModel
+from src.schemas.base_schemas import TaskStatus
 from src.schemas.dataset_schemas import (
     DatasetForTaskSchema,
     DatasetType,
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class TaskCrud(Protocol):
-    async def create(self, entity: TaskModel) -> TaskModel: ...
+    async def create(self, entity: ProfilingTaskModel) -> ProfilingTaskModel: ...
 
 
 class DatasetCrud(Protocol):
@@ -61,7 +61,9 @@ class CreateTaskUseCase:
         self._task_policy = task_policy
         self._profiling_task = profiling_task
 
-    async def __call__(self, *, actor: Actor, params: OneOfTaskParams) -> TaskModel:
+    async def __call__(
+        self, *, actor: Actor, params: OneOfTaskParams
+    ) -> ProfilingTaskModel:
         dataset_ids = list(params.datasets.model_dump().values())
 
         primitive_class = get_primitive_class_by_name(params.primitive_name)
@@ -84,12 +86,12 @@ class CreateTaskUseCase:
                     "Some datasets were not found or have invalid type"
                 )
 
-            if dataset.preprocessing.status != CeleryTaskStatus.SUCCESS:
+            if dataset.preprocessing.status != TaskStatus.SUCCESS:
                 raise BadRequestException(
                     f"Dataset {dataset.id} preprocessing has inappropriate status"
                 )
 
-        task_entity = TaskModel(
+        task_entity = ProfilingTaskModel(
             owner_id=actor.user_id,
             is_public=actor.user_id is None,
             params=params,

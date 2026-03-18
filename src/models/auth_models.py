@@ -11,6 +11,8 @@ if TYPE_CHECKING:
 
 
 class AuthAccountModel(BaseModel):
+    __tablename__ = "auth_accounts"
+
     provider: Mapped[AuthProvider] = mapped_column(
         Enum(
             AuthProvider,

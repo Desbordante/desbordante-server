@@ -5,8 +5,7 @@ from sqlalchemy import ColumnExpressionArgument
 
 from src.crud.base_crud import BaseCrud
 from src.models.dataset_models import DatasetModel
-from src.models.task_models import TaskModel
-from src.models.task_result_models import TaskResultModel
+from src.models.task_models import ProfilingTaskModel
 from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema
 from src.schemas.task_schemas.base_schemas import (
     TaskFiltersSchema,
@@ -20,18 +19,18 @@ class TaskFindProps(TypedDict, total=False):
 
 
 class TaskUpdateProps(TypedDict, total=False):
-    results: list[TaskResultModel]
+    pass
 
 
-class TaskCrud(BaseCrud[TaskModel]):
-    model = TaskModel
+class TaskCrud(BaseCrud[ProfilingTaskModel]):
+    model = ProfilingTaskModel
 
-    async def get_by(self, **kwargs: Unpack[TaskFindProps]) -> TaskModel:
+    async def get_by(self, **kwargs: Unpack[TaskFindProps]) -> ProfilingTaskModel:  # type: ignore
         return await super().get_by(**kwargs)
 
     async def update(
-        self, *, entity: TaskModel, **kwargs: Unpack[TaskUpdateProps]
-    ) -> TaskModel:
+        self, *, entity: ProfilingTaskModel, **kwargs: Unpack[TaskUpdateProps]
+    ) -> ProfilingTaskModel:
         return await super().update(entity=entity, **kwargs)
 
     def _make_filters(
@@ -52,13 +51,13 @@ class TaskCrud(BaseCrud[TaskModel]):
             else None,
         ]
 
-    async def get_many(
+    async def get_many(  # type: ignore
         self,
         *,
         pagination: PaginationParamsSchema,
         query_params: TaskQueryParamsSchema,
         **kwargs: Unpack[TaskFindProps],
-    ) -> PaginatedResult[TaskModel]:
+    ) -> PaginatedResult[ProfilingTaskModel]:
         return await super().get_many(
             pagination=pagination,
             query_params=query_params,

@@ -15,9 +15,9 @@ from sqlalchemy.orm import Session
 
 from src.models.dataset_models import PreprocessingTaskModel
 from src.schemas.base_schemas import (
-    CeleryTaskStatus,
     TaskErrorSchema,
     TaskFailureReason,
+    TaskStatus,
 )
 
 
@@ -86,7 +86,7 @@ class PreprocessingTaskBackend(BaseBackend):
                 update(self.task_cls)
                 .where(self.task_cls.id == UUID(task_id))
                 .values(
-                    status=CeleryTaskStatus(meta["status"]),
+                    status=TaskStatus(meta["status"]),
                     result=result,
                     finished_at=meta["date_done"],
                 )

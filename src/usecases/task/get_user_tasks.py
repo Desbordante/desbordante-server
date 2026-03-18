@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from src.models.task_models import TaskModel
+from src.models.task_models import ProfilingTaskModel
 from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema
 from src.schemas.task_schemas.base_schemas import TaskQueryParamsSchema
 
@@ -12,7 +12,7 @@ class TaskCrud(Protocol):
         pagination: PaginationParamsSchema,
         query_params: TaskQueryParamsSchema,
         owner_id: int,
-    ) -> PaginatedResult[TaskModel]: ...
+    ) -> PaginatedResult[ProfilingTaskModel]: ...
 
 
 class GetUserTasksUseCase:
@@ -29,7 +29,7 @@ class GetUserTasksUseCase:
         pagination: PaginationParamsSchema,
         query_params: TaskQueryParamsSchema,
         user_id: int,
-    ) -> PaginatedResult[TaskModel]:
+    ) -> PaginatedResult[ProfilingTaskModel]:
         return await self._task_crud.get_many(
             pagination=pagination,
             query_params=query_params,
