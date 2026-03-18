@@ -58,9 +58,7 @@ class BasePrimitive[
         raise ValueError(f"Algorithm {algo_name} not found")
 
     def _get_algo_options(self, params: P) -> dict[str, Any]:
-        return params.config.model_dump(
-            exclude_unset=True, exclude_none=True, exclude={"algo_name"}
-        )
+        return params.config.model_dump(exclude_none=True, exclude={"algo_name"})
 
     @abstractmethod
     def execute(self, params: P) -> R: ...
