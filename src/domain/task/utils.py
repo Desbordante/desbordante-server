@@ -7,7 +7,7 @@ from networkx.drawing import nx_pydot
 
 from src.domain.task.constants import primitives_map
 from src.infrastructure.storage.client import get_storage
-from src.models.dataset_models import DatasetModel
+from src.schemas.dataset_schemas import DatasetForTaskSchema
 from src.schemas.dataset_schemas import (
     DatasetType,
     GraphDatasetInfo,
@@ -30,7 +30,7 @@ def get_primitive_class_by_name(primitive_name: PrimitiveName):
     raise ValueError(f"Primitive {primitive_name} not found")
 
 
-def download_dataset(dataset: DatasetModel) -> OneOfDownloadedDatasetSchema:
+def download_dataset(dataset: DatasetForTaskSchema) -> OneOfDownloadedDatasetSchema:
     async def _run():
         storage = get_storage()
         return await storage.download(path=dataset.path)

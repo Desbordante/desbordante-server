@@ -6,9 +6,8 @@ from src.domain.authorization.entities import AuthenticatedActor, Dataset
 from src.exceptions import ForbiddenException, PayloadTooLargeException
 from src.models.dataset_models import DatasetModel, PreprocessingTaskModel
 from src.schemas.dataset_schemas import (
-    DatasetType,
+    DatasetForTaskSchema,
     File,
-    OneOfDatasetParams,
     OneOfUploadDatasetParams,
 )
 
@@ -45,9 +44,7 @@ class Settings(Protocol):
 
 
 class PreprocessDatasetTask(Protocol):
-    def run(
-        self, *, type: DatasetType, params: OneOfDatasetParams, path: str, task_id: UUID
-    ) -> None: ...
+    def run(self, *, dataset: DatasetForTaskSchema, task_id: UUID) -> None: ...
 
 
 class UploadDatasetUseCase:
@@ -114,9 +111,7 @@ class UploadDatasetUseCase:
             raise e
 
         self._preprocess_dataset_task.run(
-            type=created_dataset.type,
-            params=created_dataset.params,
-            path=path,
+            dataset=DatasetForTaskSchema.model_validate(created_dataset),
             task_id=created_dataset.preprocessing.id,
         )
 

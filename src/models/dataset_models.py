@@ -4,6 +4,7 @@ from uuid import UUID
 
 from sqlalchemy import (
     TIMESTAMP,
+    Enum,
     ForeignKey,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -30,7 +31,14 @@ if TYPE_CHECKING:
 
 class PreprocessingTaskModel(BaseModel):
     id: Mapped[uuid_pk]
-    status: Mapped[CeleryTaskStatus] = mapped_column(default=CeleryTaskStatus.PENDING)
+    status: Mapped[CeleryTaskStatus] = mapped_column(
+        Enum(
+            CeleryTaskStatus,
+            native_enum=False,
+            values_callable=lambda x: [e.value for e in x],
+        ),
+        default=CeleryTaskStatus.PENDING,
+    )
     result: Mapped[OneOfDatasetInfo | TaskErrorSchema | None] = mapped_column(
         PydanticType(OneOfDatasetInfo | TaskErrorSchema | None), default=None
     )

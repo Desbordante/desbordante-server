@@ -1,5 +1,5 @@
 broker_connection_retry_on_startup = True
-task_serializer = "pickle"
+task_serializer = "json"
 result_serializer = "json"
 event_serializer = "json"
 accept_content = ["application/json", "application/x-python-serialize"]

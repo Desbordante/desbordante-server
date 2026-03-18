@@ -9,6 +9,7 @@ from src.models.dataset_models import DatasetModel
 from src.models.task_models import TaskModel
 from src.schemas.base_schemas import CeleryTaskStatus
 from src.schemas.dataset_schemas import (
+    DatasetForTaskSchema,
     DatasetType,
 )
 from src.schemas.task_schemas.base_schemas import OneOfTaskParams
@@ -35,7 +36,13 @@ class TaskPolicy(Protocol):
 
 
 class ProfilingTask(Protocol):
-    def set(self, *, task_id: UUID) -> None: ...
+    def run(
+        self,
+        *,
+        params: OneOfTaskParams,
+        datasets: list[DatasetForTaskSchema],
+        task_id: UUID,
+    ) -> None: ...
 
 
 class CreateTaskUseCase:
@@ -94,6 +101,10 @@ class CreateTaskUseCase:
 
         created_task = await self._task_crud.create(task_entity)
 
-        self._profiling_task.set(task_id=created_task.id)
+        self._profiling_task.run(
+            params=params,
+            datasets=[DatasetForTaskSchema.model_validate(d) for d in datasets],
+            task_id=created_task.id,
+        )
 
         return created_task

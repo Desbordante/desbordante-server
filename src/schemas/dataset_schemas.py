@@ -132,6 +132,8 @@ OneOfDatasetInfo = TabularDatasetInfo | TransactionalDatasetInfo | GraphDatasetI
 
 
 class ProcessingPreprocessingTaskSchema(BaseSchema):
+    model_config = ConfigDict(from_attributes=True)
+
     status: Literal[
         CeleryTaskStatus.PENDING,
         CeleryTaskStatus.STARTED,
@@ -141,12 +143,16 @@ class ProcessingPreprocessingTaskSchema(BaseSchema):
 
 
 class SuccessPreprocessingTaskSchema(BaseSchema):
+    model_config = ConfigDict(from_attributes=True)
+
     status: Literal[CeleryTaskStatus.SUCCESS]
     result: OneOfDatasetInfo
     finished_at: datetime
 
 
 class FailedPreprocessingTaskSchema(BaseSchema):
+    model_config = ConfigDict(from_attributes=True)
+
     status: Literal[CeleryTaskStatus.FAILURE]
     result: TaskErrorSchema
     finished_at: datetime
@@ -227,6 +233,16 @@ class GraphDownloadedDatasetSchema(BaseSchema):
     graph: nx.Graph
     params: GraphDatasetParams
     info: GraphDatasetInfo
+
+
+class DatasetForTaskSchema(BaseSchema):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    type: DatasetType
+    params: OneOfDatasetParams
+    path: str
+    preprocessing: PreprocessingTaskSchema
 
 
 OneOfDownloadedDatasetSchema = (

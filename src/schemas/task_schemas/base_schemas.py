@@ -9,6 +9,7 @@ from pydantic import Field
 
 from src.schemas.base_schemas import (
     BaseSchema,
+    CeleryTaskStatus,
     FiltersParamsSchema,
     OrderingParamsSchema,
     PaginatedResponseSchema,
@@ -245,17 +246,17 @@ class BaseTaskSchema(BaseSchema):
 
 
 class ProcessingTaskSchema(BaseTaskSchema):
-    status: Literal[TaskStatus.PENDING] | Literal[TaskStatus.PROCESSING]
+    status: Literal[CeleryTaskStatus.PENDING] | Literal[CeleryTaskStatus.STARTED]
     result: None
 
 
 class FailedTaskSchema(BaseTaskSchema):
-    status: Literal[TaskStatus.FAILED]
+    status: Literal[CeleryTaskStatus.FAILURE]
     result: TaskErrorSchema
 
 
 class SuccessTaskSchema(BaseTaskSchema):
-    status: Literal[TaskStatus.SUCCESS]
+    status: Literal[CeleryTaskStatus.SUCCESS]
     result: OneOfTaskResultSchema
 
 

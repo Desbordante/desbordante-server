@@ -6,11 +6,12 @@ from src.domain.dataset.utils import (
     get_tabular_info,
     get_transactional_info,
 )
+from src.infrastructure.task.resource_intensive_task import ResourceIntensiveTask
 from src.schemas.dataset_schemas import (
+    DatasetForTaskSchema,
     DatasetType,
     GraphDatasetParams,
     OneOfDatasetInfo,
-    OneOfDatasetParams,
     TabularDatasetParams,
     TransactionalDatasetParams,
 )
@@ -22,26 +23,25 @@ from src.worker.worker import worker
 @worker.task(
     name="tasks.preprocess_dataset",
     backend=PreprocessingTaskBackend(app=worker, url=settings.database_url),
+    base=ResourceIntensiveTask,
     pydantic=True,
     bind=True,
 )
-def preprocess_dataset(
-    self, *, type: DatasetType, params: OneOfDatasetParams, path: str
-) -> OneOfDatasetInfo:
+def preprocess_dataset(self, *, dataset: DatasetForTaskSchema) -> OneOfDatasetInfo:
 
     async def _run():
         storage = await get_storage()
-        return await storage.download(path=path)
+        return await storage.download(path=dataset.path)
 
     data = asyncio.run(_run())
 
-    match type:
+    match dataset.type:
         case DatasetType.TABULAR:
-            params = TabularDatasetParams.model_validate(params)
+            params = TabularDatasetParams.model_validate(dataset.params)
             return get_tabular_info(params, data)
         case DatasetType.TRANSACTIONAL:
-            params = TransactionalDatasetParams.model_validate(params)
+            params = TransactionalDatasetParams.model_validate(dataset.params)
             return get_transactional_info(params, data)
         case DatasetType.GRAPH:
-            params = GraphDatasetParams.model_validate(params)
+            params = GraphDatasetParams.model_validate(dataset.params)
             return get_graph_info(params, data)
