@@ -1,7 +1,7 @@
 from celery import Task
 import resource
 
-from src.infrastructure.task.config import settings
+from src.infrastructure.bg_tasks.config import settings
 
 
 class ResourceIntensiveTask(Task):

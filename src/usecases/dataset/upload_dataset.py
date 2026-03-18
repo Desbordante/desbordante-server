@@ -43,7 +43,7 @@ class Settings(Protocol):
     STORAGE_LIMIT: int
 
 
-class PreprocessDatasetTask(Protocol):
+class PreprocessDatasetRunner(Protocol):
     def run(self, *, dataset: DatasetForTaskSchema, task_id: UUID) -> None: ...
 
 
@@ -55,13 +55,13 @@ class UploadDatasetUseCase:
         storage: Storage,
         dataset_policy: DatasetPolicy,
         settings: Settings,
-        preprocess_dataset_task: PreprocessDatasetTask,
+        preprocess_dataset_runner: PreprocessDatasetRunner,
     ):
         self._dataset_crud = dataset_crud
         self._storage = storage
         self._dataset_policy = dataset_policy
         self._settings = settings
-        self._preprocess_dataset_task = preprocess_dataset_task
+        self._preprocess_dataset_runner = preprocess_dataset_runner
 
     async def __call__(
         self,
@@ -110,7 +110,7 @@ class UploadDatasetUseCase:
             await self._dataset_crud.delete(entity=created_dataset)
             raise e
 
-        self._preprocess_dataset_task.run(
+        self._preprocess_dataset_runner.run(
             dataset=DatasetForTaskSchema.model_validate(created_dataset),
             task_id=created_dataset.preprocessing.id,
         )

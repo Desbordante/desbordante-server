@@ -26,7 +26,7 @@ async def test_upload_dataset_success(
     upload_dataset_use_case: UploadDatasetUseCase,
     dataset_crud_mock,
     storage_mock,
-    preprocess_dataset_task_mock,
+    preprocess_dataset_runner_mock,
     actor,
     file,
     upload_params,
@@ -42,8 +42,8 @@ async def test_upload_dataset_success(
     assert result == created_dataset
     dataset_crud_mock.create_with_storage_check.assert_awaited_once()
     storage_mock.upload.assert_awaited_once()
-    preprocess_dataset_task_mock.run.assert_called_once()
-    call_kwargs = preprocess_dataset_task_mock.run.call_args.kwargs
+    preprocess_dataset_runner_mock.run.assert_called_once()
+    call_kwargs = preprocess_dataset_runner_mock.run.call_args.kwargs
     assert call_kwargs["task_id"] == created_dataset.preprocessing.id
     assert call_kwargs["dataset"].id == created_dataset.id
     dataset_crud_mock.delete.assert_not_called()
@@ -123,7 +123,7 @@ async def test_upload_dataset_deletes_created_dataset_when_storage_upload_fails(
     upload_dataset_use_case: UploadDatasetUseCase,
     dataset_crud_mock,
     storage_mock,
-    preprocess_dataset_task_mock,
+    preprocess_dataset_runner_mock,
     actor,
     file,
     upload_params,
@@ -140,7 +140,7 @@ async def test_upload_dataset_deletes_created_dataset_when_storage_upload_fails(
         )
 
     dataset_crud_mock.delete.assert_awaited_once_with(entity=created_dataset)
-    preprocess_dataset_task_mock.run.assert_not_called()
+    preprocess_dataset_runner_mock.run.assert_not_called()
 
 
 async def test_upload_dataset_creates_entity_with_correct_data(

@@ -79,7 +79,7 @@ def settings_mock(mocker: MockerFixture):
 
 
 @pytest.fixture
-def preprocess_dataset_task_mock(mocker: MockerFixture):
+def preprocess_dataset_runner_mock(mocker: MockerFixture):
     mock = mocker.Mock()
     mock.run = mocker.Mock()
     return mock
@@ -116,12 +116,12 @@ def upload_dataset_use_case(
     storage_mock,
     dataset_policy_mock,
     settings_mock,
-    preprocess_dataset_task_mock,
+    preprocess_dataset_runner_mock,
 ) -> UploadDatasetUseCase:
     return UploadDatasetUseCase(
         dataset_crud=dataset_crud_mock,
         storage=storage_mock,
         dataset_policy=dataset_policy_mock,
         settings=settings_mock,
-        preprocess_dataset_task=preprocess_dataset_task_mock,
+        preprocess_dataset_runner=preprocess_dataset_runner_mock,
     )

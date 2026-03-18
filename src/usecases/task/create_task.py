@@ -35,7 +35,7 @@ class TaskPolicy(Protocol):
     def can_create(self, actor: Actor, task: Task) -> bool: ...
 
 
-class ProfilingTask(Protocol):
+class ProfilingTaskRunner(Protocol):
     def run(
         self,
         *,
@@ -53,13 +53,13 @@ class CreateTaskUseCase:
         dataset_crud: DatasetCrud,
         dataset_policy: DatasetPolicy,
         task_policy: TaskPolicy,
-        profiling_task: ProfilingTask,
+        profiling_task_runner: ProfilingTaskRunner,
     ):
         self._task_crud = task_crud
         self._dataset_crud = dataset_crud
         self._dataset_policy = dataset_policy
         self._task_policy = task_policy
-        self._profiling_task = profiling_task
+        self._profiling_task_runner = profiling_task_runner
 
     async def __call__(
         self, *, actor: Actor, params: OneOfTaskParams
@@ -103,7 +103,7 @@ class CreateTaskUseCase:
 
         created_task = await self._task_crud.create(task_entity)
 
-        self._profiling_task.run(
+        self._profiling_task_runner.run(
             params=params,
             datasets=[DatasetForTaskSchema.model_validate(d) for d in datasets],
             task_id=created_task.id,

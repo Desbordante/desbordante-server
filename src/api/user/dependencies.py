@@ -12,7 +12,9 @@ from src.api.dependencies import (
     UserCrudDep,
     UserPolicyDep,
 )
-from src.infrastructure.dataset.preprocess_dataset_worker import PreprocessDatasetWorker
+from src.infrastructure.bg_tasks.preprocess_dataset.runner import (
+    PreprocessDatasetRunner,
+)
 from src.infrastructure.storage.config import settings as storage_settings
 from src.usecases.dataset.check_content_type import CheckContentTypeUseCase
 from src.usecases.dataset.get_user_datasets import GetUserDatasetsUseCase
@@ -72,12 +74,12 @@ GetLinkedAccountsUseCaseDep = Annotated[
 ]
 
 
-async def get_preprocess_dataset_task_worker() -> PreprocessDatasetWorker:
-    return PreprocessDatasetWorker()
+async def get_preprocess_dataset_runner() -> PreprocessDatasetRunner:
+    return PreprocessDatasetRunner()
 
 
-PreprocessDatasetTaskWorkerDep = Annotated[
-    PreprocessDatasetWorker, Depends(get_preprocess_dataset_task_worker)
+PreprocessDatasetRunnerDep = Annotated[
+    PreprocessDatasetRunner, Depends(get_preprocess_dataset_runner)
 ]
 
 
@@ -85,14 +87,14 @@ async def get_upload_my_dataset_use_case(
     dataset_crud: DatasetCrudDep,
     storage: StorageDep,
     dataset_policy: DatasetPolicyDep,
-    preprocess_dataset_task_worker: PreprocessDatasetTaskWorkerDep,
+    preprocess_dataset_runner: PreprocessDatasetRunnerDep,
 ) -> UploadDatasetUseCase:
     return UploadDatasetUseCase(
         dataset_crud=dataset_crud,
         storage=storage,
         dataset_policy=dataset_policy,
         settings=storage_settings,
-        preprocess_dataset_task=preprocess_dataset_task_worker,
+        preprocess_dataset_runner=preprocess_dataset_runner,
     )
 
 

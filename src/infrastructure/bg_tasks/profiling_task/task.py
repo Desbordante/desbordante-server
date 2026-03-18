@@ -1,7 +1,9 @@
 from pydantic import TypeAdapter
 
 from src.domain.task.utils import download_dataset, get_primitive_class_by_name
-from src.infrastructure.task.resource_intensive_task import ResourceIntensiveTask
+from src.infrastructure.bg_tasks.config import settings
+from src.infrastructure.bg_tasks.profiling_task.backend import ProfilingTaskBackend
+from src.infrastructure.bg_tasks.resource_intensive_task import ResourceIntensiveTask
 from src.schemas.dataset_schemas import DatasetForTaskSchema
 from src.schemas.task_schemas.base_schemas import (
     OneOfTaskParams,
@@ -9,19 +11,17 @@ from src.schemas.task_schemas.base_schemas import (
     OneOfTaskResultSchema,
 )
 from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
-from src.worker.config import settings
-from src.worker.profiling_task_backend import ProfilingTaskBackend
 from src.worker.worker import worker
 
 
 @worker.task(
-    name="tasks.profile_task",
+    name="tasks.profiling_task",
     backend=ProfilingTaskBackend(app=worker, url=settings.database_url),
     base=ResourceIntensiveTask,
     pydantic=True,
     bind=True,
 )
-def profile_task(
+def profiling_task(
     self, *, params: OneOfTaskParams, datasets: list[DatasetForTaskSchema]
 ) -> PrimitiveResultSchema[OneOfTaskResultSchema, OneOfTaskResultItemSchema]:
     params = TypeAdapter(OneOfTaskParams).validate_python(params)

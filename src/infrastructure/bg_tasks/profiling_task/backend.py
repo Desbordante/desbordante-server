@@ -2,13 +2,13 @@
 
 from typing import Any
 
+from src.infrastructure.bg_tasks.base_task_backend import BaseTaskBackend
 from src.models.task_models import ProfilingDepModel, ProfilingTaskModel
 from src.schemas.task_schemas.base_schemas import (
     OneOfTaskResultItemSchema,
     OneOfTaskResultSchema,
 )
 from src.schemas.task_schemas.primitives.base_schemas import PrimitiveResultSchema
-from src.worker.base_task_backend import BaseTaskBackend
 
 
 class ProfilingTaskBackend(BaseTaskBackend[ProfilingTaskModel]):

@@ -12,7 +12,7 @@ from src.api.dependencies import (
     TaskPolicyDep,
 )
 from src.crud.profiling_dep_crud.profiling_dep_crud import ProfilingDepCrud
-from src.infrastructure.task.profiling_task_worker import ProfilingTaskWorker
+from src.infrastructure.bg_tasks.profiling_task.runner import ProfilingTaskRunner
 from src.models.task_models import ProfilingTaskModel
 from src.schemas.task_schemas.base_schemas import (
     OneOfTaskResultFiltersSchema,
@@ -35,12 +35,12 @@ async def get_get_task_use_case(
 GetTaskUseCaseDep = Annotated[GetTaskUseCase, Depends(get_get_task_use_case)]
 
 
-async def get_profiling_task_worker() -> ProfilingTaskWorker:
-    return ProfilingTaskWorker()
+async def get_profiling_task_runner() -> ProfilingTaskRunner:
+    return ProfilingTaskRunner()
 
 
-ProfilingTaskWorkerDep = Annotated[
-    ProfilingTaskWorker, Depends(get_profiling_task_worker)
+ProfilingTaskRunnerDep = Annotated[
+    ProfilingTaskRunner, Depends(get_profiling_task_runner)
 ]
 
 
@@ -49,14 +49,14 @@ async def get_create_task_use_case(
     dataset_crud: DatasetCrudDep,
     dataset_policy: DatasetPolicyDep,
     task_policy: TaskPolicyDep,
-    profiling_task: ProfilingTaskWorkerDep,
+    profiling_task_runner: ProfilingTaskRunnerDep,
 ) -> CreateTaskUseCase:
     return CreateTaskUseCase(
         task_crud=task_crud,
         dataset_crud=dataset_crud,
         dataset_policy=dataset_policy,
         task_policy=task_policy,
-        profiling_task=profiling_task,
+        profiling_task_runner=profiling_task_runner,
     )
 
 

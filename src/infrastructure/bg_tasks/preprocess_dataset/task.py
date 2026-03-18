@@ -6,7 +6,10 @@ from src.domain.dataset.utils import (
     get_tabular_info,
     get_transactional_info,
 )
-from src.infrastructure.task.resource_intensive_task import ResourceIntensiveTask
+from src.infrastructure.bg_tasks.preprocess_dataset.backend import (
+    PreprocessDatasetBackend,
+)
+from src.infrastructure.bg_tasks.resource_intensive_task import ResourceIntensiveTask
 from src.schemas.dataset_schemas import (
     DatasetForTaskSchema,
     DatasetType,
@@ -15,14 +18,13 @@ from src.schemas.dataset_schemas import (
     TabularDatasetParams,
     TransactionalDatasetParams,
 )
-from src.worker.config import settings
-from src.worker.dataset_task_backend import PreprocessingTaskBackend
+from src.infrastructure.bg_tasks.config import settings
 from src.worker.worker import worker
 
 
 @worker.task(
     name="tasks.preprocess_dataset",
-    backend=PreprocessingTaskBackend(app=worker, url=settings.database_url),
+    backend=PreprocessDatasetBackend(app=worker, url=settings.database_url),
     base=ResourceIntensiveTask,
     pydantic=True,
     bind=True,
