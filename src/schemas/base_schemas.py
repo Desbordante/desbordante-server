@@ -132,6 +132,17 @@ class QueryParamsSchema[T: FiltersParamsSchema, U: str](BaseSchema):
     ordering: Annotated[OrderingParamsSchema[U], Depends()]
 
 
+class TaskStatus(StrEnum):
+    PENDING = auto()
+    PROCESSING = auto()
+    SUCCESS = auto()
+    FAILED = auto()
+
+
+class TaskErrorSchema(BaseSchema):
+    error: str
+
+
 @dataclass
 class PaginatedResult[T]:
     total_count: int

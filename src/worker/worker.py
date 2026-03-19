@@ -9,4 +9,5 @@ worker = Celery(
         "src.infrastructure.task.profiling_task",
     ],
 )
+
 worker.config_from_object("src.worker.celery_config")
