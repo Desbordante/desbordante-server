@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, status
 
 from src.api.dependencies import AuthenticatedActorDep, PaginationParamsDep
 from src.api.user.dependencies import GetUserTasksUseCaseDep
-from src.schemas.base_schemas import ApiErrorSchema, PaginatedResult
+from src.schemas.base_schemas import ApiErrorSchema, PaginatedResponseSchema
 from src.schemas.task_schemas.base_schemas import TaskQueryParamsSchema, TaskSchema
 
 router = APIRouter()
@@ -14,7 +14,7 @@ TaskQueryParamsDep = Annotated[TaskQueryParamsSchema, Depends(TaskQueryParamsSch
 
 @router.get(
     "/me/tasks/",
-    response_model=PaginatedResult[TaskSchema],
+    response_model=PaginatedResponseSchema[TaskSchema],
     status_code=status.HTTP_200_OK,
     summary="Get my tasks",
     description="Get list of current user's tasks",
