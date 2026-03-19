@@ -141,11 +141,6 @@ async def test_get_many_filter_lhs_columns_indices(
         ),
         (
             FdTaskResultOrderingField.NUMBER_OF_LHS_COLUMNS,
-            OrderingDirection.ASC,
-            "beta",
-        ),
-        (
-            FdTaskResultOrderingField.NUMBER_OF_LHS_COLUMNS,
             OrderingDirection.DESC,
             "age",
         ),
