@@ -38,7 +38,10 @@ class DatasetModel(BaseModel):
     is_uploaded: Mapped[bool] = mapped_column(default=False, index=True)
 
     preprocessing: Mapped[PreprocessingTaskModel] = relationship(
-        back_populates="dataset", lazy="selectin", uselist=False
+        back_populates="dataset",
+        lazy="selectin",
+        uselist=False,
+        cascade="all, delete-orphan",
     )
 
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))

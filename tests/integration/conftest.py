@@ -86,6 +86,7 @@ async def session(
     async_session = AsyncSession(
         bind=connection,
         join_transaction_mode="create_savepoint",
+        expire_on_commit=False,
     )
     async with async_session:
         yield async_session

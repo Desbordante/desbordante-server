@@ -18,20 +18,11 @@ class TaskFindProps(TypedDict, total=False):
     owner_id: int
 
 
-class TaskUpdateProps(TypedDict, total=False):
-    pass
-
-
 class TaskCrud(BaseCrud[ProfilingTaskModel]):
     model = ProfilingTaskModel
 
     async def get_by(self, **kwargs: Unpack[TaskFindProps]) -> ProfilingTaskModel:  # type: ignore
         return await super().get_by(**kwargs)
-
-    async def update(
-        self, *, entity: ProfilingTaskModel, **kwargs: Unpack[TaskUpdateProps]
-    ) -> ProfilingTaskModel:
-        return await super().update(entity=entity, **kwargs)
 
     def _make_filters(
         self, filters_params: TaskFiltersSchema

@@ -5,7 +5,7 @@ from sqlalchemy import ColumnExpressionArgument, func, select, text
 
 from src.crud.base_crud import BaseCrud
 from src.exceptions import ConflictException
-from src.models.dataset_models import DatasetModel
+from src.models.dataset_models import DatasetModel, PreprocessingTaskModel
 from src.schemas.base_schemas import PaginatedResult, PaginationParamsSchema, TaskStatus
 from src.schemas.dataset_schemas import (
     DatasetFiltersSchema,
@@ -49,7 +49,9 @@ class DatasetCrud(BaseCrud[DatasetModel]):
             self.model.is_public == filters_params.is_public
             if filters_params.is_public is not None
             else None,
-            self.model.preprocessing.status == filters_params.status
+            self.model.preprocessing.has(
+                PreprocessingTaskModel.status == filters_params.status
+            )
             if filters_params.status
             else None,
             self.model.size >= filters_params.min_size

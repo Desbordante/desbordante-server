@@ -86,8 +86,8 @@ class BaseCrud[ModelType: BaseModel](ABC):
     ) -> PaginatedResult[ModelType]:
         query = select(self.model) if query is None else query
 
-        query = query.add_columns(func.count().over().label("total_count"))
         query = query.filter_by(**kwargs)
+        query = query.add_columns(func.count().over().label("total_count"))
 
         filters = [
             filter
