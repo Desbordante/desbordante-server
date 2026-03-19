@@ -2,6 +2,7 @@ from sqlalchemy import (
     cast,
     column,
     func,
+    or_,
 )
 from sqlalchemy.dialects.postgresql import JSONPATH
 
@@ -27,12 +28,18 @@ class MdQueryHelper(
             case MdTaskResultOrderingField.LHS_ITEMS_METRICS:
                 return func.jsonb_path_query_array(
                     ProfilingDepModel.result[MdTaskResultItemField.LHS_ITEMS],
-                    f"$[*].{MdTaskResultSideItemField.METRIC}",
+                    cast(
+                        f"$[*].{MdTaskResultSideItemField.METRIC}",
+                        JSONPATH,
+                    ),
                 )
             case MdTaskResultOrderingField.LHS_ITEMS_BOUNDARIES:
                 return func.jsonb_path_query_array(
                     ProfilingDepModel.result[MdTaskResultItemField.LHS_ITEMS],
-                    f"$[*].{MdTaskResultSideItemField.BOUNDARY}",
+                    cast(
+                        f"$[*].{MdTaskResultSideItemField.BOUNDARY}",
+                        JSONPATH,
+                    ),
                 )
             case MdTaskResultOrderingField.RHS_ITEM_METRIC:
                 return ProfilingDepModel.result[MdTaskResultItemField.RHS_ITEM][
@@ -48,7 +55,14 @@ class MdQueryHelper(
     def make_filters(self, filters: MdTaskResultFiltersSchema):
         return [
             # search
-            ProfilingDepModel.result.astext.icontains(filters.search)
+            or_(
+                ProfilingDepModel.result[
+                    MdTaskResultItemField.LHS_ITEMS
+                ].astext.icontains(filters.search),
+                ProfilingDepModel.result[
+                    MdTaskResultItemField.RHS_ITEM
+                ].astext.icontains(filters.search),
+            )
             if filters.search
             else None,
             # lhs_items_metrics
@@ -68,9 +82,9 @@ class MdQueryHelper(
 
     def get_filtered_result_column(self, filters: MdTaskResultFiltersSchema):
         conditions = [
-            "@.boundary != 0" if not filters.show_zeroes else None,
+            "@.boundary != 0" if filters.show_zeroes is False else None,
             (
-                f"({' || '.join([f'@.metrics == "{metric}"' for metric in filters.lhs_items_metrics])})"
+                f"({' || '.join([f'@.metric == "{metric}"' for metric in filters.lhs_items_metrics])})"
             )
             if filters.lhs_items_metrics
             else None,

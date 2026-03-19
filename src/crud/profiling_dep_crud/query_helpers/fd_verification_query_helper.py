@@ -43,7 +43,9 @@ class FdVerificationQueryHelper(
     def make_filters(self, filters: FdVerificationTaskResultFiltersSchema):
         return [
             # search
-            ProfilingDepModel.result.astext.icontains(filters.search)
+            ProfilingDepModel.result[
+                FdVerificationTaskResultItemField.ROWS
+            ].astext.icontains(filters.search)
             if filters.search
             else None,
             # min_number_of_distinct_rhs_values

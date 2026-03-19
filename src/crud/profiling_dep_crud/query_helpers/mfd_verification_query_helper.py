@@ -1,5 +1,6 @@
 import sqlalchemy as sa
-from sqlalchemy import func
+from sqlalchemy import cast, func, or_
+from sqlalchemy.dialects.postgresql import JSONPATH
 
 from src.crud.profiling_dep_crud.query_helpers.base_query_helper import BaseQueryHelper
 from src.models.task_models import ProfilingDepModel
@@ -41,7 +42,10 @@ class MfdVerificationQueryHelper(
                     ProfilingDepModel.result[
                         MfdVerificationTaskResultItemField.HIGHLIGHTS
                     ],
-                    f"$[*].{MfdVerificationHighlightField.DATA_INDEX}",
+                    cast(
+                        f"$[*].{MfdVerificationHighlightField.DATA_INDEX}",
+                        JSONPATH,
+                    ),
                 )
             case (
                 MfdVerificationTaskResultOrderingField.HIGHLIGHTS_FURTHEST_DATA_INDICES
@@ -50,7 +54,10 @@ class MfdVerificationQueryHelper(
                     ProfilingDepModel.result[
                         MfdVerificationTaskResultItemField.HIGHLIGHTS
                     ],
-                    f"$[*].{MfdVerificationHighlightField.FURTHEST_DATA_INDEX}",
+                    cast(
+                        f"$[*].{MfdVerificationHighlightField.FURTHEST_DATA_INDEX}",
+                        JSONPATH,
+                    ),
                 )
 
         return super().get_ordering_field(order_by)
@@ -58,13 +65,23 @@ class MfdVerificationQueryHelper(
     def make_filters(self, filters: MfdVerificationTaskResultFiltersSchema):
         return [
             # search
-            ProfilingDepModel.result.astext.icontains(filters.search)
+            or_(
+                ProfilingDepModel.result[
+                    MfdVerificationTaskResultItemField.LHS_VALUES
+                ].astext.icontains(filters.search),
+                ProfilingDepModel.result[
+                    MfdVerificationTaskResultItemField.HIGHLIGHTS
+                ].astext.icontains(filters.search),
+            )
             if filters.search
             else None,
             # cluster_indices
-            ProfilingDepModel.result[
-                MfdVerificationTaskResultItemField.CLUSTER_INDEX
-            ].in_(filters.cluster_indices)
+            func.cast(
+                ProfilingDepModel.result[
+                    MfdVerificationTaskResultItemField.CLUSTER_INDEX
+                ],
+                sa.Integer,
+            ).in_(filters.cluster_indices)
             if filters.cluster_indices
             else None,
         ]

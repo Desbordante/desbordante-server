@@ -1,4 +1,5 @@
 import sqlalchemy
+from sqlalchemy import or_
 
 from src.crud.profiling_dep_crud.query_helpers.base_query_helper import BaseQueryHelper
 from src.models.task_models import ProfilingDepModel
@@ -33,7 +34,14 @@ class ArQueryHelper(
     def make_filters(self, filters: ArTaskResultFiltersSchema):
         return [
             # search
-            ProfilingDepModel.result.astext.icontains(filters.search)
+            or_(
+                ProfilingDepModel.result[
+                    ArTaskResultItemField.LHS_VALUES
+                ].astext.icontains(filters.search),
+                ProfilingDepModel.result[
+                    ArTaskResultItemField.RHS_VALUES
+                ].astext.icontains(filters.search),
+            )
             if filters.search
             else None,
             # lhs_values

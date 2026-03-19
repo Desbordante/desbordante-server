@@ -1,5 +1,5 @@
 import sqlalchemy as sa
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 from src.crud.profiling_dep_crud.query_helpers.base_query_helper import BaseQueryHelper
 from src.models.task_models import ProfilingDepModel
@@ -53,7 +53,14 @@ class AcQueryHelper(
     def make_filters(self, filters: AcTaskResultFiltersSchema):
         return [
             # search
-            ProfilingDepModel.result.astext.icontains(filters.search)
+            or_(
+                ProfilingDepModel.result[
+                    AcTaskResultItemField.LHS_COLUMN
+                ].astext.icontains(filters.search),
+                ProfilingDepModel.result[
+                    AcTaskResultItemField.RHS_COLUMN
+                ].astext.icontains(filters.search),
+            )
             if filters.search
             else None,
             # lhs_column_indices

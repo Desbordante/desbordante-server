@@ -1,5 +1,6 @@
 import sqlalchemy as sa
-from sqlalchemy import func
+from sqlalchemy import cast, func, or_
+from sqlalchemy.dialects.postgresql import JSONB, JSONPATH
 
 from src.crud.profiling_dep_crud.query_helpers.base_query_helper import BaseQueryHelper
 from src.models.task_models import ProfilingDepModel
@@ -23,12 +24,18 @@ class DdQueryHelper(
             case DdTaskResultOrderingField.LHS_ITEMS_NAMES:
                 return func.jsonb_path_query_array(
                     ProfilingDepModel.result,
-                    f"$.{DdTaskResultItemField.LHS_ITEMS}[*].{ColumnField.NAME}",
+                    cast(
+                        f"$.{DdTaskResultItemField.LHS_ITEMS}[*].{ColumnField.NAME}",
+                        JSONPATH,
+                    ),
                 )
             case DdTaskResultOrderingField.LHS_ITEMS_INDICES:
                 return func.jsonb_path_query_array(
                     ProfilingDepModel.result,
-                    f"$.{DdTaskResultItemField.LHS_ITEMS}[*].{ColumnField.INDEX}",
+                    cast(
+                        f"$.{DdTaskResultItemField.LHS_ITEMS}[*].{ColumnField.INDEX}",
+                        JSONPATH,
+                    ),
                 )
             case DdTaskResultOrderingField.RHS_ITEM_NAMES:
                 return ProfilingDepModel.result[DdTaskResultItemField.RHS_ITEM][
@@ -47,21 +54,34 @@ class DdQueryHelper(
     def make_filters(self, filters: DdTaskResultFiltersSchema):
         return [
             # search
-            ProfilingDepModel.result.astext.icontains(filters.search)
+            or_(
+                ProfilingDepModel.result[
+                    DdTaskResultItemField.LHS_ITEMS
+                ].astext.icontains(filters.search),
+                ProfilingDepModel.result[
+                    DdTaskResultItemField.RHS_ITEM
+                ].astext.icontains(filters.search),
+            )
             if filters.search
             else None,
             # lhs_column_names
             func.jsonb_path_query_array(
                 ProfilingDepModel.result,
-                f"$.{DdTaskResultItemField.LHS_ITEMS}[*].{ColumnField.NAME}",
-            ).op("<@")(filters.lhs_items_names)
+                cast(
+                    f"$.{DdTaskResultItemField.LHS_ITEMS}[*].{ColumnField.NAME}",
+                    JSONPATH,
+                ),
+            ).op("<@")(cast(filters.lhs_items_names, JSONB))
             if filters.lhs_items_names
             else None,
             # lhs_column_indices
             func.jsonb_path_query_array(
                 ProfilingDepModel.result,
-                f"$.{DdTaskResultItemField.LHS_ITEMS}[*].{ColumnField.INDEX}",
-            ).op("<@")(filters.lhs_items_indices)
+                cast(
+                    f"$.{DdTaskResultItemField.LHS_ITEMS}[*].{ColumnField.INDEX}",
+                    JSONPATH,
+                ),
+            ).op("<@")(cast(filters.lhs_items_indices, JSONB))
             if filters.lhs_items_indices
             else None,
             # rhs_column_names
@@ -73,8 +93,11 @@ class DdQueryHelper(
             # rhs_column_indices
             func.jsonb_path_query_array(
                 ProfilingDepModel.result,
-                f"$.{DdTaskResultItemField.RHS_ITEM}[*].{ColumnField.INDEX}",
-            ).op("<@")(filters.rhs_item_indices)
+                cast(
+                    f"$.{DdTaskResultItemField.RHS_ITEM}.{ColumnField.INDEX}",
+                    JSONPATH,
+                ),
+            ).op("<@")(cast(filters.rhs_item_indices, JSONB))
             if filters.rhs_item_indices
             else None,
         ]

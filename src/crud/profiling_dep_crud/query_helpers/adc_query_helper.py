@@ -1,5 +1,5 @@
 from sqlalchemy import cast, func
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSONB, JSONPATH
 
 from src.crud.profiling_dep_crud.query_helpers.base_query_helper import BaseQueryHelper
 from src.models.task_models import ProfilingDepModel
@@ -19,22 +19,22 @@ class AdcQueryHelper(
             case AdcTaskResultOrderingField.LHS_ITEM_NAMES:
                 return func.jsonb_path_query_array(
                     ProfilingDepModel.result[AdcTaskResultItemField.CONJUNCTS],
-                    f"$[*].lhs_item.{ColumnField.NAME}",
+                    cast(f"$[*].lhs_item.{ColumnField.NAME}", JSONPATH),
                 )
             case AdcTaskResultOrderingField.RHS_ITEM_NAMES:
                 return func.jsonb_path_query_array(
                     ProfilingDepModel.result[AdcTaskResultItemField.CONJUNCTS],
-                    f"$[*].rhs_item.{ColumnField.NAME}",
+                    cast(f"$[*].rhs_item.{ColumnField.NAME}", JSONPATH),
                 )
             case AdcTaskResultOrderingField.LHS_ITEM_INDICES:
                 return func.jsonb_path_query_array(
                     ProfilingDepModel.result[AdcTaskResultItemField.CONJUNCTS],
-                    f"$[*].lhs_item.{ColumnField.INDEX}",
+                    cast(f"$[*].lhs_item.{ColumnField.INDEX}", JSONPATH),
                 )
             case AdcTaskResultOrderingField.RHS_ITEM_INDICES:
                 return func.jsonb_path_query_array(
                     ProfilingDepModel.result[AdcTaskResultItemField.CONJUNCTS],
-                    f"$[*].rhs_item.{ColumnField.INDEX}",
+                    cast(f"$[*].rhs_item.{ColumnField.INDEX}", JSONPATH),
                 )
             case AdcTaskResultOrderingField.NUMBER_OF_CONJUNCTS:
                 return func.jsonb_array_length(
@@ -54,28 +54,28 @@ class AdcQueryHelper(
             # lhs_item_names
             func.jsonb_path_query_array(
                 ProfilingDepModel.result[AdcTaskResultItemField.CONJUNCTS],
-                f"$[*].lhs_item.{ColumnField.NAME}",
+                cast(f"$[*].lhs_item.{ColumnField.NAME}", JSONPATH),
             ).op("<@")(cast(filters.lhs_item_names, JSONB))
             if filters.lhs_item_names
             else None,
             # rhs_item_names
             func.jsonb_path_query_array(
                 ProfilingDepModel.result[AdcTaskResultItemField.CONJUNCTS],
-                f"$[*].rhs_item.{ColumnField.NAME}",
+                cast(f"$[*].rhs_item.{ColumnField.NAME}", JSONPATH),
             ).op("<@")(cast(filters.rhs_item_names, JSONB))
             if filters.rhs_item_names
             else None,
             # lhs_item_indices
             func.jsonb_path_query_array(
                 ProfilingDepModel.result[AdcTaskResultItemField.CONJUNCTS],
-                f"$[*].lhs_item.{ColumnField.INDEX}",
+                cast(f"$[*].lhs_item.{ColumnField.INDEX}", JSONPATH),
             ).op("<@")(cast(filters.lhs_item_indices, JSONB))
             if filters.lhs_item_indices
             else None,
             # rhs_item_indices
             func.jsonb_path_query_array(
                 ProfilingDepModel.result[AdcTaskResultItemField.CONJUNCTS],
-                f"$[*].rhs_item.{ColumnField.INDEX}",
+                cast(f"$[*].rhs_item.{ColumnField.INDEX}", JSONPATH),
             ).op("<@")(cast(filters.rhs_item_indices, JSONB))
             if filters.rhs_item_indices
             else None,

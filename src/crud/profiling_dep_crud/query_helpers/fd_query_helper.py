@@ -1,6 +1,6 @@
 import sqlalchemy
 from sqlalchemy import cast, func, or_
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSONB, JSONPATH
 
 from src.crud.profiling_dep_crud.query_helpers.base_query_helper import BaseQueryHelper
 from src.models.task_models import ProfilingDepModel
@@ -20,12 +20,12 @@ class FdQueryHelper(
             case FdTaskResultOrderingField.LHS_COLUMNS_INDICES:
                 return func.jsonb_path_query_array(
                     ProfilingDepModel.result[FdTaskResultItemField.LHS_COLUMNS],
-                    f"$[*].{ColumnField.INDEX}",
+                    cast(f"$[*].{ColumnField.INDEX}", JSONPATH),
                 )
             case FdTaskResultOrderingField.LHS_COLUMNS_NAMES:
                 return func.jsonb_path_query_array(
                     ProfilingDepModel.result[FdTaskResultItemField.LHS_COLUMNS],
-                    f"$[*].{ColumnField.NAME}",
+                    cast(f"$[*].{ColumnField.NAME}", JSONPATH),
                 )
             case FdTaskResultOrderingField.RHS_COLUMN_INDEX:
                 return func.cast(
@@ -61,14 +61,14 @@ class FdQueryHelper(
             # lhs_columns_names
             func.jsonb_path_query_array(
                 ProfilingDepModel.result[FdTaskResultItemField.LHS_COLUMNS],
-                f"$[*].{ColumnField.NAME}",
+                cast(f"$[*].{ColumnField.NAME}", JSONPATH),
             ).op("<@")(cast(filters.lhs_columns_names, JSONB))
             if filters.lhs_columns_names
             else None,
             # lhs_columns_indices
             func.jsonb_path_query_array(
                 ProfilingDepModel.result[FdTaskResultItemField.LHS_COLUMNS],
-                f"$[*].{ColumnField.INDEX}",
+                cast(f"$[*].{ColumnField.INDEX}", JSONPATH),
             ).op("<@")(cast(filters.lhs_columns_indices, JSONB))
             if filters.lhs_columns_indices
             else None,

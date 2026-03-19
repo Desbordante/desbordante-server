@@ -1,5 +1,6 @@
 import sqlalchemy
-from sqlalchemy import func
+from sqlalchemy import cast, func, or_
+from sqlalchemy.dialects.postgresql import JSONB, JSONPATH
 
 from src.crud.profiling_dep_crud.query_helpers.base_query_helper import BaseQueryHelper
 from src.models.task_models import ProfilingDepModel
@@ -17,28 +18,32 @@ class NarQueryHelper(
     def get_ordering_field(self, order_by: NarTaskResultOrderingField):
         match order_by:
             case NarTaskResultOrderingField.NUMBER_OF_LHS_ITEMS:
-                return func.jsonb_array_length(NarTaskResultItemField.LHS_ITEMS)
+                return func.jsonb_array_length(
+                    ProfilingDepModel.result[NarTaskResultItemField.LHS_ITEMS]
+                )
             case NarTaskResultOrderingField.NUMBER_OF_RHS_ITEMS:
-                return func.jsonb_array_length(NarTaskResultItemField.RHS_ITEMS)
+                return func.jsonb_array_length(
+                    ProfilingDepModel.result[NarTaskResultItemField.RHS_ITEMS]
+                )
             case NarTaskResultOrderingField.LHS_ITEMS_NAMES:
                 return func.jsonb_path_query_array(
                     ProfilingDepModel.result[NarTaskResultItemField.LHS_ITEMS],
-                    f"$[*].{ColumnField.NAME}",
+                    cast(f"$[*].{ColumnField.NAME}", JSONPATH),
                 )
             case NarTaskResultOrderingField.LHS_ITEMS_INDICES:
                 return func.jsonb_path_query_array(
                     ProfilingDepModel.result[NarTaskResultItemField.LHS_ITEMS],
-                    f"$[*].{ColumnField.INDEX}",
+                    cast(f"$[*].{ColumnField.INDEX}", JSONPATH),
                 )
             case NarTaskResultOrderingField.RHS_ITEMS_NAMES:
                 return func.jsonb_path_query_array(
                     ProfilingDepModel.result[NarTaskResultItemField.RHS_ITEMS],
-                    f"$[*].{ColumnField.NAME}",
+                    cast(f"$[*].{ColumnField.NAME}", JSONPATH),
                 )
             case NarTaskResultOrderingField.RHS_ITEMS_INDICES:
                 return func.jsonb_path_query_array(
                     ProfilingDepModel.result[NarTaskResultItemField.RHS_ITEMS],
-                    f"$[*].{ColumnField.INDEX}",
+                    cast(f"$[*].{ColumnField.INDEX}", JSONPATH),
                 )
             case NarTaskResultOrderingField.CONFIDENCE:
                 return func.cast(
@@ -61,7 +66,14 @@ class NarQueryHelper(
     def make_filters(self, filters: NarTaskResultFiltersSchema):
         return [
             # search
-            ProfilingDepModel.result.astext.icontains(filters.search)
+            or_(
+                ProfilingDepModel.result[
+                    NarTaskResultItemField.LHS_ITEMS
+                ].astext.icontains(filters.search),
+                ProfilingDepModel.result[
+                    NarTaskResultItemField.RHS_ITEMS
+                ].astext.icontains(filters.search),
+            )
             if filters.search
             else None,
             # min_confidence
@@ -112,32 +124,40 @@ class NarQueryHelper(
             <= filters.max_fitness
             if filters.max_fitness is not None
             else None,
-            # lhs_items_names
-            func.jsonb_path_query_array(
-                ProfilingDepModel.result[NarTaskResultItemField.LHS_ITEMS],
-                f"$[*].{ColumnField.NAME}",
-            ).op("<@")(filters.lhs_items_names)
+            # lhs_items_names (filter array contained in result array)
+            cast(filters.lhs_items_names, JSONB).op("<@")(
+                func.jsonb_path_query_array(
+                    ProfilingDepModel.result[NarTaskResultItemField.LHS_ITEMS],
+                    cast(f"$[*].{ColumnField.NAME}", JSONPATH),
+                )
+            )
             if filters.lhs_items_names
             else None,
             # lhs_items_indices
-            func.jsonb_path_query_array(
-                ProfilingDepModel.result[NarTaskResultItemField.LHS_ITEMS],
-                f"$[*].{ColumnField.INDEX}",
-            ).op("<@")(filters.lhs_items_indices)
+            cast(filters.lhs_items_indices, JSONB).op("<@")(
+                func.jsonb_path_query_array(
+                    ProfilingDepModel.result[NarTaskResultItemField.LHS_ITEMS],
+                    cast(f"$[*].{ColumnField.INDEX}", JSONPATH),
+                )
+            )
             if filters.lhs_items_indices
             else None,
             # rhs_items_names
-            func.jsonb_path_query_array(
-                ProfilingDepModel.result[NarTaskResultItemField.RHS_ITEMS],
-                f"$[*].{ColumnField.NAME}",
-            ).op("<@")(filters.rhs_items_names)
+            cast(filters.rhs_items_names, JSONB).op("<@")(
+                func.jsonb_path_query_array(
+                    ProfilingDepModel.result[NarTaskResultItemField.RHS_ITEMS],
+                    cast(f"$[*].{ColumnField.NAME}", JSONPATH),
+                )
+            )
             if filters.rhs_items_names
             else None,
             # rhs_items_indices
-            func.jsonb_path_query_array(
-                ProfilingDepModel.result[NarTaskResultItemField.RHS_ITEMS],
-                f"$[*].{ColumnField.INDEX}",
-            ).op("<@")(filters.rhs_items_indices)
+            cast(filters.rhs_items_indices, JSONB).op("<@")(
+                func.jsonb_path_query_array(
+                    ProfilingDepModel.result[NarTaskResultItemField.RHS_ITEMS],
+                    cast(f"$[*].{ColumnField.INDEX}", JSONPATH),
+                )
+            )
             if filters.rhs_items_indices
             else None,
         ]
