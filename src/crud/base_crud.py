@@ -86,8 +86,8 @@ class BaseCrud[ModelType: BaseModel](ABC):
     ) -> PaginatedResult[ModelType]:
         query = select(self.model) if query is None else query
 
-        query = query.add_columns(func.count().over().label("total_count"))
         query = query.filter_by(**kwargs)
+        query = query.add_columns(func.count().over().label("total_count"))
 
         filters = [
             filter
@@ -122,10 +122,7 @@ class BaseCrud[ModelType: BaseModel](ABC):
         self, *, entity: ModelType, **kwargs: Unpack[BaseUpdateProps]
     ) -> ModelType:
         for key, value in kwargs.items():
-            if isinstance(value, list):
-                self._session.add_all(value)  # type: ignore
-            else:
-                setattr(entity, key, value)
+            setattr(entity, key, value)
 
         await self._session.commit()
         await self._session.refresh(entity)

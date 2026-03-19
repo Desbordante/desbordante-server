@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from enum import StrEnum, auto
 from typing import Annotated, Any
 
+from celery import states
 from fastapi import Depends
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, model_validator
@@ -53,6 +54,45 @@ json.dumps = custom_dumps
 
 class ApiErrorSchema(BaseSchema):
     detail: str
+
+
+class OptionalSchema(BaseSchema):
+    """
+    A base model class that automatically sets all fields, except those defined in
+    `__non_optional_fields__`, to `None` by default. This allows for the creation
+    of model where fields are optional unless explicitly marked as required.
+
+    Attributes:
+        __non_optional_fields__ (set): A set of field names that should remain
+        non-optional. Fields listed here will not have `None` as their default value.
+    """
+
+    __non_optional_fields__: set[str] = set()
+
+    @classmethod
+    def __pydantic_init_subclass__(cls, **kwargs: Any) -> None:
+        """
+        Class-level initializer that ensures all fields except those specified
+        in `__non_optional_fields__` are set to `None` by default. This method
+        is called during the subclass initialization process.
+
+        Args:
+            **kwargs: Arbitrary keyword arguments passed to the superclass initializer.
+        Exceptions:
+            ValueError: If a field listed in `__non_optional_fields__` has a default value of `None`.
+        """
+        super().__pydantic_init_subclass__(**kwargs)
+
+        for field_name, value in cls.model_fields.items():
+            if field_name in cls.__non_optional_fields__:
+                if value.default is None:
+                    raise ValueError(
+                        f"Field '{field_name}' is in __non_optional_fields__ but has a default value of None."
+                    )
+                continue
+            value.default = None
+
+        cls.model_rebuild(force=True)
 
 
 class PydanticType(TypeDecorator[Any]):
@@ -130,6 +170,31 @@ class FiltersParamsSchema(BaseSchema):
 class QueryParamsSchema[T: FiltersParamsSchema, U: str](BaseSchema):
     filters: Annotated[T, Depends()]
     ordering: Annotated[OrderingParamsSchema[U], Depends()]
+
+
+class TaskStatus(StrEnum):
+    PENDING = states.PENDING
+    RECEIVED = states.RECEIVED
+    STARTED = states.STARTED
+    SUCCESS = states.SUCCESS
+    FAILURE = states.FAILURE
+    RETRY = states.RETRY
+    REVOKED = states.REVOKED
+
+
+class TaskFailureReason(StrEnum):
+    MEMORY_LIMIT_EXCEEDED = auto()
+    TIME_LIMIT_EXCEEDED = auto()
+    WORKER_LOST = auto()
+    OTHER = auto()
+
+
+class TaskErrorSchema(BaseSchema):
+    reason: TaskFailureReason
+    exc_type: str
+    exc_module: str
+    exc_message: list[str]
+    traceback: str | None
 
 
 @dataclass

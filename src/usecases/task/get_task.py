@@ -3,11 +3,11 @@ from uuid import UUID
 
 from src.domain.authorization.entities import Actor, Task
 from src.exceptions import ResourceNotFoundException
-from src.models.task_models import TaskModel
+from src.models.task_models import ProfilingTaskModel
 
 
 class TaskCrud(Protocol):
-    async def get_by(self, *, id: UUID) -> TaskModel: ...
+    async def get_by(self, *, id: UUID) -> ProfilingTaskModel: ...
 
 
 class TaskPolicy(Protocol):
@@ -29,7 +29,7 @@ class GetTaskUseCase:
         *,
         id: UUID,
         actor: Actor,
-    ) -> TaskModel:
+    ) -> ProfilingTaskModel:
         task = await self._task_crud.get_by(id=id)
 
         if not self._task_policy.can_read(actor, cast(Task, task)):

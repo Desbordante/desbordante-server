@@ -1,8 +1,11 @@
 from io import BytesIO
+from types import SimpleNamespace
+from uuid import uuid4
 
 import pytest
 from pytest_mock import MockerFixture
 
+from src.schemas.base_schemas import TaskStatus
 from src.schemas.dataset_schemas import (
     DatasetSeparator,
     DatasetType,
@@ -76,6 +79,13 @@ def settings_mock(mocker: MockerFixture):
 
 
 @pytest.fixture
+def preprocess_dataset_runner_mock(mocker: MockerFixture):
+    mock = mocker.Mock()
+    mock.run = mocker.Mock()
+    return mock
+
+
+@pytest.fixture
 def user_stats_empty(mocker: MockerFixture):
     stats = mocker.Mock()
     stats.total_size = 0
@@ -84,8 +94,20 @@ def user_stats_empty(mocker: MockerFixture):
 
 
 @pytest.fixture
-def created_dataset(mocker: MockerFixture):
-    return mocker.Mock()
+def created_dataset(upload_params: UploadTabularDatasetParams):
+    preprocessing_id = uuid4()
+    preprocessing = SimpleNamespace(
+        status=TaskStatus.PENDING,
+        result=None,
+        id=preprocessing_id,
+    )
+    return SimpleNamespace(
+        id=uuid4(),
+        type=DatasetType.TABULAR,
+        params=upload_params.model_dump(exclude={"type"}),
+        path=f"{FAKE_USER_ID}/{uuid4()}",
+        preprocessing=preprocessing,
+    )
 
 
 @pytest.fixture
@@ -94,10 +116,12 @@ def upload_dataset_use_case(
     storage_mock,
     dataset_policy_mock,
     settings_mock,
+    preprocess_dataset_runner_mock,
 ) -> UploadDatasetUseCase:
     return UploadDatasetUseCase(
         dataset_crud=dataset_crud_mock,
         storage=storage_mock,
         dataset_policy=dataset_policy_mock,
         settings=settings_mock,
+        preprocess_dataset_runner=preprocess_dataset_runner_mock,
     )

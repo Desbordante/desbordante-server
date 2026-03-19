@@ -1,12 +1,12 @@
 import logging
 from typing import Protocol, cast
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from src.domain.authorization.entities import AuthenticatedActor, Dataset
 from src.exceptions import ForbiddenException, PayloadTooLargeException
-from src.models.dataset_models import DatasetModel
+from src.models.dataset_models import DatasetModel, PreprocessingTaskModel
 from src.schemas.dataset_schemas import (
-    DatasetStatus,
+    DatasetForTaskSchema,
     File,
     OneOfUploadDatasetParams,
 )
@@ -24,7 +24,7 @@ class DatasetCrud(Protocol):
         storage_limit: int,
     ) -> DatasetModel: ...
     async def update(
-        self, *, entity: DatasetModel, status: DatasetStatus
+        self, *, entity: DatasetModel, is_uploaded: bool
     ) -> DatasetModel: ...
     async def delete(self, *, entity: DatasetModel) -> None: ...
 
@@ -46,6 +46,10 @@ class Settings(Protocol):
     STORAGE_LIMIT: int
 
 
+class PreprocessDatasetRunner(Protocol):
+    def run(self, *, dataset: DatasetForTaskSchema, task_id: UUID) -> None: ...
+
+
 class UploadDatasetUseCase:
     def __init__(
         self,
@@ -54,11 +58,13 @@ class UploadDatasetUseCase:
         storage: Storage,
         dataset_policy: DatasetPolicy,
         settings: Settings,
+        preprocess_dataset_runner: PreprocessDatasetRunner,
     ):
         self._dataset_crud = dataset_crud
         self._storage = storage
         self._dataset_policy = dataset_policy
         self._settings = settings
+        self._preprocess_dataset_runner = preprocess_dataset_runner
 
     async def __call__(
         self,
@@ -85,6 +91,7 @@ class UploadDatasetUseCase:
             params=params.model_dump(exclude={"type"}),
             owner_id=actor.user_id,
             is_public=is_public,
+            preprocessing=PreprocessingTaskModel(),
         )
 
         if not self._dataset_policy.can_create(
@@ -106,8 +113,11 @@ class UploadDatasetUseCase:
             await self._dataset_crud.delete(entity=created_dataset)
             raise e
 
-        await self._dataset_crud.update(
-            entity=created_dataset, status=DatasetStatus.READY
+        await self._dataset_crud.update(entity=created_dataset, is_uploaded=True)
+
+        self._preprocess_dataset_runner.run(
+            dataset=DatasetForTaskSchema.model_validate(created_dataset),
+            task_id=created_dataset.preprocessing.id,
         )
 
         return created_dataset

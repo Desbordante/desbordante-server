@@ -4,12 +4,16 @@ from enum import StrEnum, auto
 from typing import Annotated, Any, BinaryIO, Literal, Protocol
 from uuid import UUID
 
-from pydantic import Field, model_validator
+import networkx as nx
+import pandas as pd
+from pydantic import ConfigDict, Field, model_validator
 
 from src.schemas.base_schemas import (
     BaseSchema,
     FiltersParamsSchema,
     QueryParamsSchema,
+    TaskErrorSchema,
+    TaskStatus,
 )
 
 
@@ -107,13 +111,68 @@ class DatasetStatus(StrEnum):
     READY = auto()
 
 
+class TabularDatasetInfo(BaseSchema):
+    number_of_columns: int
+    number_of_rows: int
+    column_names: list[str]
+
+
+class TransactionalDatasetInfo(TabularDatasetInfo):
+    unique_values: list[str]
+
+
+class GraphDatasetInfo(BaseSchema):
+    number_of_nodes: int
+    number_of_edges: int
+    is_directed: bool
+
+
+OneOfDatasetInfo = TabularDatasetInfo | TransactionalDatasetInfo | GraphDatasetInfo
+
+
+class ProcessingPreprocessingTaskSchema(BaseSchema):
+    model_config = ConfigDict(from_attributes=True)
+
+    status: Literal[
+        TaskStatus.PENDING,
+        TaskStatus.STARTED,
+        TaskStatus.RECEIVED,
+    ]
+    result: None
+
+
+class SuccessPreprocessingTaskSchema(BaseSchema):
+    model_config = ConfigDict(from_attributes=True)
+
+    status: Literal[TaskStatus.SUCCESS]
+    result: OneOfDatasetInfo
+    finished_at: datetime
+
+
+class FailedPreprocessingTaskSchema(BaseSchema):
+    model_config = ConfigDict(from_attributes=True)
+
+    status: Literal[TaskStatus.FAILURE]
+    result: TaskErrorSchema
+    finished_at: datetime
+
+
+PreprocessingTaskSchema = Annotated[
+    ProcessingPreprocessingTaskSchema
+    | SuccessPreprocessingTaskSchema
+    | FailedPreprocessingTaskSchema,
+    Field(discriminator="status"),
+]
+
+
 class BaseDatasetSchema(BaseSchema):
     id: UUID
     type: DatasetType
     name: str
     size: int
     params: OneOfDatasetParams
-    status: DatasetStatus
+
+    preprocessing: PreprocessingTaskSchema
 
     created_at: datetime
     updated_at: datetime
@@ -137,6 +196,7 @@ DatasetSchema = Annotated[
 class DatasetFiltersSchema(FiltersParamsSchema):
     type: DatasetType | None = None
     is_public: bool | None = None
+    status: TaskStatus | None = None
     min_size: int | None = None
     max_size: int | None = None
     created_after: datetime | None = None
@@ -151,3 +211,41 @@ DatasetQueryParamsSchema = QueryParamsSchema[
 class DatasetsStatsSchema(BaseSchema):
     total_count: int
     total_size: int
+
+
+class TabularDownloadedDatasetSchema(BaseSchema):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    df: pd.DataFrame
+    params: TabularDatasetParams
+    info: TabularDatasetInfo
+
+
+class TransactionalDownloadedDatasetSchema(BaseSchema):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    df: pd.DataFrame
+    params: TransactionalDatasetParams
+    info: TransactionalDatasetInfo
+
+
+class GraphDownloadedDatasetSchema(BaseSchema):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    graph: nx.Graph
+    params: GraphDatasetParams
+    info: GraphDatasetInfo
+
+
+class DatasetForTaskSchema(BaseSchema):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    type: DatasetType
+    params: OneOfDatasetParams
+    path: str
+    preprocessing: PreprocessingTaskSchema
+
+
+OneOfDownloadedDatasetSchema = (
+    TabularDownloadedDatasetSchema
+    | TransactionalDownloadedDatasetSchema
+    | GraphDownloadedDatasetSchema
+)

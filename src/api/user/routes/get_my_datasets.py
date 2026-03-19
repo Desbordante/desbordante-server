@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, status
 
 from src.api.dependencies import AuthenticatedActorDep, PaginationParamsDep
 from src.api.user.dependencies import GetUserDatasetsUseCaseDep
-from src.schemas.base_schemas import ApiErrorSchema, PaginatedResult
+from src.schemas.base_schemas import ApiErrorSchema, PaginatedResponseSchema
 from src.schemas.dataset_schemas import DatasetQueryParamsSchema, PrivateDatasetSchema
 
 router = APIRouter()
@@ -16,7 +16,7 @@ DatasetQueryParamsDep = Annotated[
 
 @router.get(
     "/me/datasets/",
-    response_model=PaginatedResult[PrivateDatasetSchema],
+    response_model=PaginatedResponseSchema[PrivateDatasetSchema],
     status_code=status.HTTP_200_OK,
     summary="Get my datasets",
     description="Get list of current user's datasets",

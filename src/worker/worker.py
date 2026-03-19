@@ -6,7 +6,9 @@ worker = Celery(
     __name__,
     broker=settings.rabbitmq_dsn.unicode_string(),
     include=[
-        "src.infrastructure.task.profiling_task",
+        "src.infrastructure.bg_tasks.preprocess_dataset.task",
+        "src.infrastructure.bg_tasks.profiling_task.task",
     ],
 )
+
 worker.config_from_object("src.worker.celery_config")

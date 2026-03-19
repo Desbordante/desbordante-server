@@ -8,13 +8,18 @@ from src.api.dependencies import (
     DatasetPolicyDep,
     SessionManagerDep,
     StorageDep,
+    TaskCrudDep,
     UserCrudDep,
     UserPolicyDep,
+)
+from src.infrastructure.bg_tasks.preprocess_dataset.runner import (
+    PreprocessDatasetRunner,
 )
 from src.infrastructure.storage.config import settings as storage_settings
 from src.usecases.dataset.check_content_type import CheckContentTypeUseCase
 from src.usecases.dataset.get_user_datasets import GetUserDatasetsUseCase
 from src.usecases.dataset.upload_dataset import UploadDatasetUseCase
+from src.usecases.task.get_user_tasks import GetUserTasksUseCase
 from src.usecases.user.get_linked_accounts import GetLinkedAccountsUseCase
 from src.usecases.user.get_user_by_id import GetUserByIdUseCase
 from src.usecases.user.get_user_stats import GetUserStatsUseCase
@@ -69,16 +74,27 @@ GetLinkedAccountsUseCaseDep = Annotated[
 ]
 
 
+async def get_preprocess_dataset_runner() -> PreprocessDatasetRunner:
+    return PreprocessDatasetRunner()
+
+
+PreprocessDatasetRunnerDep = Annotated[
+    PreprocessDatasetRunner, Depends(get_preprocess_dataset_runner)
+]
+
+
 async def get_upload_my_dataset_use_case(
     dataset_crud: DatasetCrudDep,
     storage: StorageDep,
     dataset_policy: DatasetPolicyDep,
+    preprocess_dataset_runner: PreprocessDatasetRunnerDep,
 ) -> UploadDatasetUseCase:
     return UploadDatasetUseCase(
         dataset_crud=dataset_crud,
         storage=storage,
         dataset_policy=dataset_policy,
         settings=storage_settings,
+        preprocess_dataset_runner=preprocess_dataset_runner,
     )
 
 
@@ -104,4 +120,15 @@ async def get_check_content_type_use_case() -> CheckContentTypeUseCase:
 
 CheckContentTypeUseCaseDep = Annotated[
     CheckContentTypeUseCase, Depends(get_check_content_type_use_case)
+]
+
+
+async def get_get_user_tasks_use_case(
+    task_crud: TaskCrudDep,
+) -> GetUserTasksUseCase:
+    return GetUserTasksUseCase(task_crud=task_crud)
+
+
+GetUserTasksUseCaseDep = Annotated[
+    GetUserTasksUseCase, Depends(get_get_user_tasks_use_case)
 ]
