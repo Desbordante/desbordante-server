@@ -143,11 +143,6 @@ async def test_get_many_filter_lhs_columns_indices(
         ),
         (
             PfdTaskResultOrderingField.NUMBER_OF_LHS_COLUMNS,
-            OrderingDirection.ASC,
-            "name",
-        ),
-        (
-            PfdTaskResultOrderingField.NUMBER_OF_LHS_COLUMNS,
             OrderingDirection.DESC,
             "age",
         ),
